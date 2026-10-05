@@ -187,7 +187,8 @@ function getLeaderboard(limit = 10) {
             ORDER BY a.score DESC, a.time_spent_seconds ASC
             LIMIT ?
         `;
-        db.query(sql, [Number(limit)], (err, rows) => {
+        const n = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+        db.query(sql, [n], (err, rows) => {
             if (err) return reject(err);
             resolve(rows);
         });
