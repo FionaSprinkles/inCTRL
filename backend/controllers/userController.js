@@ -49,7 +49,7 @@ exports.getMe = async (req, res) => {
                 error: 'Not authenticated'
             });
         }
-        const user = await userService.getUserById(req.user.id);
+        const user = await userService.getUserProfileById(req.user.id);
         if (!user) {
             return res.status(404).json({
                 success: false,

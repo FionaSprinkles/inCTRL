@@ -1,10 +1,13 @@
 const db = require('../connectionMySQL');
 const bcrypt = require('bcryptjs');
 
+/**
+ * Public lookup: Retrieves all users without exposing sensitive data (email, password hash).
+ */
 function getAllUsers() {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT id, username, email, display_name AS displayName, role, avatar, xp, created_at AS createdAt
+            SELECT id, username, display_name AS displayName, role, avatar, xp, created_at AS createdAt
             FROM users 
             ORDER BY xp DESC, created_at ASC
         `;
@@ -15,7 +18,28 @@ function getAllUsers() {
     });
 }
 
+/**
+ * Public lookup: Retrieves a single user by ID without exposing sensitive data (email, password hash).
+ */
 function getUserById(id) {
+    return new Promise((resolve, reject) => {
+        const sql = `
+            SELECT id, username, display_name AS displayName, role, avatar, xp, created_at AS createdAt
+            FROM users 
+            WHERE id = ?
+        `;
+        db.query(sql, [id], (err, rows) => {
+            if (err) return reject(err);
+            if (!rows || rows.length === 0) return resolve(null);
+            resolve(rows[0]);
+        });
+    });
+}
+
+/**
+ * Private profile lookup: Only for the authenticated user viewing their own account.
+ */
+function getUserProfileById(id) {
     return new Promise((resolve, reject) => {
         const sql = `
             SELECT id, username, email, display_name AS displayName, role, avatar, xp, created_at AS createdAt
@@ -116,6 +140,7 @@ function deleteUser(id) {
 module.exports = {
     getAllUsers,
     getUserById,
+    getUserProfileById,
     getUserByUsernameOrEmail,
     register,
     login,
