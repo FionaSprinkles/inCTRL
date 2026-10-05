@@ -57,8 +57,9 @@ function handleKeyDown(e) {
 }
 
 function handleKeyUp(e) {
-  // Clear held keys on release
-  currentlyHeld.value = new Set()
+  const next = new Set(currentlyHeld.value)
+  next.delete(getKeyLabelFromEvent(e))
+  currentlyHeld.value = next
 }
 
 function toggleVirtualKey(key) {
