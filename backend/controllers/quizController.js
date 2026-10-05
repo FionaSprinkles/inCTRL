@@ -102,23 +102,61 @@ exports.deleteQuestion = async (req, res) => {
 
 exports.submitAttempt = async (req, res) => {
     try {
-        const { userId, guestName, formatFilter, score, maxScore, totalAnswered, timeSpentSeconds } = req.body;
+        const { guestName, formatFilter, score, maxScore, totalAnswered, timeSpentSeconds } = req.body;
 
-        if (score === undefined || maxScore === undefined) {
+        // Security (CWE-639 IDOR Fix):
+        // Derive userId strictly from the authenticated token session (req.user).
+        // Never accept or trust client-supplied userId from req.body.
+        const authenticatedUserId = req.user ? req.user.id : null;
+
+        // Validation: Verify score and maxScore are integers
+        if (typeof score !== 'number' || !Number.isInteger(score)) {
             return res.status(400).json({
                 success: false,
-                error: 'score and maxScore are required'
+                error: 'score is required and must be an integer'
             });
         }
 
+        if (typeof maxScore !== 'number' || !Number.isInteger(maxScore)) {
+            return res.status(400).json({
+                success: false,
+                error: 'maxScore is required and must be an integer'
+            });
+        }
+
+        // Validation: Enforce 0 <= score <= maxScore bounds
+        if (maxScore < 0 || score < 0 || score > maxScore) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid score: score must satisfy 0 <= score <= maxScore'
+            });
+        }
+
+        // Validation: totalAnswered bounds
+        const safeTotalAnswered = Number.isInteger(totalAnswered) && totalAnswered >= 0 ? totalAnswered : 0;
+        if (safeTotalAnswered > maxScore) {
+            return res.status(400).json({
+                success: false,
+                error: 'totalAnswered cannot exceed maxScore'
+            });
+        }
+
+        // Validation: timeSpentSeconds
+        const safeTimeSpent = Number.isInteger(timeSpentSeconds) && timeSpentSeconds >= 0 ? timeSpentSeconds : 0;
+
+        // Sanitization: guestName
+        const safeGuestName = !authenticatedUserId && typeof guestName === 'string'
+            ? guestName.trim().slice(0, 50)
+            : null;
+
         const attempt = await quizService.saveAttempt({
-            userId,
-            guestName,
-            formatFilter,
+            userId: authenticatedUserId,
+            guestName: safeGuestName,
+            formatFilter: typeof formatFilter === 'string' ? formatFilter.slice(0, 50) : 'all',
             score,
             maxScore,
-            totalAnswered: totalAnswered || 0,
-            timeSpentSeconds: timeSpentSeconds || 0
+            totalAnswered: safeTotalAnswered,
+            timeSpentSeconds: safeTimeSpent
         });
 
         res.status(201).json({

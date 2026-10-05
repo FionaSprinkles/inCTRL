@@ -140,12 +140,17 @@ function deleteQuestion(id) {
 
 function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', score, maxScore, totalAnswered, timeSpentSeconds = 0 }) {
     return new Promise((resolve, reject) => {
+        // Defense-in-depth: validate integer types and bounds
+        if (!Number.isInteger(score) || !Number.isInteger(maxScore) || maxScore < 0 || score < 0 || score > maxScore) {
+            return reject(new Error('Invalid score bounds: score and maxScore must be integers with 0 <= score <= maxScore'));
+        }
+
         const sql = `
             INSERT INTO quiz_attempts 
             (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        const params = [userId, guestName, formatFilter, score, maxScore, totalAnswered, timeSpentSeconds];
+        const params = [userId || null, guestName || null, formatFilter, score, maxScore, totalAnswered, timeSpentSeconds];
 
         db.query(sql, params, (err, result) => {
             if (err) return reject(err);

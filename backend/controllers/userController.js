@@ -1,4 +1,5 @@
 const userService = require('../services/userService');
+const { generateToken } = require('../middleware/auth');
 
 exports.getUsers = async (req, res) => {
     try {
@@ -40,6 +41,34 @@ exports.getUser = async (req, res) => {
     }
 };
 
+exports.getMe = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
+                success: false,
+                error: 'Not authenticated'
+            });
+        }
+        const user = await userService.getUserById(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+        res.json({
+            success: true,
+            user
+        });
+    } catch (error) {
+        console.error('Error fetching current user:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 exports.register = async (req, res) => {
     try {
         const { username, email, password, displayName } = req.body;
@@ -51,9 +80,12 @@ exports.register = async (req, res) => {
         }
 
         const user = await userService.register({ username, email, password, displayName });
+        const token = generateToken({ id: user.id, username: user.username, role: user.role });
+
         res.status(201).json({
             success: true,
             message: 'User registered successfully',
+            token,
             user
         });
     } catch (error) {
@@ -76,9 +108,12 @@ exports.login = async (req, res) => {
         }
 
         const user = await userService.login({ username, password });
+        const token = generateToken({ id: user.id, username: user.username, role: user.role });
+
         res.json({
             success: true,
             message: 'Login successful',
+            token,
             user
         });
     } catch (error) {
@@ -93,6 +128,15 @@ exports.login = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Authorization check: only the account owner or an admin can update profile
+        if (!req.user || (Number(req.user.id) !== Number(id) && req.user.role !== 'admin')) {
+            return res.status(403).json({
+                success: false,
+                error: 'Forbidden: You can only update your own profile'
+            });
+        }
+
         const { displayName, avatar } = req.body;
         await userService.updateUser(id, { displayName, avatar });
         res.json({
@@ -111,6 +155,15 @@ exports.updateProfile = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Authorization check: only the account owner or an admin can delete
+        if (!req.user || (Number(req.user.id) !== Number(id) && req.user.role !== 'admin')) {
+            return res.status(403).json({
+                success: false,
+                error: 'Forbidden: Insufficient permissions to delete this account'
+            });
+        }
+
         await userService.deleteUser(id);
         res.json({
             success: true,
