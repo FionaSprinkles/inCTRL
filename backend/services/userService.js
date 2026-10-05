@@ -66,7 +66,9 @@ function getUserByUsernameOrEmail(identifier) {
 }
 
 async function register({ username, email, password, displayName }) {
-    const existing = await getUserByUsernameOrEmail(username);
+    const u = username.trim();
+    const e = email.trim().toLowerCase();
+    const existing = (await getUserByUsernameOrEmail(u)) || (await getUserByUsernameOrEmail(e));
     if (existing) {
         throw new Error('Username or email already in use');
     }
