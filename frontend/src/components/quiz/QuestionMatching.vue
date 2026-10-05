@@ -119,7 +119,7 @@ function getRightMatchedLeft(rightId) {
       <!-- Left Column: Shortcuts -->
       <div class="column left-column">
         <div class="column-header">Shortcuts</div>
-        <div
+        <button
           v-for="pair in question.pairs"
           :key="'left-' + pair.id"
           class="match-card left-card"
@@ -141,13 +141,13 @@ function getRightMatchedLeft(rightId) {
           >
             Linked ✕
           </span>
-        </div>
+        </button>
       </div>
 
       <!-- Right Column: Descriptions -->
       <div class="column right-column">
         <div class="column-header">Functions / Actions</div>
-        <div
+        <button
           v-for="item in rightItems"
           :key="'right-' + item.id"
           class="match-card right-card"
@@ -167,7 +167,7 @@ function getRightMatchedLeft(rightId) {
           >
             Matched
           </span>
-        </div>
+        </button>
       </div>
     </div>
   </div>
