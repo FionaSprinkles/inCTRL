@@ -74,7 +74,7 @@ const formatLabels = {
 watch(
   () => props.question.id,
   () => {
-    userAnswer.value = props.savedAnswer !== undefined ? props.savedAnswer : getInitialAnswer(props.question)
+    userAnswer.value = props.savedAnswer ?? getInitialAnswer(props.question)
     evaluationResult.value = props.savedResult || null
     showHint.value = false
   },
