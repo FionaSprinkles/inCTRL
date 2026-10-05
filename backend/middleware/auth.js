@@ -1,6 +1,25 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'inctrl-development-secret-key-replace-in-production';
+/**
+ * Resolves JWT secret. Outside explicit development (NODE_ENV === 'development'),
+ * missing JWT_SECRET immediately fails startup to prevent token forgery (CWE-798).
+ */
+function resolveJwtSecret() {
+    if (process.env.JWT_SECRET) {
+        return process.env.JWT_SECRET;
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ [Security Warning] Running with development fallback JWT secret. Set JWT_SECRET for production deployments.');
+        return 'inctrl-development-secret-key-replace-in-production';
+    }
+
+    throw new Error(
+        'FATAL: JWT_SECRET environment variable is missing. A secure JWT_SECRET must be configured unless NODE_ENV is explicitly set to "development".'
+    );
+}
+
+const JWT_SECRET = resolveJwtSecret();
 
 /**
  * Required authentication middleware.
