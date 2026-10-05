@@ -56,6 +56,10 @@ function handleAnswered({ questionId, userAnswer, result }) {
   }
 }
 
+function handleRetry({ questionId }) {
+  delete evalResults.value[questionId]
+}
+
 function nextQuestion() {
   if (currentIndex.value < filteredQuestions.value.length - 1) {
     currentIndex.value++
@@ -130,6 +134,7 @@ function jumpToQuestion(idx) {
         :question-number="currentIndex + 1"
         :total-questions="filteredQuestions.length"
         @answered="handleAnswered"
+        @retry="handleRetry"
         @next="nextQuestion"
         @previous="previousQuestion"
       />

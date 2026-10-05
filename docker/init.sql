@@ -103,10 +103,10 @@ INSERT IGNORE INTO categories (id, name, slug, description, icon, display_order)
 (8, 'Interactive Keyboard Practice', 'keyboard-practice', 'Live typing exercises testing muscle memory on common commands.', 'terminal', 8);
 
 -- ----------------------------------------------------------
--- SEED DATA: USERS (Passwords hashed or demo ready)
+-- SEED DATA: DEMO USERS
+-- Admin accounts must be provisioned separately with unique credentials.
 -- ----------------------------------------------------------
 INSERT IGNORE INTO users (id, username, email, password_hash, display_name, role, xp) VALUES
-(1, 'admin', 'admin@inctrl.dev', '$2b$10$w091pP3qf1.f4n1M5mH7sOi5P05fRkFhUuM9fQ4n08M9J8bKq3/6a', 'inCTRL Admin', 'admin', 2500),
 (2, 'shortcut_ninja', 'ninja@inctrl.dev', '$2b$10$w091pP3qf1.f4n1M5mH7sOi5P05fRkFhUuM9fQ4n08M9J8bKq3/6a', 'Shortcut Ninja', 'user', 1850),
 (3, 'demo_user', 'user@inctrl.dev', '$2b$10$w091pP3qf1.f4n1M5mH7sOi5P05fRkFhUuM9fQ4n08M9J8bKq3/6a', 'Alex Dev', 'user', 920);
 
@@ -294,5 +294,4 @@ INSERT IGNORE INTO quiz_questions (id, type, category_id, category_name, difficu
 -- ----------------------------------------------------------
 INSERT IGNORE INTO quiz_attempts (id, user_id, format_filter, score, max_score, total_answered, time_spent_seconds) VALUES
 (1, 2, 'all', 19, 20, 18, 142),
-(2, 1, 'all', 18, 20, 18, 160),
 (3, 3, 'all', 15, 20, 18, 210);

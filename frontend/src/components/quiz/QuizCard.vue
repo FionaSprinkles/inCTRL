@@ -34,7 +34,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['answered', 'next', 'previous'])
+const emit = defineEmits(['answered', 'retry', 'next', 'previous'])
 
 const userAnswer = ref(null)
 const evaluationResult = ref(null)
@@ -110,6 +110,7 @@ function checkAnswer() {
 function retryQuestion() {
   evaluationResult.value = null
   userAnswer.value = getInitialAnswer(props.question)
+  emit('retry', { questionId: props.question.id })
 }
 </script>
 
