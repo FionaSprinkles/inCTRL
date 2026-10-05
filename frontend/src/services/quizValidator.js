@@ -82,12 +82,23 @@ export function validateAnswer(question, userAnswer) {
     }
 
     case 'matching': {
+    // Normalizing userAnswer to being an object
+      let normalizedAnswer = userAnswer
+      if (Array.isArray(userAnswer)) {
+        normalizedAnswer = {}
+        userAnswer.forEach(item => {
+          if (item && item.leftId !== undefined && item.rightId !== undefined) {
+            normalizedAnswer[item.leftId] = item.rightId
+          }
+        })
+      }
+
       // userAnswer: Record<pairId, rightId> or array of { leftId, rightId }
       const pairs = question.pairs || []
       let correctMatches = 0
 
       pairs.forEach(pair => {
-        if (userAnswer && userAnswer[pair.id] === pair.id) {
+        if (normalizedAnswer && normalizedAnswer[pair.id] === pair.id) {
           correctMatches++
         }
       })
