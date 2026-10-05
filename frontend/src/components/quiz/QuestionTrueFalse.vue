@@ -2,20 +2,20 @@
 defineProps({
   question: {
     type: Object,
-    required: true
+    required: true,
   },
   modelValue: {
     type: [Boolean, null],
-    default: null
+    default: null,
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   result: {
     type: Object,
-    default: null
-  }
+    default: null,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -40,7 +40,7 @@ function setAnswer(val) {
         :class="{
           selected: modelValue === true,
           correct: result && question.correctAnswer === true,
-          incorrect: result && modelValue === true && question.correctAnswer === false
+          incorrect: result && modelValue === true && question.correctAnswer === false,
         }"
         :disabled="disabled"
         @click="setAnswer(true)"
@@ -56,7 +56,7 @@ function setAnswer(val) {
         :class="{
           selected: modelValue === false,
           correct: result && question.correctAnswer === false,
-          incorrect: result && modelValue === false && question.correctAnswer === true
+          incorrect: result && modelValue === false && question.correctAnswer === true,
         }"
         :disabled="disabled"
         @click="setAnswer(false)"
@@ -127,16 +127,12 @@ function setAnswer(val) {
   transform: translateY(-1px);
 }
 
-.btn-true.selected {
-  border-color: #10b981;
-  background: #ecfdf5;
-  color: #065f46;
-}
 
-.btn-false.selected {
-  border-color: #ef4444;
-  background: #fef2f2;
-  color: #991b1b;
+
+.tf-btn.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1e40af;
 }
 
 .btn-true.correct,
