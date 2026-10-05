@@ -109,11 +109,13 @@ const formatLabels = {
     <div class="review-section">
       <h3 class="section-title">Question Breakdown</h3>
       <div class="review-list">
-        <div
+        <button
           v-for="(q, idx) in questions"
           :key="q.id"
+          type="button"
           class="review-item"
           :class="results[q.id]?.isCorrect ? 'item-correct' : 'item-wrong'"
+          :aria-label="`Review question ${idx + 1}: ${q.prompt}`"
           @click="$emit('review-question', idx)"
         >
           <div class="item-left">
@@ -126,7 +128,7 @@ const formatLabels = {
               {{ results[q.id]?.isCorrect ? '✓ Correct' : '✕ Missed' }}
             </span>
           </div>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -257,11 +259,22 @@ const formatLabels = {
   border-radius: 8px;
   border: 1px solid var(--color-border, #e2e8f0);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
+  width: 100%;
+  background: var(--color-background, #ffffff);
+  text-align: left;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
 }
 
 .review-item:hover {
   background: #f8fafc;
+}
+
+.review-item:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
 .item-correct {
