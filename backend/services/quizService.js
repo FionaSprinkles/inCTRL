@@ -235,27 +235,67 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
                 timeSpentSeconds || 0
             ];
 
-            db.query(insertSql, params, (insertErr, result) => {
-                if (insertErr) return reject(insertErr);
+            db.getConnection((connErr, connection) => {
+                if (connErr) return reject(connErr);
 
-                const responseData = {
-                    id: result.insertId,
-                    score: computedScore,
-                    maxScore: computedMaxScore,
-                    totalAnswered,
-                    evaluations
-                };
+                connection.beginTransaction((beginErr) => {
+                    if (beginErr) {
+                        connection.release();
+                        return reject(beginErr);
+                    }
 
-                // Award XP to registered user based strictly on server-computed score (10 XP per point)
-                if (userId && computedScore > 0) {
-                    const xpGain = computedScore * 10;
-                    db.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
-                        if (xpErr) console.error('Error updating user XP:', xpErr);
-                        resolve(responseData);
+                    connection.query(insertSql, params, (insertErr, result) => {
+                        if (insertErr) {
+                            return connection.rollback(() => {
+                                connection.release();
+                                reject(insertErr);
+                            });
+                        }
+
+                        const responseData = {
+                            id: result.insertId,
+                            score: computedScore,
+                            maxScore: computedMaxScore,
+                            totalAnswered,
+                            evaluations
+                        };
+
+                        // Award XP to registered user based strictly on server-computed score (10 XP per point)
+                        if (userId && computedScore > 0) {
+                            const xpGain = computedScore * 10;
+                            connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
+                                if (xpErr) {
+                                    return connection.rollback(() => {
+                                        connection.release();
+                                        reject(xpErr);
+                                    });
+                                }
+
+                                connection.commit((commitErr) => {
+                                    if (commitErr) {
+                                        return connection.rollback(() => {
+                                            connection.release();
+                                            reject(commitErr);
+                                        });
+                                    }
+                                    connection.release();
+                                    resolve(responseData);
+                                });
+                            });
+                        } else {
+                            connection.commit((commitErr) => {
+                                if (commitErr) {
+                                    return connection.rollback(() => {
+                                        connection.release();
+                                        reject(commitErr);
+                                    });
+                                }
+                                connection.release();
+                                resolve(responseData);
+                            });
+                        }
                     });
-                } else {
-                    resolve(responseData);
-                }
+                });
             });
         });
     });
