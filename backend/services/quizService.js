@@ -113,14 +113,29 @@ function updateQuestion(id, data) {
             ...restPayload
         } = data;
 
-        const payloadJson = JSON.stringify(restPayload.payload || restPayload);
+        const hasPayload =
+            Object.prototype.hasOwnProperty.call(data, 'payload') ||
+            Object.keys(restPayload).length > 0;
+        const payloadJson = hasPayload
+            ? JSON.stringify(restPayload.payload || restPayload)
+            : null;
 
         const sql = `
             UPDATE quiz_questions 
-            SET type = ?, category_id = ?, category_name = ?, difficulty = ?, prompt = ?, hint = ?, explanation = ?, payload_json = ?
+            SET type = ?, category_id = ?, category_name = ?, difficulty = ?, prompt = ?, hint = ?, explanation = ?${hasPayload ? ', payload_json = ?' : ''}
             WHERE id = ?
         `;
-        const params = [type, categoryId || null, categoryName, difficulty, prompt, hint, explanation, payloadJson, id];
+        const params = [
+            type,
+            categoryId || null,
+            categoryName,
+            difficulty,
+            prompt,
+            hint,
+            explanation,
+            ...(hasPayload ? [payloadJson] : []),
+            id
+        ];
 
         db.query(sql, params, (err, result) => {
             if (err) return reject(err);
