@@ -166,7 +166,7 @@ function validateAnswer(question, userAnswer) {
         }
 
         case 'true_false': {
-            const isCorrect = Boolean(userAnswer) === Boolean(question.correctAnswer);
+            const isCorrect = typeof userAnswer === 'boolean' && userAnswer === question.correctAnswer;
             return {
                 isCorrect,
                 score: isCorrect ? 1 : 0,
