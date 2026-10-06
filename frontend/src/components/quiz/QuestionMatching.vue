@@ -119,29 +119,44 @@ function getRightMatchedLeft(rightId) {
       <!-- Left Column: Shortcuts -->
       <div class="column left-column">
         <div class="column-header">Shortcuts</div>
-        <button
+        <div
           v-for="pair in question.pairs"
           :key="'left-' + pair.id"
-          class="match-card left-card"
-          :class="{
-            active: selectedLeftId === pair.id,
-            paired: currentMatches[pair.id] !== undefined,
-            correct: result && currentMatches[pair.id] === pair.id,
-            incorrect: result && currentMatches[pair.id] !== undefined && currentMatches[pair.id] !== pair.id
-          }"
-          @click="onSelectLeft(pair.id)"
+          class="match-row"
         >
-          <kbd class="shortcut-text">{{ pair.left }}</kbd>
-          <span
-            v-if="currentMatches[pair.id] !== undefined"
-            class="match-pill"
-            :class="getPairBadge(pair.id)"
-            @click.stop="unpair(pair.id)"
-            title="Click to disconnect"
+          <button
+            type="button"
+            class="match-card left-card"
+            :class="{
+              active: selectedLeftId === pair.id,
+              paired: currentMatches[pair.id] !== undefined,
+              correct: result && currentMatches[pair.id] === pair.id,
+              incorrect: result && currentMatches[pair.id] !== undefined && currentMatches[pair.id] !== pair.id
+            }"
+            :disabled="disabled"
+            @click="onSelectLeft(pair.id)"
           >
-            Linked ✕
-          </span>
-        </button>
+            <kbd class="shortcut-text">{{ pair.left }}</kbd>
+            <span
+              v-if="currentMatches[pair.id] !== undefined"
+              class="match-pill"
+              :class="getPairBadge(pair.id)"
+            >
+              Linked
+            </span>
+          </button>
+          <button
+            v-if="currentMatches[pair.id] !== undefined"
+            type="button"
+            class="unlink-btn"
+            :disabled="disabled"
+            title="Click to disconnect"
+            :aria-label="`Disconnect ${pair.left}`"
+            @click="unpair(pair.id)"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <!-- Right Column: Descriptions -->
@@ -150,6 +165,7 @@ function getRightMatchedLeft(rightId) {
         <button
           v-for="item in rightItems"
           :key="'right-' + item.id"
+          type="button"
           class="match-card right-card"
           :class="{
             paired: getRightMatchedLeft(item.id) !== null,
@@ -157,6 +173,7 @@ function getRightMatchedLeft(rightId) {
             correct: result && getRightMatchedLeft(item.id) === item.id,
             incorrect: result && getRightMatchedLeft(item.id) !== null && getRightMatchedLeft(item.id) !== item.id
           }"
+          :disabled="disabled"
           @click="onSelectRight(item.id)"
         >
           <span class="action-text">{{ item.right }}</span>
@@ -223,6 +240,42 @@ function getRightMatchedLeft(rightId) {
   text-transform: uppercase;
   color: #64748b;
   letter-spacing: 0.5px;
+}
+
+.match-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.match-row .left-card {
+  flex: 1;
+}
+
+.unlink-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  background: #f1f5f9;
+  border: 2px solid var(--color-border, #cbd5e1);
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.unlink-btn:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.unlink-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .match-card {
