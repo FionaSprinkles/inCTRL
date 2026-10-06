@@ -18,3 +18,10 @@ Databas:
 - MySQL körs i Docker på port 3306.
 - Databasnamn: inctrl_db
 - Initieras automatiskt via docker/init.sql med schema och data för kortkommandon, quizfrågor, användare och poäng.
+
+Felsökning i Windows PowerShell:
+Om du får felet "running scripts is disabled on this system" när du kör `npm`:
+- Kör antingen kommandot en gång i PowerShell:
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+- Eller kör med `.cmd`: `npm.cmd install` och `npm.cmd run dev` (eller `node app.js`)
+

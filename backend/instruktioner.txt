@@ -23,3 +23,11 @@ inCTRL - Backend & MySQL via Docker
    - Kategorier:       GET  http://localhost:3000/api/categories
    - Topplista:        GET  http://localhost:3000/api/quiz/leaderboard
    - Skicka resultat:  POST http://localhost:3000/api/quiz/attempts
+
+5. Felsökning i Windows PowerShell:
+   Om du får felet "running scripts is disabled on this system" när du kör `npm`:
+   - Tillåt skript för ditt användarkonto i PowerShell:
+       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   - Eller kör med `.cmd`:
+       npm.cmd install
+       npm.cmd run dev (eller node app.js)
