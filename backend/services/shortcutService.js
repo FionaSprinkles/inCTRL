@@ -1,5 +1,13 @@
 const db = require('../connectionMySQL');
 
+/**
+ * Retrieves all Windows shortcuts matching optional filter criteria (search query, category, difficulty).
+ * @param {object} [filters={}] - Query filters object.
+ * @param {string} [filters.q] - Search keyword matching title, combo, or description.
+ * @param {number|string} [filters.categoryId] - Unique category ID filter.
+ * @param {string} [filters.difficulty] - Difficulty level filter.
+ * @returns {Promise<Array<object>>} Resolves with list of shortcut records.
+ */
 function getAllShortcuts(filters = {}) {
     return new Promise((resolve, reject) => {
         let sql = `
@@ -43,6 +51,11 @@ function getAllShortcuts(filters = {}) {
     });
 }
 
+/**
+ * Retrieves a single Windows shortcut by ID.
+ * @param {number|string} id - Shortcut ID.
+ * @returns {Promise<object|null>} Resolves with shortcut record or null if not found.
+ */
 function getShortcutById(id) {
     return new Promise((resolve, reject) => {
         const sql = `
@@ -67,6 +80,16 @@ function getShortcutById(id) {
     });
 }
 
+/**
+ * Inserts a new Windows shortcut into the database.
+ * @param {object} params - Shortcut parameters.
+ * @param {string} params.title - Shortcut name/title.
+ * @param {string} params.keyCombo - Key combination string (e.g. "Ctrl + C").
+ * @param {string} params.description - Explanation of what the shortcut does.
+ * @param {number|string} [params.categoryId] - Optional associated category ID.
+ * @param {string} [params.difficulty='Beginner'] - Difficulty rating.
+ * @returns {Promise<object>} Resolves with created shortcut object.
+ */
 function createShortcut({ title, keyCombo, description, categoryId, difficulty = 'Beginner' }) {
     return new Promise((resolve, reject) => {
         const sql = `
@@ -89,6 +112,11 @@ function createShortcut({ title, keyCombo, description, categoryId, difficulty =
     });
 }
 
+/**
+ * Deletes a Windows shortcut by ID.
+ * @param {number|string} id - Target shortcut ID.
+ * @returns {Promise<object>} Resolves with database query result.
+ */
 function deleteShortcut(id) {
     return new Promise((resolve, reject) => {
         const sql = 'DELETE FROM windows_shortcuts WHERE id = ?';

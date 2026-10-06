@@ -24,12 +24,20 @@ const emit = defineEmits(['update:modelValue'])
 
 const currentKeys = computed(() => (Array.isArray(props.modelValue) ? props.modelValue : []))
 
+/**
+ * Appends a key token to the built combination.
+ * @param {string} key - Key label to append.
+ */
 function addKey(key) {
   if (props.disabled) return
   const next = [...currentKeys.value, key]
   emit('update:modelValue', next)
 }
 
+/**
+ * Removes a key token at a specific slot index.
+ * @param {number} index - Index of key token to remove.
+ */
 function removeKeyAtIndex(index) {
   if (props.disabled) return
   const next = [...currentKeys.value]
@@ -37,6 +45,9 @@ function removeKeyAtIndex(index) {
   emit('update:modelValue', next)
 }
 
+/**
+ * Clears all key tokens from the combination.
+ */
 function clearAll() {
   if (props.disabled) return
   emit('update:modelValue', [])

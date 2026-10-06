@@ -81,6 +81,11 @@ watch(
   { immediate: true }
 )
 
+/**
+ * Computes default initial empty answer for question according to its format type.
+ * @param {object} q - Question definition object.
+ * @returns {any} Initial empty answer shape.
+ */
 function getInitialAnswer(q) {
   if (q.type === 'multiple_choice' || q.type === 'key_builder' || q.type === 'live_press') return []
   if (q.type === 'matching') return {}
@@ -97,6 +102,9 @@ const hasAnswer = computed(() => {
   return true
 })
 
+/**
+ * Validates the current question answer and emits answered event with evaluation result.
+ */
 function checkAnswer() {
   const result = validateAnswer(props.question, userAnswer.value)
   evaluationResult.value = result
@@ -107,6 +115,9 @@ function checkAnswer() {
   })
 }
 
+/**
+ * Resets local answer and evaluation state and emits retry event.
+ */
 function retryQuestion() {
   evaluationResult.value = null
   userAnswer.value = getInitialAnswer(props.question)

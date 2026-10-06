@@ -2,7 +2,9 @@ import { checkShortcutMatch } from '../utils/keyboardUtils.js'
 
 /**
  * Validates a user's answer against a question definition.
- * Returns an object: { isCorrect: boolean, feedback: string, score: number, maxScore: number }
+ * @param {object} question - Question definition object.
+ * @param {any} userAnswer - Answer provided by the user.
+ * @returns {{ isCorrect: boolean, feedback: string, score: number, maxScore: number }} Evaluation result object.
  */
 export function validateAnswer(question, userAnswer) {
   if (!question || userAnswer === undefined || userAnswer === null) {

@@ -1,5 +1,12 @@
 const quizService = require('../services/quizService');
 
+/**
+ * Handles GET /api/questions.
+ * Retrieves all quiz questions matching optional query filters (type, difficulty, categoryId).
+ * @param {import('express').Request} req - Express request object with query parameters.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getQuestions = async (req, res) => {
     try {
         const { type, difficulty, categoryId } = req.query;
@@ -18,6 +25,13 @@ exports.getQuestions = async (req, res) => {
     }
 };
 
+/**
+ * Handles GET /api/questions/:id.
+ * Retrieves a single quiz question by its unique identifier.
+ * @param {import('express').Request} req - Express request object with id parameter.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getQuestion = async (req, res) => {
     try {
         const { id } = req.params;
@@ -41,6 +55,13 @@ exports.getQuestion = async (req, res) => {
     }
 };
 
+/**
+ * Handles POST /api/questions.
+ * Creates a new quiz question in the database.
+ * @param {import('express').Request} req - Express request object containing question payload.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.createQuestion = async (req, res) => {
     try {
         const { id, type, prompt } = req.body;
@@ -66,6 +87,13 @@ exports.createQuestion = async (req, res) => {
     }
 };
 
+/**
+ * Handles PUT /api/questions/:id.
+ * Updates an existing question's attributes and payload.
+ * @param {import('express').Request} req - Express request object with id param and updated data.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.updateQuestion = async (req, res) => {
     try {
         const { id } = req.params;
@@ -83,6 +111,13 @@ exports.updateQuestion = async (req, res) => {
     }
 };
 
+/**
+ * Handles DELETE /api/questions/:id.
+ * Deletes a quiz question by ID.
+ * @param {import('express').Request} req - Express request object with id param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.deleteQuestion = async (req, res) => {
     try {
         const { id } = req.params;
@@ -100,6 +135,13 @@ exports.deleteQuestion = async (req, res) => {
     }
 };
 
+/**
+ * Handles POST /api/quiz/attempts.
+ * Submits and securely evaluates quiz answers server-side, records attempt and awards XP.
+ * @param {import('express').Request} req - Express request object with answer submission.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.submitAttempt = async (req, res) => {
     try {
         const { guestName, formatFilter, answers, timeSpentSeconds } = req.body;
@@ -151,6 +193,13 @@ exports.submitAttempt = async (req, res) => {
     }
 };
 
+/**
+ * Handles GET /api/quiz/leaderboard.
+ * Retrieves top ranking quiz attempts ordered by score and time spent.
+ * @param {import('express').Request} req - Express request object with optional limit query param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getLeaderboard = async (req, res) => {
     try {
         const limit = req.query.limit || 10;
@@ -168,6 +217,13 @@ exports.getLeaderboard = async (req, res) => {
     }
 };
 
+/**
+ * Handles GET /api/quiz/attempts/user/:userId.
+ * Retrieves past quiz attempts submitted by a specific user.
+ * @param {import('express').Request} req - Express request object with userId param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getUserAttempts = async (req, res) => {
     try {
         const { userId } = req.params;

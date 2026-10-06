@@ -39,12 +39,23 @@ const answeredCount = computed(() => {
   return Object.keys(evalResults.value).length
 })
 
+/**
+ * Updates active format filter and resets position.
+ * @param {string} format - Selected question type or 'all'.
+ */
 function onFilterChanged(format) {
   activeFilter.value = format
   currentIndex.value = 0
   isCompleted.value = false
 }
 
+/**
+ * Stores the user's submitted answer and evaluation result for a question.
+ * @param {object} payload - Answer submission event payload.
+ * @param {string} payload.questionId - Question identifier.
+ * @param {any} payload.userAnswer - User's selected or typed answer.
+ * @param {object} payload.result - Validation result object.
+ */
 function handleAnswered({ questionId, userAnswer, result }) {
   userAnswers.value = {
     ...userAnswers.value,
@@ -56,10 +67,18 @@ function handleAnswered({ questionId, userAnswer, result }) {
   }
 }
 
+/**
+ * Clears evaluation result when retrying a question.
+ * @param {object} payload - Retry event payload.
+ * @param {string} payload.questionId - Question identifier to retry.
+ */
 function handleRetry({ questionId }) {
   delete evalResults.value[questionId]
 }
 
+/**
+ * Advances to the next question or finishes the quiz if at the end.
+ */
 function nextQuestion() {
   if (currentIndex.value < filteredQuestions.value.length - 1) {
     currentIndex.value++
@@ -68,12 +87,18 @@ function nextQuestion() {
   }
 }
 
+/**
+ * Navigates to the previous question.
+ */
 function previousQuestion() {
   if (currentIndex.value > 0) {
     currentIndex.value--
   }
 }
 
+/**
+ * Resets all answers and evaluation state to restart the quiz from the beginning.
+ */
 function restartQuiz() {
   userAnswers.value = {}
   evalResults.value = {}
@@ -81,11 +106,19 @@ function restartQuiz() {
   isCompleted.value = false
 }
 
+/**
+ * Navigates to a specific question for review.
+ * @param {number} index - Zero-based question index.
+ */
 function reviewQuestion(index) {
   currentIndex.value = index
   isCompleted.value = false
 }
 
+/**
+ * Jumps directly to a question by index from the question dot bar.
+ * @param {number} idx - Zero-based question index.
+ */
 function jumpToQuestion(idx) {
   currentIndex.value = idx
   isCompleted.value = false

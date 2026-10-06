@@ -31,6 +31,10 @@ const capturedCombo = computed(() => {
   return Array.isArray(props.modelValue) ? props.modelValue : []
 })
 
+/**
+ * Captures keydown events and records pressed modifier and alphanumeric keys.
+ * @param {KeyboardEvent} e - Native keyboard event.
+ */
 function handleKeyDown(e) {
   if (props.disabled || !isListening.value) return
 
@@ -56,12 +60,20 @@ function handleKeyDown(e) {
   emit('update:modelValue', comboArr)
 }
 
+/**
+ * Handles keyup events to release keys from currentlyHeld set.
+ * @param {KeyboardEvent} e - Native keyboard event.
+ */
 function handleKeyUp(e) {
   const next = new Set(currentlyHeld.value)
   next.delete(getKeyLabelFromEvent(e))
   currentlyHeld.value = next
 }
 
+/**
+ * Toggles a virtual on-screen keypad key.
+ * @param {string} key - Key label to toggle.
+ */
 function toggleVirtualKey(key) {
   if (props.disabled) return
   const current = [...capturedCombo.value]
@@ -74,12 +86,18 @@ function toggleVirtualKey(key) {
   emit('update:modelValue', current)
 }
 
+/**
+ * Clears all recorded keys.
+ */
 function clearRecorded() {
   if (props.disabled) return
   currentlyHeld.value = new Set()
   emit('update:modelValue', [])
 }
 
+/**
+ * Activates live keyboard capture mode and focuses input container.
+ */
 function activateListening() {
   isListening.value = true
   if (padRef.value) {

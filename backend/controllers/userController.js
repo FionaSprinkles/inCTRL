@@ -1,6 +1,13 @@
 const userService = require('../services/userService');
 const { generateToken } = require('../middleware/auth');
 
+/**
+ * Handles GET /api/users.
+ * Retrieves all registered users (public fields only).
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getUsers = async (req, res) => {
     try {
         const users = await userService.getAllUsers();
@@ -18,6 +25,13 @@ exports.getUsers = async (req, res) => {
     }
 };
 
+/**
+ * Handles GET /api/users/:id.
+ * Retrieves public user profile by ID.
+ * @param {import('express').Request} req - Express request object with id param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -41,6 +55,13 @@ exports.getUser = async (req, res) => {
     }
 };
 
+/**
+ * Handles GET /api/users/profile/me.
+ * Retrieves full authenticated user profile including email.
+ * @param {import('express').Request} req - Express request object with authenticated user session.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getMe = async (req, res) => {
     try {
         if (!req.user || !req.user.id) {
@@ -69,6 +90,13 @@ exports.getMe = async (req, res) => {
     }
 };
 
+/**
+ * Handles POST /api/users/register.
+ * Registers a new user account and returns a signed JWT.
+ * @param {import('express').Request} req - Express request object with registration credentials.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.register = async (req, res) => {
     try {
         const { username, email, password, displayName } = req.body;
@@ -97,6 +125,13 @@ exports.register = async (req, res) => {
     }
 };
 
+/**
+ * Handles POST /api/users/login.
+ * Authenticates user credentials and returns a signed JWT.
+ * @param {import('express').Request} req - Express request object with login credentials.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.login = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -125,6 +160,13 @@ exports.login = async (req, res) => {
     }
 };
 
+/**
+ * Handles PUT /api/users/:id.
+ * Updates user profile details with owner or administrator authorization.
+ * @param {import('express').Request} req - Express request object with user id and profile update payload.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.updateProfile = async (req, res) => {
     try {
         const { id } = req.params;
@@ -152,6 +194,13 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
+/**
+ * Handles DELETE /api/users/:id.
+ * Deletes user account with owner or administrator authorization.
+ * @param {import('express').Request} req - Express request object with user id param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.deleteUser = async (req, res) => {
     try {
         const { id } = req.params;

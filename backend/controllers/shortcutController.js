@@ -1,5 +1,12 @@
 const shortcutService = require('../services/shortcutService');
 
+/**
+ * Handles GET /api/shortcuts.
+ * Retrieves all Windows shortcuts matching optional search and filter queries.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getShortcuts = async (req, res) => {
     try {
         const { q, categoryId, difficulty } = req.query;
@@ -18,6 +25,13 @@ exports.getShortcuts = async (req, res) => {
     }
 };
 
+/**
+ * Handles GET /api/shortcuts/:id.
+ * Retrieves a single Windows shortcut by ID.
+ * @param {import('express').Request} req - Express request object with id param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getShortcut = async (req, res) => {
     try {
         const { id } = req.params;
@@ -41,6 +55,13 @@ exports.getShortcut = async (req, res) => {
     }
 };
 
+/**
+ * Handles POST /api/shortcuts.
+ * Creates a new Windows shortcut in the directory (admin only).
+ * @param {import('express').Request} req - Express request object with shortcut payload.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.createShortcut = async (req, res) => {
     try {
         const { title, keyCombo, description, categoryId, difficulty } = req.body;
@@ -66,6 +87,13 @@ exports.createShortcut = async (req, res) => {
     }
 };
 
+/**
+ * Handles DELETE /api/shortcuts/:id.
+ * Deletes a Windows shortcut from the directory (admin only).
+ * @param {import('express').Request} req - Express request object with id param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.deleteShortcut = async (req, res) => {
     try {
         const { id } = req.params;

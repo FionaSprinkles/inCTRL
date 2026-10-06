@@ -29,6 +29,9 @@ onMounted(() => {
   }
 })
 
+/**
+ * Emits initial scrambled sequence order for the question items.
+ */
 function initScrambledOrder() {
   const ids = (props.question.items || []).map(i => i.id)
   // Scramble deterministically (reverse or offset)
@@ -51,10 +54,19 @@ const currentOrder = computed(() => {
   return (props.question.items || []).map(i => i.id)
 })
 
+/**
+ * Finds item definition object by ID.
+ * @param {string} id - Item identifier.
+ * @returns {object} Item object.
+ */
 function getItem(id) {
   return (props.question.items || []).find(i => i.id === id) || { id, text: id }
 }
 
+/**
+ * Swaps item with the preceding item to move it earlier in the sequence.
+ * @param {number} index - Item index in current order.
+ */
 function moveUp(index) {
   if (props.disabled || index === 0) return
   const next = [...currentOrder.value]
@@ -64,6 +76,10 @@ function moveUp(index) {
   emit('update:modelValue', next)
 }
 
+/**
+ * Swaps item with the following item to move it later in the sequence.
+ * @param {number} index - Item index in current order.
+ */
 function moveDown(index) {
   if (props.disabled || index >= currentOrder.value.length - 1) return
   const next = [...currentOrder.value]
@@ -73,11 +89,20 @@ function moveDown(index) {
   emit('update:modelValue', next)
 }
 
+/**
+ * Resets item sequence back to initial scrambled order.
+ */
 function resetOrder() {
   if (props.disabled) return
   initScrambledOrder()
 }
 
+/**
+ * Checks whether an item at a specific index matches the correct sequence order.
+ * @param {string} id - Item ID.
+ * @param {number} index - Position index.
+ * @returns {boolean} True if correctly positioned.
+ */
 function isStepCorrect(id, index) {
   return props.question.correctOrder && props.question.correctOrder[index] === id
 }

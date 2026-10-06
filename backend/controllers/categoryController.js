@@ -1,5 +1,12 @@
 const categoryService = require('../services/categoryService');
 
+/**
+ * Handles GET /api/categories.
+ * Retrieves all shortcut and quiz categories.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getCategories = async (req, res) => {
     try {
         const categories = await categoryService.getCategories();
@@ -17,6 +24,13 @@ exports.getCategories = async (req, res) => {
     }
 };
 
+/**
+ * Handles GET /api/categories/:id.
+ * Retrieves category details by ID.
+ * @param {import('express').Request} req - Express request object with id param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.getCategory = async (req, res) => {
     try {
         const { id } = req.params;
@@ -40,6 +54,13 @@ exports.getCategory = async (req, res) => {
     }
 };
 
+/**
+ * Handles POST /api/categories.
+ * Creates a new shortcut category (admin only).
+ * @param {import('express').Request} req - Express request object with category payload.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
 exports.createCategory = async (req, res) => {
     try {
         const { name, slug, description, icon } = req.body;

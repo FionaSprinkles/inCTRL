@@ -2,6 +2,11 @@
  * Utility functions for keyboard shortcut normalization and parsing.
  */
 
+/**
+ * Normalizes a shortcut string into standard lowercase plus-separated tokens.
+ * @param {string} input - Raw shortcut string.
+ * @returns {string} Normalized string with lowercase tokens separated by plus signs.
+ */
 export function normalizeShortcutString(input) {
   if (!input || typeof input !== 'string') return ''
 
@@ -20,7 +25,10 @@ export function normalizeShortcutString(input) {
 }
 
 /**
- * Checks whether an input matches any accepted variation.
+ * Checks whether user input matches any accepted shortcut variation.
+ * @param {string} userInput - Shortcut combination submitted by user.
+ * @param {Array<string>} acceptedList - List of accepted shortcut combinations.
+ * @returns {boolean} True if input matches any accepted shortcut.
  */
 export function checkShortcutMatch(userInput, acceptedList) {
   const normUser = normalizeShortcutString(userInput)
@@ -41,7 +49,9 @@ export function checkShortcutMatch(userInput, acceptedList) {
 }
 
 /**
- * Translates KeyboardEvent into normalized key name
+ * Translates a KeyboardEvent into a normalized key name representation.
+ * @param {KeyboardEvent} e - Native browser keyboard event.
+ * @returns {string} Standardized key label (e.g. 'Ctrl', 'Win', 'Esc').
  */
 export function getKeyLabelFromEvent(e) {
   if (e.key === 'Control') return 'Ctrl'

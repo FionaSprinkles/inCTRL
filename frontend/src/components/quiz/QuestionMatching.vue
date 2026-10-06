@@ -36,6 +36,10 @@ const rightItems = computed(() => {
 
 const currentMatches = computed(() => props.modelValue || {})
 
+/**
+ * Handles selection of a left item card.
+ * @param {string} id - Selected pair ID on the left side.
+ */
 function onSelectLeft(id) {
   if (props.disabled) return
   if (selectedLeftId.value === id) {
@@ -45,6 +49,10 @@ function onSelectLeft(id) {
   }
 }
 
+/**
+ * Handles selection of a right item card and connects it with active left selection.
+ * @param {string} rightId - Selected target ID on the right side.
+ */
 function onSelectRight(rightId) {
   if (props.disabled) return
   if (!selectedLeftId.value) {
@@ -73,6 +81,10 @@ function onSelectRight(rightId) {
   selectedLeftId.value = null
 }
 
+/**
+ * Removes link for a specific left item.
+ * @param {string} leftId - Pair identifier on the left.
+ */
 function unpair(leftId) {
   if (props.disabled) return
   const next = { ...currentMatches.value }
@@ -80,6 +92,9 @@ function unpair(leftId) {
   emit('update:modelValue', next)
 }
 
+/**
+ * Clears all established pairings and selection state.
+ */
 function resetAll() {
   if (props.disabled) return
   emit('update:modelValue', {})
@@ -88,6 +103,11 @@ function resetAll() {
 
 const colorClasses = ['badge-blue', 'badge-purple', 'badge-orange', 'badge-teal', 'badge-pink']
 
+/**
+ * Determines badge color class based on pair index.
+ * @param {string} pairId - Pair ID.
+ * @returns {string} CSS class string for badge styling.
+ */
 function getPairBadge(pairId) {
   const index = (props.question.pairs || []).findIndex(p => p.id === pairId)
   return colorClasses[index % colorClasses.length]

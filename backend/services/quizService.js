@@ -3,6 +3,8 @@ const { validateAnswer, normalizeAnswers } = require('./quizValidator');
 
 /**
  * Normalizes a database row into the format expected by frontend quiz components.
+ * @param {object} row - Raw MySQL database row object from `quiz_questions`.
+ * @returns {object} Formatted question object with parsed payload.
  */
 function formatQuestionRow(row) {
     let payload = {};
@@ -29,6 +31,14 @@ function formatQuestionRow(row) {
     };
 }
 
+/**
+ * Retrieves questions with optional filtering by type, difficulty, and category.
+ * @param {object} [filters={}] - Optional filters object.
+ * @param {string} [filters.type] - Format type filter (e.g. 'single_choice', 'matching', 'all').
+ * @param {string} [filters.difficulty] - Question difficulty level.
+ * @param {number|string} [filters.categoryId] - Unique category ID.
+ * @returns {Promise<Array<object>>} Resolves to list of formatted question objects.
+ */
 function getQuestions(filters = {}) {
     return new Promise((resolve, reject) => {
         let sql = 'SELECT * FROM quiz_questions WHERE 1=1';
@@ -59,6 +69,11 @@ function getQuestions(filters = {}) {
     });
 }
 
+/**
+ * Retrieves a single question by its unique string identifier.
+ * @param {string} id - Question ID.
+ * @returns {Promise<object|null>} Resolves to formatted question or null if not found.
+ */
 function getQuestionById(id) {
     return new Promise((resolve, reject) => {
         const sql = 'SELECT * FROM quiz_questions WHERE id = ?';
@@ -70,6 +85,11 @@ function getQuestionById(id) {
     });
 }
 
+/**
+ * Inserts a new quiz question and serializes its format-specific payload.
+ * @param {object} data - Question fields and payload.
+ * @returns {Promise<object>} Resolves with created question data.
+ */
 function createQuestion(data) {
     return new Promise((resolve, reject) => {
         const {
@@ -100,6 +120,12 @@ function createQuestion(data) {
     });
 }
 
+/**
+ * Updates an existing question, preserving existing payload_json when payload fields are omitted.
+ * @param {string} id - Question ID.
+ * @param {object} data - Updated question fields.
+ * @returns {Promise<object>} Resolves with database query result.
+ */
 function updateQuestion(id, data) {
     return new Promise((resolve, reject) => {
         const {
@@ -144,6 +170,11 @@ function updateQuestion(id, data) {
     });
 }
 
+/**
+ * Deletes a quiz question by ID.
+ * @param {string} id - Question ID.
+ * @returns {Promise<object>} Resolves with database query result.
+ */
 function deleteQuestion(id) {
     return new Promise((resolve, reject) => {
         const sql = 'DELETE FROM quiz_questions WHERE id = ?';
@@ -154,7 +185,13 @@ function deleteQuestion(id) {
     });
 }
 
+/**
+ * Custom error class for client validation errors returning HTTP 400.
+ */
 class ValidationError extends Error {
+    /**
+     * @param {string} message - Validation failure message.
+     */
     constructor(message) {
         super(message);
         this.name = 'ValidationError';
@@ -163,6 +200,16 @@ class ValidationError extends Error {
     }
 }
 
+/**
+ * Validates submitted answers server-side, stores attempt, and awards XP within a single transaction.
+ * @param {object} params - Attempt parameters.
+ * @param {number|null} [params.userId=null] - Authenticated user ID or null for guest.
+ * @param {string|null} [params.guestName=null] - Optional guest screen name.
+ * @param {string} [params.formatFilter='all'] - Format filter applied during the quiz.
+ * @param {object|Array} params.answers - Submitted question answers.
+ * @param {number} [params.timeSpentSeconds=0] - Total seconds spent taking quiz.
+ * @returns {Promise<object>} Resolves with attempt evaluation details and generated attempt ID.
+ */
 function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', answers, timeSpentSeconds = 0 }) {
     return new Promise((resolve, reject) => {
         const normalizedAnswers = normalizeAnswers(answers);
@@ -301,6 +348,11 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
     });
 }
 
+/**
+ * Retrieves global quiz leaderboard sorted by highest score and fastest time.
+ * @param {number|string} [limit=10] - Maximum number of leaderboard entries to retrieve.
+ * @returns {Promise<Array<object>>} Resolves with array of leaderboard records.
+ */
 function getLeaderboard(limit = 10) {
     return new Promise((resolve, reject) => {
         const sql = `
@@ -328,6 +380,11 @@ function getLeaderboard(limit = 10) {
     });
 }
 
+/**
+ * Retrieves all quiz attempts for a specific user ID.
+ * @param {number|string} userId - Target user ID.
+ * @returns {Promise<Array<object>>} Resolves with list of attempts.
+ */
 function getUserAttempts(userId) {
     return new Promise((resolve, reject) => {
         const sql = `

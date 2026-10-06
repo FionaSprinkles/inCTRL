@@ -20,6 +20,10 @@ defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+/**
+ * Sets boolean true/false answer and emits updated modelValue.
+ * @param {boolean} val - Selected boolean answer value.
+ */
 function setAnswer(val) {
   emit('update:modelValue', val)
 }

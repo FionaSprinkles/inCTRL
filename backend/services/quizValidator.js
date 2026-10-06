@@ -2,6 +2,8 @@ const { checkShortcutMatch } = require('../utils/keyboardUtils');
 
 /**
  * Normalizes client-submitted answers into a { [questionId]: userAnswer } object.
+ * @param {object|Array} answers - Raw answers provided by the client.
+ * @returns {Record<string, any>} Normalized dictionary mapping question IDs to answers.
  */
 function normalizeAnswers(answers) {
     if (!answers || typeof answers !== 'object') {
@@ -28,7 +30,9 @@ function normalizeAnswers(answers) {
 
 /**
  * Validates a single user answer against stored question data.
- * Returns: { isCorrect: boolean, score: number, maxScore: number, feedback: string }
+ * @param {object} question - Question schema definition from database.
+ * @param {any} userAnswer - Raw answer provided by the user.
+ * @returns {{ isCorrect: boolean, score: number, maxScore: number, feedback: string }} Validation evaluation result.
  */
 function validateAnswer(question, userAnswer) {
     if (!question || userAnswer === undefined || userAnswer === null) {

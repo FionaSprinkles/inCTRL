@@ -20,6 +20,10 @@ defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+/**
+ * Selects an option and emits its identifier.
+ * @param {string|number} id - Selected option identifier.
+ */
 function selectOption(id) {
   emit('update:modelValue', id)
 }

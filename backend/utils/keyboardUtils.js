@@ -2,6 +2,11 @@
  * Utility functions for keyboard shortcut normalization and parsing on the backend.
  */
 
+/**
+ * Normalizes a shortcut string into standard lowercase plus-separated tokens.
+ * @param {string} input - Raw shortcut string (e.g. "Windows + L" or "ctrl-c").
+ * @returns {string} Normalized string with lowercase tokens separated by plus signs.
+ */
 function normalizeShortcutString(input) {
     if (!input || typeof input !== 'string') return '';
 
@@ -20,7 +25,10 @@ function normalizeShortcutString(input) {
 }
 
 /**
- * Checks whether user input matches any accepted shortcut variation.
+ * Checks whether user input matches any accepted shortcut variation regardless of key order.
+ * @param {string} userInput - Shortcut combination submitted by user.
+ * @param {Array<string>} [acceptedList=[]] - List of accepted shortcut variations.
+ * @returns {boolean} True if user input matches any accepted shortcut variation.
  */
 function checkShortcutMatch(userInput, acceptedList = []) {
     const normUser = normalizeShortcutString(userInput);

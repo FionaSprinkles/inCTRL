@@ -20,10 +20,18 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+/**
+ * Handles text input changes and emits updated modelValue.
+ * @param {Event} e - Native input event.
+ */
 function onInput(e) {
   emit('update:modelValue', e.target.value)
 }
 
+/**
+ * Appends key token to current input text with plus separator.
+ * @param {string} keyStr - Key label to append.
+ */
 function appendKey(keyStr) {
   if (props.disabled) return
   const current = props.modelValue ? props.modelValue.trim() : ''
@@ -36,6 +44,9 @@ function appendKey(keyStr) {
   }
 }
 
+/**
+ * Clears text input content.
+ */
 function clearInput() {
   if (props.disabled) return
   emit('update:modelValue', '')

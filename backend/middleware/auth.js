@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 /**
  * Resolves JWT secret. Outside explicit development (NODE_ENV === 'development'),
  * missing JWT_SECRET immediately fails startup to prevent token forgery (CWE-798).
+ * @returns {string} The resolved JWT secret string.
  */
 function resolveJwtSecret() {
     if (process.env.JWT_SECRET) {
@@ -24,6 +25,9 @@ const JWT_SECRET = resolveJwtSecret();
 /**
  * Required authentication middleware.
  * Rejects requests with 401/403 if no valid token is provided.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware callback.
  */
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -53,6 +57,9 @@ function authenticateToken(req, res, next) {
  * If a valid token is provided, populates req.user.
  * If no token or invalid token, req.user remains null without failing the request.
  * Crucial for preventing IDOR when endpoints accept both authenticated users and guests.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware callback.
  */
 function optionalAuth(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -75,7 +82,10 @@ function optionalAuth(req, res, next) {
 }
 
 /**
- * Role-based access control middleware.
+ * Role-based access control middleware for administrator endpoints.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware callback.
  */
 function requireAdmin(req, res, next) {
     if (!req.user || req.user.role !== 'admin') {
@@ -87,6 +97,12 @@ function requireAdmin(req, res, next) {
     next();
 }
 
+/**
+ * Signs and generates a JSON Web Token for an authenticated user.
+ * @param {object} payload - Token payload containing user identification and roles.
+ * @param {string} [expiresIn='7d'] - Expiration timeframe string for the token.
+ * @returns {string} Signed JWT string.
+ */
 function generateToken(payload, expiresIn = '7d') {
     return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }

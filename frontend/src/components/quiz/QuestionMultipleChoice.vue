@@ -20,6 +20,10 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+/**
+ * Toggles an option in the multiple selection set.
+ * @param {string|number} id - Option identifier to toggle.
+ */
 function toggleOption(id) {
   if (props.disabled) return
   const current = [...props.modelValue]
