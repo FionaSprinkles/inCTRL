@@ -102,42 +102,18 @@ exports.deleteQuestion = async (req, res) => {
 
 exports.submitAttempt = async (req, res) => {
     try {
-        const { guestName, formatFilter, score, maxScore, totalAnswered, timeSpentSeconds } = req.body;
+        const { guestName, formatFilter, answers, timeSpentSeconds } = req.body;
 
         // Security (CWE-639 IDOR Fix):
         // Derive userId strictly from the authenticated token session (req.user).
         // Never accept or trust client-supplied userId from req.body.
         const authenticatedUserId = req.user ? req.user.id : null;
 
-        // Validation: Verify score and maxScore are integers
-        if (typeof score !== 'number' || !Number.isInteger(score)) {
+        // Validation: answers is required and must be an object or array
+        if (!answers || (typeof answers !== 'object' && typeof answers !== 'string')) {
             return res.status(400).json({
                 success: false,
-                error: 'score is required and must be an integer'
-            });
-        }
-
-        if (typeof maxScore !== 'number' || !Number.isInteger(maxScore)) {
-            return res.status(400).json({
-                success: false,
-                error: 'maxScore is required and must be an integer'
-            });
-        }
-
-        // Validation: Enforce 0 <= score <= maxScore bounds
-        if (maxScore < 0 || score < 0 || score > maxScore) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid score: score must satisfy 0 <= score <= maxScore'
-            });
-        }
-
-        // Validation: totalAnswered bounds
-        const safeTotalAnswered = Number.isInteger(totalAnswered) && totalAnswered >= 0 ? totalAnswered : 0;
-        if (safeTotalAnswered > maxScore) {
-            return res.status(400).json({
-                success: false,
-                error: 'totalAnswered cannot exceed maxScore'
+                error: 'answers is required and must be an object or array'
             });
         }
 
@@ -149,24 +125,30 @@ exports.submitAttempt = async (req, res) => {
             ? guestName.trim().slice(0, 50)
             : null;
 
+        const safeFormatFilter = typeof formatFilter === 'string' ? formatFilter.slice(0, 50) : 'all';
+
         const attempt = await quizService.saveAttempt({
             userId: authenticatedUserId,
             guestName: safeGuestName,
-            formatFilter: typeof formatFilter === 'string' ? formatFilter.slice(0, 50) : 'all',
-            score,
-            maxScore,
-            totalAnswered: safeTotalAnswered,
+            formatFilter: safeFormatFilter,
+            answers,
             timeSpentSeconds: safeTimeSpent
         });
 
         res.status(201).json({
             success: true,
-            message: 'Quiz attempt saved successfully',
+            message: 'Quiz attempt evaluated and saved successfully',
             attempt
         });
     } catch (error) {
         console.error('Error submitting attempt:', error);
-        res.status(500).json({
+        const isClientError =
+            error.message.includes('Invalid question ID') ||
+            error.message.includes('answers') ||
+            error.message.includes('formatFilter') ||
+            error.message.includes('match');
+
+        res.status(isClientError ? 400 : 500).json({
             success: false,
             error: error.message
         });

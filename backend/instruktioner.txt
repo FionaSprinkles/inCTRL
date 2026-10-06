@@ -22,7 +22,8 @@ inCTRL - Backend & MySQL via Docker
    - Användare:        GET  http://localhost:3000/api/users
    - Kategorier:       GET  http://localhost:3000/api/categories
    - Topplista:        GET  http://localhost:3000/api/quiz/leaderboard
-   - Skicka resultat:  POST http://localhost:3000/api/quiz/attempts
+   - Skicka svar/resultat: POST http://localhost:3000/api/quiz/attempts
+     (Body: { "answers": { "sc-1": "opt-1", ... }, "formatFilter": "all", "timeSpentSeconds": 30 })
 
 5. Felsökning i Windows PowerShell:
    Om du får felet "running scripts is disabled on this system" när du kör `npm`:

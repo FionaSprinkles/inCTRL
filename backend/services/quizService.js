@@ -1,4 +1,5 @@
 const db = require('../connectionMySQL');
+const { validateAnswer, normalizeAnswers } = require('./quizValidator');
 
 /**
  * Normalizes a database row into the format expected by frontend quiz components.
@@ -138,32 +139,100 @@ function deleteQuestion(id) {
     });
 }
 
-function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', score, maxScore, totalAnswered, timeSpentSeconds = 0 }) {
+function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', answers, timeSpentSeconds = 0 }) {
     return new Promise((resolve, reject) => {
-        // Defense-in-depth: validate integer types and bounds
-        if (!Number.isInteger(score) || !Number.isInteger(maxScore) || maxScore < 0 || score < 0 || score > maxScore) {
-            return reject(new Error('Invalid score bounds: score and maxScore must be integers with 0 <= score <= maxScore'));
+        const normalizedAnswers = normalizeAnswers(answers);
+        const questionIds = Object.keys(normalizedAnswers);
+
+        if (questionIds.length === 0) {
+            return reject(new Error('At least one question answer must be provided in answers'));
         }
 
-        const sql = `
-            INSERT INTO quiz_attempts 
-            (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
-        const params = [userId || null, guestName || null, formatFilter, score, maxScore, totalAnswered, timeSpentSeconds];
-
-        db.query(sql, params, (err, result) => {
+        // Query stored questions from database matching the supplied question IDs
+        const sql = 'SELECT * FROM quiz_questions WHERE id IN (?)';
+        db.query(sql, [questionIds], (err, rows) => {
             if (err) return reject(err);
 
-            // Award XP to registered user (e.g. 10 XP per point scored)
-            if (userId && score > 0) {
-                const xpGain = score * 10;
-                db.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
-                    if (xpErr) console.error('Error updating user XP:', xpErr);
+            // Validate that every submitted question ID exists in the database
+            const foundMap = new Map();
+            rows.forEach(r => foundMap.set(r.id, formatQuestionRow(r)));
+
+            const invalidIds = questionIds.filter(id => !foundMap.has(id));
+            if (invalidIds.length > 0) {
+                return reject(new Error(`Invalid question ID(s): ${invalidIds.join(', ')}`));
+            }
+
+            // If formatFilter is specified and not 'all', validate that questions match format
+            if (formatFilter && formatFilter !== 'all') {
+                const mismatched = questionIds.filter(id => foundMap.get(id).type !== formatFilter);
+                if (mismatched.length > 0) {
+                    return reject(new Error(`Questions do not match formatFilter '${formatFilter}': ${mismatched.join(', ')}`));
+                }
+            }
+
+            // Server-side answer validation and score computation
+            let rawScore = 0;
+            let rawMaxScore = 0;
+            const evaluations = [];
+
+            for (const qId of questionIds) {
+                const question = foundMap.get(qId);
+                const userAnswer = normalizedAnswers[qId];
+                const evalResult = validateAnswer(question, userAnswer);
+
+                rawScore += (evalResult.score || 0);
+                rawMaxScore += (evalResult.maxScore || 1);
+
+                evaluations.push({
+                    questionId: qId,
+                    isCorrect: evalResult.isCorrect,
+                    score: evalResult.score,
+                    maxScore: evalResult.maxScore,
+                    feedback: evalResult.feedback
                 });
             }
 
-            resolve({ id: result.insertId, score, maxScore, totalAnswered });
+            const computedScore = Math.min(Math.round(rawMaxScore), Math.max(0, Math.round(rawScore)));
+            const computedMaxScore = Math.round(rawMaxScore);
+            const totalAnswered = questionIds.length;
+
+            const insertSql = `
+                INSERT INTO quiz_attempts 
+                (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `;
+            const params = [
+                userId || null,
+                guestName || null,
+                formatFilter || 'all',
+                computedScore,
+                computedMaxScore,
+                totalAnswered,
+                timeSpentSeconds || 0
+            ];
+
+            db.query(insertSql, params, (insertErr, result) => {
+                if (insertErr) return reject(insertErr);
+
+                const responseData = {
+                    id: result.insertId,
+                    score: computedScore,
+                    maxScore: computedMaxScore,
+                    totalAnswered,
+                    evaluations
+                };
+
+                // Award XP to registered user based strictly on server-computed score (10 XP per point)
+                if (userId && computedScore > 0) {
+                    const xpGain = computedScore * 10;
+                    db.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
+                        if (xpErr) console.error('Error updating user XP:', xpErr);
+                        resolve(responseData);
+                    });
+                } else {
+                    resolve(responseData);
+                }
+            });
         });
     });
 }
