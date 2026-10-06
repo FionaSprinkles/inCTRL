@@ -154,13 +154,22 @@ function deleteQuestion(id) {
     });
 }
 
+class ValidationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ValidationError';
+        this.isClientError = true;
+        this.statusCode = 400;
+    }
+}
+
 function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', answers, timeSpentSeconds = 0 }) {
     return new Promise((resolve, reject) => {
         const normalizedAnswers = normalizeAnswers(answers);
         const questionIds = Object.keys(normalizedAnswers);
 
         if (questionIds.length === 0) {
-            return reject(new Error('At least one question answer must be provided in answers'));
+            return reject(new ValidationError('At least one question answer must be provided in answers'));
         }
 
         // Query stored questions from database matching the supplied question IDs
@@ -174,14 +183,14 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
 
             const invalidIds = questionIds.filter(id => !foundMap.has(id));
             if (invalidIds.length > 0) {
-                return reject(new Error(`Invalid question ID(s): ${invalidIds.join(', ')}`));
+                return reject(new ValidationError(`Invalid question ID(s): ${invalidIds.join(', ')}`));
             }
 
             // If formatFilter is specified and not 'all', validate that questions match format
             if (formatFilter && formatFilter !== 'all') {
                 const mismatched = questionIds.filter(id => foundMap.get(id).type !== formatFilter);
                 if (mismatched.length > 0) {
-                    return reject(new Error(`Questions do not match formatFilter '${formatFilter}': ${mismatched.join(', ')}`));
+                    return reject(new ValidationError(`Questions do not match formatFilter '${formatFilter}': ${mismatched.join(', ')}`));
                 }
             }
 

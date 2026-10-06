@@ -142,11 +142,7 @@ exports.submitAttempt = async (req, res) => {
         });
     } catch (error) {
         console.error('Error submitting attempt:', error);
-        const isClientError =
-            error.message.includes('Invalid question ID') ||
-            error.message.includes('answers') ||
-            error.message.includes('formatFilter') ||
-            error.message.includes('match');
+        const isClientError = Boolean(error.isClientError || error.statusCode === 400);
 
         res.status(isClientError ? 400 : 500).json({
             success: false,
