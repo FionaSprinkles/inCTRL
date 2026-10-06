@@ -1,14 +1,27 @@
-För att kunna använda ett Vue Vite-projekt som frontend och en Node-Express-applikation som backend,
-behöver man ha igång två terminaler samtidigt (en för backend och en för frontend).
+inCTRL - Windows Shortcut Commands Quiz & Platform
 
-I backend skriver vi node app.js i terminalen för att starta igång Node-applikationen.
+Kör projektet:
+1. Starta databasen med Docker:
+   docker compose up -d
 
-För att skapa Frontend med Vue Vite kör du i terminalen rotmappen:
-npm create vue@latest
+2. Starta Backend:
+   cd backend
+   npm install
+   npm run dev    (eller npm start)
 
-(Namnge projektet till frontend, då skapas en mapp som heter frontend i rotmappen)
+3. Starta Frontend (i separat terminal):
+   cd frontend
+   npm install
+   npm run dev
 
-I frontend skriver vi i terminalen:
-npm install
-npm run dev
+Databas:
+- MySQL körs i Docker på port 3306.
+- Databasnamn: inctrl_db
+- Initieras automatiskt via docker/init.sql med schema och data för kortkommandon, quizfrågor, användare och poäng.
+
+Felsökning i Windows PowerShell:
+Om du får felet "running scripts is disabled on this system" när du kör `npm`:
+- Kör antingen kommandot en gång i PowerShell:
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+- Eller kör med `.cmd`: `npm.cmd install` och `npm.cmd run dev` (eller `node app.js`)
 
