@@ -3,9 +3,6 @@
 -- Website for Windows Shortcut Commands, Quizzes & Users
 -- ==========================================================
 
-CREATE DATABASE IF NOT EXISTS inctrl_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE inctrl_db;
-
 SET NAMES utf8mb4;
 
 -- ----------------------------------------------------------
