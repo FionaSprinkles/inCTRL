@@ -50,10 +50,14 @@ app.use((req, res) => {
 });
 
 // Start Server
-app.listen(port, () => {
-    console.log(`🚀 inCTRL Backend Server running at http://localhost:${port}`);
-    console.log(`👉 API Health check: http://localhost:${port}/api/health`);
-    console.log(`👉 Quiz Questions: http://localhost:${port}/api/questions`);
-    console.log(`👉 Shortcuts: http://localhost:${port}/api/shortcuts`);
-    console.log(`👉 Users: http://localhost:${port}/api/users`);
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`🚀 inCTRL Backend Server running at http://localhost:${port}`);
+        console.log(`👉 API Health check: http://localhost:${port}/api/health`);
+        console.log(`👉 Quiz Questions: http://localhost:${port}/api/questions`);
+        console.log(`👉 Shortcuts: http://localhost:${port}/api/shortcuts`);
+        console.log(`👉 Users: http://localhost:${port}/api/users`);
+    });
+}
+
+module.exports = app;
