@@ -25,3 +25,11 @@ Om du får felet "running scripts is disabled on this system" när du kör `npm`
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 - Eller kör med `.cmd`: `npm.cmd install` och `npm.cmd run dev` (eller `node app.js`)
 
+Tester och testtäckning (Coverage):
+- Backend (>99% coverage):
+    cd backend
+    npm test
+- Frontend (100% coverage):
+    cd frontend
+    npm test
+
