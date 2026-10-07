@@ -34,14 +34,26 @@ describe('backend/middleware/auth', () => {
             delete process.env.JWT_SECRET;
             process.env.NODE_ENV = 'development';
 
-            const devAuth = require('../middleware/auth');
-            assert.strictEqual(devAuth.JWT_SECRET, 'inctrl-development-secret-key-replace-in-production');
+            try {
+                const devAuth = require('../middleware/auth');
+                assert.strictEqual(devAuth.JWT_SECRET, 'inctrl-development-secret-key-replace-in-production');
+            } finally {
+                // Restore
+                if (oldSecret !== undefined) {
+                    process.env.JWT_SECRET = oldSecret;
+                } else {
+                    delete process.env.JWT_SECRET;
+                }
 
-            // Restore
-            process.env.JWT_SECRET = oldSecret;
-            process.env.NODE_ENV = oldEnv;
-            delete require.cache[authPath];
-            require('../middleware/auth');
+                if (oldEnv !== undefined) {
+                    process.env.NODE_ENV = oldEnv;
+                } else {
+                    delete process.env.NODE_ENV;
+                }
+
+                delete require.cache[authPath];
+                require('../middleware/auth');
+            }
         });
 
         it('throws fatal error when JWT_SECRET is missing and NODE_ENV is production', () => {
@@ -53,15 +65,27 @@ describe('backend/middleware/auth', () => {
             delete process.env.JWT_SECRET;
             process.env.NODE_ENV = 'production';
 
-            assert.throws(() => {
-                require('../middleware/auth');
-            }, /FATAL: JWT_SECRET environment variable is missing/);
+            try {
+                assert.throws(() => {
+                    require('../middleware/auth');
+                }, /FATAL: JWT_SECRET environment variable is missing/);
+            } finally {
+                // Restore
+                if (oldSecret !== undefined) {
+                    process.env.JWT_SECRET = oldSecret;
+                } else {
+                    delete process.env.JWT_SECRET;
+                }
 
-            // Restore
-            process.env.JWT_SECRET = oldSecret;
-            process.env.NODE_ENV = oldEnv;
-            delete require.cache[authPath];
-            require('../middleware/auth');
+                if (oldEnv !== undefined) {
+                    process.env.NODE_ENV = oldEnv;
+                } else {
+                    delete process.env.NODE_ENV;
+                }
+
+                delete require.cache[authPath];
+                require('../middleware/auth');
+            }
         });
     });
 
