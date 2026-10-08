@@ -317,5 +317,59 @@ describe('backend API integration tests (app & routes)', () => {
             assert.strictEqual(attRes.status, 200);
             assert.strictEqual(attRes.body.attempts.length, 1);
         });
+
+        it('GET /api/quizzes and GET /api/quizzes/:id', async () => {
+            const quizRow = { id: 1, title: 'Navigation Quiz' };
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quizzes')) return cb(null, [quizRow]);
+                if (sql.includes('FROM quiz_questions')) return cb(null, [questionRow]);
+                cb(null, []);
+            });
+
+            const listRes = await request(app).get('/api/quizzes');
+            assert.strictEqual(listRes.status, 200);
+            assert.strictEqual(listRes.body.quizzes.length, 1);
+
+            const itemRes = await request(app).get('/api/quizzes/1');
+            assert.strictEqual(itemRes.status, 200);
+            assert.strictEqual(itemRes.body.quiz.id, 1);
+        });
+
+        it('POST /api/quizzes, PUT /api/quizzes/:id, DELETE /api/quizzes/:id by admin', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, { insertId: 10, affectedRows: 1 });
+            });
+
+            const postRes = await request(app)
+                .post('/api/quizzes')
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send({ title: 'New Admin Quiz' });
+            assert.strictEqual(postRes.status, 201);
+            assert.strictEqual(postRes.body.quiz.id, 10);
+
+            const putRes = await request(app)
+                .put('/api/quizzes/10')
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send({ title: 'Updated Admin Quiz' });
+            assert.strictEqual(putRes.status, 200);
+
+            const delRes = await request(app)
+                .delete('/api/quizzes/10')
+                .set('Authorization', `Bearer ${adminToken}`);
+            assert.strictEqual(delRes.status, 200);
+        });
+
+        it('GET /api/quiz/attempts/:id/details returns attempt with breakdown', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 7, score: 1 }]);
+                if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1', isCorrect: true }]);
+                cb(null, []);
+            });
+
+            const res = await request(app).get('/api/quiz/attempts/7/details');
+            assert.strictEqual(res.status, 200);
+            assert.strictEqual(res.body.attempt.id, 7);
+            assert.strictEqual(res.body.attempt.questions.length, 1);
+        });
     });
 });

@@ -326,4 +326,204 @@ describe('backend/controllers/quizController', () => {
             assert.strictEqual(res.body.error, 'Attempts query failure');
         });
     });
+
+    describe('getQuizzes', () => {
+        it('returns 200 with list of quizzes', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, [{ id: 1, title: 'Quiz 1' }]);
+            });
+
+            const req = {};
+            const res = createMockResponse();
+
+            await quizController.getQuizzes(req, res);
+            assert.strictEqual(res.statusCode, 200);
+            assert.strictEqual(res.body.success, true);
+            assert.strictEqual(res.body.count, 1);
+        });
+
+        it('returns 500 on service error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Quizzes error'));
+            });
+
+            const req = {};
+            const res = createMockResponse();
+
+            await quizController.getQuizzes(req, res);
+            assert.strictEqual(res.statusCode, 500);
+            assert.strictEqual(res.body.error, 'Quizzes error');
+        });
+    });
+
+    describe('getQuiz', () => {
+        it('returns 200 with quiz details when found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quizzes')) return cb(null, [{ id: 1, title: 'Quiz 1' }]);
+                cb(null, []);
+            });
+
+            const req = { params: { id: 1 } };
+            const res = createMockResponse();
+
+            await quizController.getQuiz(req, res);
+            assert.strictEqual(res.statusCode, 200);
+            assert.strictEqual(res.body.quiz.id, 1);
+        });
+
+        it('returns 404 when quiz not found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, []);
+            });
+
+            const req = { params: { id: 999 } };
+            const res = createMockResponse();
+
+            await quizController.getQuiz(req, res);
+            assert.strictEqual(res.statusCode, 404);
+            assert.strictEqual(res.body.error, "Quiz with id '999' not found");
+        });
+
+        it('returns 500 on service error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Quiz fetch failure'));
+            });
+
+            const req = { params: { id: 1 } };
+            const res = createMockResponse();
+
+            await quizController.getQuiz(req, res);
+            assert.strictEqual(res.statusCode, 500);
+            assert.strictEqual(res.body.error, 'Quiz fetch failure');
+        });
+    });
+
+    describe('createQuiz, updateQuiz, deleteQuiz', () => {
+        it('createQuiz returns 400 when title is missing', async () => {
+            const req = { body: {} };
+            const res = createMockResponse();
+
+            await quizController.createQuiz(req, res);
+            assert.strictEqual(res.statusCode, 400);
+            assert.strictEqual(res.body.error, 'title is required');
+        });
+
+        it('createQuiz returns 201 on success', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, { insertId: 10 });
+            });
+
+            const req = { body: { title: 'New Quiz' } };
+            const res = createMockResponse();
+
+            await quizController.createQuiz(req, res);
+            assert.strictEqual(res.statusCode, 201);
+            assert.strictEqual(res.body.quiz.id, 10);
+        });
+
+        it('createQuiz returns 500 on error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Create error'));
+            });
+
+            const req = { body: { title: 'New Quiz' } };
+            const res = createMockResponse();
+
+            await quizController.createQuiz(req, res);
+            assert.strictEqual(res.statusCode, 500);
+            assert.strictEqual(res.body.error, 'Create error');
+        });
+
+        it('updateQuiz returns 200 on success', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, { affectedRows: 1 });
+            });
+
+            const req = { params: { id: 2 }, body: { title: 'Updated' } };
+            const res = createMockResponse();
+
+            await quizController.updateQuiz(req, res);
+            assert.strictEqual(res.statusCode, 200);
+            assert.strictEqual(res.body.success, true);
+        });
+
+        it('updateQuiz returns 500 on error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Update error'));
+            });
+
+            const req = { params: { id: 2 }, body: { title: 'Updated' } };
+            const res = createMockResponse();
+
+            await quizController.updateQuiz(req, res);
+            assert.strictEqual(res.statusCode, 500);
+        });
+
+        it('deleteQuiz returns 200 on success', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, { affectedRows: 1 });
+            });
+
+            const req = { params: { id: 2 } };
+            const res = createMockResponse();
+
+            await quizController.deleteQuiz(req, res);
+            assert.strictEqual(res.statusCode, 200);
+        });
+
+        it('deleteQuiz returns 500 on error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Delete error'));
+            });
+
+            const req = { params: { id: 2 } };
+            const res = createMockResponse();
+
+            await quizController.deleteQuiz(req, res);
+            assert.strictEqual(res.statusCode, 500);
+        });
+    });
+
+    describe('getAttemptDetails', () => {
+        it('returns 200 with attempt details when found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, score: 3 }]);
+                if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1' }]);
+                cb(null, []);
+            });
+
+            const req = { params: { id: 5 } };
+            const res = createMockResponse();
+
+            await quizController.getAttemptDetails(req, res);
+            assert.strictEqual(res.statusCode, 200);
+            assert.strictEqual(res.body.attempt.id, 5);
+        });
+
+        it('returns 404 when attempt not found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, []);
+            });
+
+            const req = { params: { id: 999 } };
+            const res = createMockResponse();
+
+            await quizController.getAttemptDetails(req, res);
+            assert.strictEqual(res.statusCode, 404);
+            assert.strictEqual(res.body.error, "Attempt with id '999' not found");
+        });
+
+        it('returns 500 on service error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Detail error'));
+            });
+
+            const req = { params: { id: 5 } };
+            const res = createMockResponse();
+
+            await quizController.getAttemptDetails(req, res);
+            assert.strictEqual(res.statusCode, 500);
+            assert.strictEqual(res.body.error, 'Detail error');
+        });
+    });
 });

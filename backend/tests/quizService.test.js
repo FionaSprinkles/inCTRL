@@ -84,6 +84,18 @@ describe('backend/services/quizService', () => {
             await quizService.getQuestions({ type: 'all' });
         });
 
+        it('applies quizId filter', async () => {
+            let capturedParams = [];
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('AND quiz_id = ?'));
+                capturedParams = params;
+                cb(null, []);
+            });
+
+            await quizService.getQuestions({ quizId: 3 });
+            assert.deepStrictEqual(capturedParams, [3]);
+        });
+
         it('rejects on query failure', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
                 cb(new Error('Question fetch failed'));
@@ -351,6 +363,35 @@ describe('backend/services/quizService', () => {
             assert.strictEqual(rolledBack, true);
         });
 
+        it('rolls back and rejects when result_questions insert query fails', async () => {
+            let rolledBack = false;
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, [sampleQuestionRow]);
+            });
+            mockDb.setConnectionHandler((cb) => {
+                cb(null, {
+                    beginTransaction: (bCb) => bCb(null),
+                    query: (sql, params, qCb) => {
+                        if (sql.includes('INSERT INTO quiz_attempts')) {
+                            return qCb(null, { insertId: 55 });
+                        }
+                        if (sql.includes('INSERT INTO result_questions')) {
+                            return qCb(new Error('Result questions insert error'));
+                        }
+                        qCb(null, {});
+                    },
+                    rollback: (rCb) => { rolledBack = true; rCb(); },
+                    release: () => {}
+                });
+            });
+
+            await assert.rejects(
+                async () => await quizService.saveAttempt({ answers: { q1: 'opt1' } }),
+                /Result questions insert error/
+            );
+            assert.strictEqual(rolledBack, true);
+        });
+
         it('rolls back and rejects when XP update query fails for authenticated user', async () => {
             let rolledBack = false;
             mockDb.setQueryHandler((sql, params, cb) => {
@@ -558,6 +599,214 @@ describe('backend/services/quizService', () => {
             await assert.rejects(
                 async () => await quizService.getUserAttempts(3),
                 /Fetch attempts failed/
+            );
+        });
+    });
+
+    describe('getQuizzes', () => {
+        it('resolves with list of quizzes', async () => {
+            const mockQuizzes = [{ id: 1, title: 'Navigation Quiz', questionCount: 5 }];
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('FROM quizzes q'));
+                cb(null, mockQuizzes);
+            });
+
+            const result = await quizService.getQuizzes();
+            assert.deepStrictEqual(result, mockQuizzes);
+        });
+
+        it('rejects on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Quizzes query error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getQuizzes(),
+                /Quizzes query error/
+            );
+        });
+    });
+
+    describe('getQuizById', () => {
+        it('resolves with quiz and its questions when found', async () => {
+            const mockQuiz = { id: 1, title: 'Navigation Quiz' };
+
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quizzes q')) {
+                    assert.deepStrictEqual(params, [1]);
+                    return cb(null, [mockQuiz]);
+                }
+                if (sql.includes('FROM quiz_questions')) {
+                    assert.ok(sql.includes('quiz_id = ?'));
+                    return cb(null, [{ id: 'q1', type: 'single_choice', prompt: 'Prompt 1' }]);
+                }
+                cb(null, []);
+            });
+
+            const result = await quizService.getQuizById(1);
+            assert.strictEqual(result.id, 1);
+            assert.strictEqual(result.title, 'Navigation Quiz');
+            assert.strictEqual(result.questions.length, 1);
+        });
+
+        it('resolves with null when quiz not found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, []);
+            });
+
+            const result = await quizService.getQuizById(999);
+            assert.strictEqual(result, null);
+        });
+
+        it('rejects on query failure', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Quiz query failed'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getQuizById(1),
+                /Quiz query failed/
+            );
+        });
+    });
+
+    describe('createQuiz, updateQuiz, deleteQuiz', () => {
+        it('creates a quiz and returns created data with insertId', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('INSERT INTO quizzes'));
+                assert.strictEqual(params[0], 'Test Quiz');
+                cb(null, { insertId: 42 });
+            });
+
+            const result = await quizService.createQuiz({
+                title: 'Test Quiz',
+                description: 'A test quiz',
+                categoryId: 1,
+                difficulty: 'Intermediate'
+            });
+
+            assert.strictEqual(result.id, 42);
+            assert.strictEqual(result.title, 'Test Quiz');
+        });
+
+        it('rejects createQuiz on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Create quiz error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.createQuiz({ title: 'Fail' }),
+                /Create quiz error/
+            );
+        });
+
+        it('updates a quiz and returns result', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('UPDATE quizzes'));
+                assert.strictEqual(params[4], 5);
+                cb(null, { affectedRows: 1 });
+            });
+
+            const result = await quizService.updateQuiz(5, {
+                title: 'Updated Quiz',
+                description: 'Updated desc',
+                categoryId: 2,
+                difficulty: 'Advanced'
+            });
+
+            assert.strictEqual(result.affectedRows, 1);
+        });
+
+        it('rejects updateQuiz on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Update quiz error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.updateQuiz(5, { title: 'Fail' }),
+                /Update quiz error/
+            );
+        });
+
+        it('deletes a quiz and returns result', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('DELETE FROM quizzes'));
+                assert.strictEqual(params[0], 5);
+                cb(null, { affectedRows: 1 });
+            });
+
+            const result = await quizService.deleteQuiz(5);
+            assert.strictEqual(result.affectedRows, 1);
+        });
+
+        it('rejects deleteQuiz on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Delete quiz error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.deleteQuiz(5),
+                /Delete quiz error/
+            );
+        });
+    });
+
+    describe('getAttemptDetails', () => {
+        it('resolves with attempt and questions breakdown when found', async () => {
+            const attemptRow = { id: 10, userId: 1, score: 5, maxScore: 5 };
+            const questionRows = [
+                { id: 1, questionId: 'sc-1', attempts: 1, isCorrect: 1, score: 1, prompt: 'Lock PC' }
+            ];
+
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) {
+                    assert.deepStrictEqual(params, [10]);
+                    return cb(null, [attemptRow]);
+                }
+                if (sql.includes('FROM result_questions rq')) {
+                    assert.deepStrictEqual(params, [10]);
+                    return cb(null, questionRows);
+                }
+                cb(null, []);
+            });
+
+            const result = await quizService.getAttemptDetails(10);
+            assert.strictEqual(result.id, 10);
+            assert.strictEqual(result.questions.length, 1);
+            assert.strictEqual(result.questions[0].questionId, 'sc-1');
+        });
+
+        it('resolves with null when attempt not found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, []);
+            });
+
+            const result = await quizService.getAttemptDetails(999);
+            assert.strictEqual(result, null);
+        });
+
+        it('rejects on attempt query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Attempt fetch error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getAttemptDetails(10),
+                /Attempt fetch error/
+            );
+        });
+
+        it('rejects on questions breakdown query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) {
+                    return cb(null, [{ id: 10 }]);
+                }
+                cb(new Error('Breakdown fetch error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getAttemptDetails(10),
+                /Breakdown fetch error/
             );
         });
     });
