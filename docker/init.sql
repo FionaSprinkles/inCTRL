@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    display_name VARCHAR(100) NOT NULL,
+    display_name VARCHAR(100) NOT NULL,3
     role ENUM('user', 'admin') DEFAULT 'user',
     avatar VARCHAR(255) DEFAULT 'default-avatar.png',
     xp INT DEFAULT 0,
@@ -52,28 +52,46 @@ CREATE TABLE IF NOT EXISTS windows_shortcuts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------
--- 4. QUIZ QUESTIONS TABLE
+-- 4. QUIZZES TABLE (Curated Quizzes & Practice Sets)
 -- ----------------------------------------------------------
-CREATE TABLE IF NOT EXISTS quiz_questions (
-    id VARCHAR(50) NOT NULL,
-    type VARCHAR(50) NOT NULL,
+CREATE TABLE IF NOT EXISTS quizzes (
+    id INT NOT NULL AUTO_INCREMENT,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
     category_id INT NULL,
-    category_name VARCHAR(100) NOT NULL,
     difficulty ENUM('Beginner', 'Intermediate', 'Advanced') DEFAULT 'Beginner',
-    prompt TEXT NOT NULL,
-    hint TEXT NULL,
-    explanation TEXT NULL,
-    payload_json JSON NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------
--- 5. QUIZ ATTEMPTS (SCORES & LEADERBOARD)
+-- 5. QUIZ QUESTIONS TABLE
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS quiz_questions (
+    id VARCHAR(50) NOT NULL,
+    quiz_id INT NULL,
+    type VARCHAR(50) NOT NULL,
+    category_id INT NULL,
+    category_name VARCHAR(100) NOT NULL,
+    difficulty ENUM('Beginner', 'Intermediate', 'Advanced') DEFAULT 'Beginner',
+    prompt TEXT NOT NULL,
+    key_combination VARCHAR(100) NULL,
+    hint TEXT NULL,
+    explanation TEXT NULL,
+    payload_json JSON NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE SET NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------
+-- 6. QUIZ ATTEMPTS (SCORES & LEADERBOARD)
 -- ----------------------------------------------------------
 CREATE TABLE IF NOT EXISTS quiz_attempts (
     id INT NOT NULL AUTO_INCREMENT,
+    quiz_id INT NULL,
     user_id INT NULL,
     guest_name VARCHAR(100) NULL,
     format_filter VARCHAR(50) DEFAULT 'all',
@@ -83,6 +101,7 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
     time_spent_seconds INT DEFAULT 0,
     completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE SET NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -106,6 +125,14 @@ INSERT IGNORE INTO categories (id, name, slug, description, icon, display_order)
 INSERT IGNORE INTO users (id, username, email, password_hash, display_name, role, xp) VALUES
 (2, 'shortcut_ninja', 'ninja@inctrl.dev', '$2b$10$w091pP3qf1.f4n1M5mH7sOi5P05fRkFhUuM9fQ4n08M9J8bKq3/6a', 'Shortcut Ninja', 'user', 1850),
 (3, 'demo_user', 'user@inctrl.dev', '$2b$10$w091pP3qf1.f4n1M5mH7sOi5P05fRkFhUuM9fQ4n08M9J8bKq3/6a', 'Alex Dev', 'user', 920);
+
+-- ----------------------------------------------------------
+-- SEED DATA: QUIZZES
+-- ----------------------------------------------------------
+INSERT IGNORE INTO quizzes (id, title, description, category_id, difficulty) VALUES
+(1, 'Essential Navigation Mastery', 'Core Windows shortcuts for navigating files, desktop, and locking the system.', 1, 'Beginner'),
+(2, 'System & Troubleshooting Diagnostics', 'Task Manager, system interrupts, diagnostics and recovery commands.', 2, 'Intermediate'),
+(3, 'Power User & Virtual Desktops', 'Clipboard history, virtual desktops, and power menu commands.', 6, 'Advanced');
 
 -- ----------------------------------------------------------
 -- SEED DATA: WINDOWS SHORTCUTS
@@ -289,6 +316,6 @@ INSERT IGNORE INTO quiz_questions (id, type, category_id, category_name, difficu
 -- ----------------------------------------------------------
 -- SEED DATA: SAMPLE ATTEMPTS (For Leaderboard)
 -- ----------------------------------------------------------
-INSERT IGNORE INTO quiz_attempts (id, user_id, format_filter, score, max_score, total_answered, time_spent_seconds) VALUES
-(1, 2, 'all', 19, 20, 18, 142),
-(3, 3, 'all', 15, 20, 18, 210);
+INSERT IGNORE INTO quiz_attempts (id, quiz_id, user_id, format_filter, score, max_score, total_answered, time_spent_seconds) VALUES
+(1, 1, 2, 'all', 19, 20, 18, 142),
+(3, 2, 3, 'all', 15, 20, 18, 210);

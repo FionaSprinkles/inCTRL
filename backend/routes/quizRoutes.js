@@ -12,6 +12,13 @@ router.post('/api/questions', authenticateToken, requireAdmin, quizController.cr
 router.put('/api/questions/:id', authenticateToken, requireAdmin, quizController.updateQuestion);
 router.delete('/api/questions/:id', authenticateToken, requireAdmin, quizController.deleteQuestion);
 
+// Curated Quizzes routes
+router.get('/api/quizzes', quizController.getQuizzes);
+router.get('/api/quizzes/:id', quizController.getQuiz);
+router.post('/api/quizzes', authenticateToken, requireAdmin, quizController.createQuiz);
+router.put('/api/quizzes/:id', authenticateToken, requireAdmin, quizController.updateQuiz);
+router.delete('/api/quizzes/:id', authenticateToken, requireAdmin, quizController.deleteQuiz);
+
 // Quiz attempt route: optionalAuth verifies JWT if supplied, ensuring authenticated userId is safely extracted
 router.post('/api/quiz/attempts', optionalAuth, quizController.submitAttempt);
 router.get('/api/quiz/leaderboard', quizController.getLeaderboard);

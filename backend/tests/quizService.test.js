@@ -56,12 +56,13 @@ describe('backend/services/quizService', () => {
             assert.strictEqual(result[2].id, 'q3');
         });
 
-        it('applies type, difficulty, and categoryId filters', async () => {
+        it('applies type, difficulty, categoryId, and quizId filters', async () => {
             let capturedParams = [];
             mockDb.setQueryHandler((sql, params, cb) => {
                 assert.ok(sql.includes('AND type = ?'));
                 assert.ok(sql.includes('AND difficulty = ?'));
                 assert.ok(sql.includes('AND category_id = ?'));
+                assert.ok(sql.includes('AND quiz_id = ?'));
                 capturedParams = params;
                 cb(null, []);
             });
@@ -69,10 +70,11 @@ describe('backend/services/quizService', () => {
             await quizService.getQuestions({
                 type: 'matching',
                 difficulty: 'Hard',
-                categoryId: 4
+                categoryId: 4,
+                quizId: 2
             });
 
-            assert.deepStrictEqual(capturedParams, ['matching', 'Hard', 4]);
+            assert.deepStrictEqual(capturedParams, ['matching', 'Hard', 4, 2]);
         });
 
         it('ignores type filter when set to "all"', async () => {
@@ -558,6 +560,154 @@ describe('backend/services/quizService', () => {
             await assert.rejects(
                 async () => await quizService.getUserAttempts(3),
                 /Fetch attempts failed/
+            );
+        });
+    });
+
+    describe('getQuizzes', () => {
+        it('resolves with list of quizzes', async () => {
+            const mockQuizzes = [{ id: 1, title: 'Navigation Quiz', questionCount: 5 }];
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('FROM quizzes q'));
+                cb(null, mockQuizzes);
+            });
+
+            const result = await quizService.getQuizzes();
+            assert.deepStrictEqual(result, mockQuizzes);
+        });
+
+        it('rejects on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Quizzes query error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getQuizzes(),
+                /Quizzes query error/
+            );
+        });
+    });
+
+    describe('getQuizById', () => {
+        it('resolves with quiz and its questions when found', async () => {
+            const mockQuiz = { id: 1, title: 'Navigation Quiz' };
+
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quizzes q')) {
+                    assert.deepStrictEqual(params, [1]);
+                    return cb(null, [mockQuiz]);
+                }
+                if (sql.includes('FROM quiz_questions')) {
+                    assert.ok(sql.includes('quiz_id = ?'));
+                    return cb(null, [{ id: 'q1', type: 'single_choice', prompt: 'Prompt 1' }]);
+                }
+                cb(null, []);
+            });
+
+            const result = await quizService.getQuizById(1);
+            assert.strictEqual(result.id, 1);
+            assert.strictEqual(result.title, 'Navigation Quiz');
+            assert.strictEqual(result.questions.length, 1);
+        });
+
+        it('resolves with null when quiz not found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, []);
+            });
+
+            const result = await quizService.getQuizById(999);
+            assert.strictEqual(result, null);
+        });
+
+        it('rejects on query failure', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Quiz query failed'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getQuizById(1),
+                /Quiz query failed/
+            );
+        });
+    });
+
+    describe('createQuiz, updateQuiz, deleteQuiz', () => {
+        it('creates a quiz and returns created data with insertId', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('INSERT INTO quizzes'));
+                assert.strictEqual(params[0], 'Test Quiz');
+                cb(null, { insertId: 42 });
+            });
+
+            const result = await quizService.createQuiz({
+                title: 'Test Quiz',
+                description: 'A test quiz',
+                categoryId: 1,
+                difficulty: 'Intermediate'
+            });
+
+            assert.strictEqual(result.id, 42);
+            assert.strictEqual(result.title, 'Test Quiz');
+        });
+
+        it('rejects createQuiz on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Create quiz error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.createQuiz({ title: 'Fail' }),
+                /Create quiz error/
+            );
+        });
+
+        it('updates a quiz and returns result', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('UPDATE quizzes'));
+                assert.strictEqual(params[4], 5);
+                cb(null, { affectedRows: 1 });
+            });
+
+            const result = await quizService.updateQuiz(5, {
+                title: 'Updated Quiz',
+                description: 'Updated desc',
+                categoryId: 2,
+                difficulty: 'Advanced'
+            });
+
+            assert.strictEqual(result.affectedRows, 1);
+        });
+
+        it('rejects updateQuiz on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Update quiz error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.updateQuiz(5, { title: 'Fail' }),
+                /Update quiz error/
+            );
+        });
+
+        it('deletes a quiz and returns result', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('DELETE FROM quizzes'));
+                assert.strictEqual(params[0], 5);
+                cb(null, { affectedRows: 1 });
+            });
+
+            const result = await quizService.deleteQuiz(5);
+            assert.strictEqual(result.affectedRows, 1);
+        });
+
+        it('rejects deleteQuiz on query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Delete quiz error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.deleteQuiz(5),
+                /Delete quiz error/
             );
         });
     });

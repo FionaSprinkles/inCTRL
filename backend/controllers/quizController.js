@@ -1,16 +1,149 @@
 const quizService = require('../services/quizService');
 
 /**
+ * Handles GET /api/quizzes.
+ * Retrieves all curated quizzes.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+exports.getQuizzes = async (req, res) => {
+    try {
+        const quizzes = await quizService.getQuizzes();
+        res.json({
+            success: true,
+            count: quizzes.length,
+            quizzes
+        });
+    } catch (error) {
+        console.error('Error fetching quizzes:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Handles GET /api/quizzes/:id.
+ * Retrieves a single quiz and its associated questions.
+ * @param {import('express').Request} req - Express request object with id parameter.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+exports.getQuiz = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const quiz = await quizService.getQuizById(id);
+        if (!quiz) {
+            return res.status(404).json({
+                success: false,
+                error: `Quiz with id '${id}' not found`
+            });
+        }
+        res.json({
+            success: true,
+            quiz
+        });
+    } catch (error) {
+        console.error('Error fetching quiz:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Handles POST /api/quizzes.
+ * Creates a new curated quiz (Admin only).
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+exports.createQuiz = async (req, res) => {
+    try {
+        const { title, description, categoryId, difficulty } = req.body;
+        if (!title) {
+            return res.status(400).json({
+                success: false,
+                error: 'title is required'
+            });
+        }
+        const created = await quizService.createQuiz({ title, description, categoryId, difficulty });
+        res.status(201).json({
+            success: true,
+            message: 'Quiz created successfully',
+            quiz: created
+        });
+    } catch (error) {
+        console.error('Error creating quiz:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Handles PUT /api/quizzes/:id.
+ * Updates an existing quiz (Admin only).
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+exports.updateQuiz = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await quizService.updateQuiz(id, req.body);
+        res.json({
+            success: true,
+            message: `Quiz '${id}' updated successfully`
+        });
+    } catch (error) {
+        console.error('Error updating quiz:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Handles DELETE /api/quizzes/:id.
+ * Deletes a quiz by ID (Admin only).
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+exports.deleteQuiz = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await quizService.deleteQuiz(id);
+        res.json({
+            success: true,
+            message: `Quiz '${id}' deleted successfully`
+        });
+    } catch (error) {
+        console.error('Error deleting quiz:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+/**
  * Handles GET /api/questions.
- * Retrieves all quiz questions matching optional query filters (type, difficulty, categoryId).
+ * Retrieves all quiz questions matching optional query filters (type, difficulty, categoryId, quizId).
  * @param {import('express').Request} req - Express request object with query parameters.
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
  */
 exports.getQuestions = async (req, res) => {
     try {
-        const { type, difficulty, categoryId } = req.query;
-        const questions = await quizService.getQuestions({ type, difficulty, categoryId });
+        const { type, difficulty, categoryId, quizId } = req.query;
+        const questions = await quizService.getQuestions({ type, difficulty, categoryId, quizId });
         res.json({
             success: true,
             count: questions.length,
@@ -144,7 +277,7 @@ exports.deleteQuestion = async (req, res) => {
  */
 exports.submitAttempt = async (req, res) => {
     try {
-        const { guestName, formatFilter, answers, timeSpentSeconds } = req.body;
+        const { guestName, formatFilter, quizId, answers, timeSpentSeconds } = req.body;
 
         // Security (CWE-639 IDOR Fix):
         // Derive userId strictly from the authenticated token session (req.user).
@@ -162,6 +295,11 @@ exports.submitAttempt = async (req, res) => {
         // Validation: timeSpentSeconds
         const safeTimeSpent = Number.isInteger(timeSpentSeconds) && timeSpentSeconds >= 0 ? timeSpentSeconds : 0;
 
+        // Validation: quizId
+        const safeQuizId = Number.isInteger(quizId) || (typeof quizId === 'string' && /^\d+$/.test(quizId))
+            ? parseInt(quizId, 10)
+            : null;
+
         // Sanitization: guestName
         const safeGuestName = !authenticatedUserId && typeof guestName === 'string'
             ? guestName.trim().slice(0, 50)
@@ -173,6 +311,7 @@ exports.submitAttempt = async (req, res) => {
             userId: authenticatedUserId,
             guestName: safeGuestName,
             formatFilter: safeFormatFilter,
+            quizId: safeQuizId,
             answers,
             timeSpentSeconds: safeTimeSpent
         });
