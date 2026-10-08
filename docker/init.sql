@@ -3,7 +3,7 @@
 -- Website for Windows Shortcut Commands, Quizzes & Users
 -- ==========================================================
 
-SET NAMES utf8mb4;
+USE inctrl_db;
 
 -- ----------------------------------------------------------
 -- 1. USERS TABLE
