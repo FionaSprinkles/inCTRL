@@ -379,3 +379,33 @@ exports.getUserAttempts = async (req, res) => {
         });
     }
 };
+
+/**
+ * Handles GET /api/quiz/attempts/:id/details.
+ * Retrieves comprehensive attempt details including per-question breakdown.
+ * @param {import('express').Request} req - Express request object with id param.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+exports.getAttemptDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const attempt = await quizService.getAttemptDetails(id);
+        if (!attempt) {
+            return res.status(404).json({
+                success: false,
+                error: `Attempt with id '${id}' not found`
+            });
+        }
+        res.json({
+            success: true,
+            attempt
+        });
+    } catch (error) {
+        console.error('Error fetching attempt details:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};

@@ -358,5 +358,18 @@ describe('backend API integration tests (app & routes)', () => {
                 .set('Authorization', `Bearer ${adminToken}`);
             assert.strictEqual(delRes.status, 200);
         });
+
+        it('GET /api/quiz/attempts/:id/details returns attempt with breakdown', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 7, score: 1 }]);
+                if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1', isCorrect: true }]);
+                cb(null, []);
+            });
+
+            const res = await request(app).get('/api/quiz/attempts/7/details');
+            assert.strictEqual(res.status, 200);
+            assert.strictEqual(res.body.attempt.id, 7);
+            assert.strictEqual(res.body.attempt.questions.length, 1);
+        });
     });
 });
