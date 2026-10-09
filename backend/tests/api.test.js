@@ -403,6 +403,13 @@ describe('backend API integration tests (app & routes)', () => {
             const anonRes = await request(app).get('/api/quiz/attempts/8/details');
             assert.strictEqual(anonRes.status, 403);
 
+            // Registered user session token matching attempt ID must not authorize guest attempt
+            const userWithSameIdToken = generateToken({ id: 8, username: 'user8', role: 'user' });
+            const userTokenRes = await request(app)
+                .get('/api/quiz/attempts/8/details')
+                .set('x-attempt-token', userWithSameIdToken);
+            assert.strictEqual(userTokenRes.status, 403);
+
             // Guest with valid attempt token succeeds
             const guestToken = generateToken({ attemptId: 8, role: 'guest_attempt' });
             const guestRes = await request(app)

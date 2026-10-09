@@ -592,6 +592,19 @@ describe('backend/controllers/quizController', () => {
             await quizController.getAttemptDetails(reqWrongToken, resWrongToken);
             assert.strictEqual(resWrongToken.statusCode, 403);
 
+            // Registered user token matching attempt ID (must NOT authorize guest attempt)
+            const userTokenWithSameId = generateToken({ id: 5, role: 'user' });
+            const reqUserToken = { params: { id: 5 }, user: null, query: { token: userTokenWithSameId }, headers: {} };
+            const resUserToken = createMockResponse();
+            await quizController.getAttemptDetails(reqUserToken, resUserToken);
+            assert.strictEqual(resUserToken.statusCode, 403);
+
+            // Registered user caller matching attempt ID (must NOT authorize guest attempt)
+            const reqUserCaller = { params: { id: 5 }, user: { id: 5, role: 'user' }, query: {}, headers: {} };
+            const resUserCaller = createMockResponse();
+            await quizController.getAttemptDetails(reqUserCaller, resUserCaller);
+            assert.strictEqual(resUserCaller.statusCode, 403);
+
             // Malformed token string
             const reqMalformedToken = { params: { id: 5 }, user: null, query: { token: 'malformed.jwt.signature' }, headers: {} };
             const resMalformedToken = createMockResponse();

@@ -453,7 +453,7 @@ exports.getAttemptDetails = async (req, res) => {
         if (!guestAuthorized && tokenCandidate) {
             try {
                 const decoded = jwt.verify(tokenCandidate, JWT_SECRET);
-                if (decoded && (Number(decoded.attemptId) === Number(id) || Number(decoded.id) === Number(id))) {
+                if (decoded && decoded.role === 'guest_attempt' && Number(decoded.attemptId) === Number(id)) {
                     guestAuthorized = true;
                 }
             } catch {
