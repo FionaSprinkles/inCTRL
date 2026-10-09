@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    display_name VARCHAR(100) NOT NULL,3
+    display_name VARCHAR(100) NOT NULL,
     role ENUM('user', 'admin') DEFAULT 'user',
     avatar VARCHAR(255) DEFAULT 'default-avatar.png',
     xp INT DEFAULT 0,
@@ -101,6 +101,23 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
     PRIMARY KEY (id),
     FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE SET NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------
+-- 7. RESULT QUESTIONS (Per-Question Attempt Breakdown)
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS result_questions (
+    id INT NOT NULL AUTO_INCREMENT,
+    result_id INT NOT NULL,
+    question_id VARCHAR(50) NOT NULL,
+    attempts INT NOT NULL DEFAULT 1,
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE,
+    score INT NOT NULL DEFAULT 0,
+    user_answer TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (result_id) REFERENCES quiz_attempts(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES quiz_questions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------
@@ -317,3 +334,13 @@ INSERT IGNORE INTO quiz_questions (id, type, category_id, category_name, difficu
 INSERT IGNORE INTO quiz_attempts (id, quiz_id, user_id, format_filter, score, max_score, total_answered, time_spent_seconds) VALUES
 (1, 1, 2, 'all', 19, 20, 18, 142),
 (3, 2, 3, 'all', 15, 20, 18, 210);
+
+-- ----------------------------------------------------------
+-- SEED DATA: RESULT QUESTIONS (Per-Question Attempt Breakdown)
+-- ----------------------------------------------------------
+INSERT IGNORE INTO result_questions (id, result_id, question_id, attempts, is_correct, score, user_answer) VALUES
+(1, 1, 'sc-2', 1, TRUE, 1, 'opt-2'),
+(2, 1, 'sc-3', 1, TRUE, 1, 'opt-2'),
+(3, 1, 'fb-1', 1, TRUE, 1, 'Win + L'),
+(4, 3, 'sc-1', 2, FALSE, 0, 'opt-2'),
+(5, 3, 'fb-3', 1, TRUE, 1, 'regedit');

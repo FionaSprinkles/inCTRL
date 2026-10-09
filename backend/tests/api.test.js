@@ -358,5 +358,65 @@ describe('backend API integration tests (app & routes)', () => {
                 .set('Authorization', `Bearer ${adminToken}`);
             assert.strictEqual(delRes.status, 200);
         });
+
+        it('GET /api/quiz/attempts/:id/details returns attempt with breakdown for owner and admin, rejects unauthorized', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 7, userId: 2, score: 1 }]);
+                if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1', isCorrect: true }]);
+                cb(null, []);
+            });
+
+            // Owner can fetch their attempt breakdown
+            const ownerRes = await request(app)
+                .get('/api/quiz/attempts/7/details')
+                .set('Authorization', `Bearer ${userToken}`);
+            assert.strictEqual(ownerRes.status, 200);
+            assert.strictEqual(ownerRes.body.attempt.id, 7);
+            assert.strictEqual(ownerRes.body.attempt.questions.length, 1);
+
+            // Anonymous request without token is rejected with 401
+            const anonRes = await request(app).get('/api/quiz/attempts/7/details');
+            assert.strictEqual(anonRes.status, 401);
+
+            // Non-owner request is rejected with 403
+            const otherToken = generateToken({ id: 99, username: 'other', role: 'user' });
+            const otherRes = await request(app)
+                .get('/api/quiz/attempts/7/details')
+                .set('Authorization', `Bearer ${otherToken}`);
+            assert.strictEqual(otherRes.status, 403);
+
+            // Admin can fetch any attempt breakdown
+            const adminRes = await request(app)
+                .get('/api/quiz/attempts/7/details')
+                .set('Authorization', `Bearer ${adminToken}`);
+            assert.strictEqual(adminRes.status, 200);
+        });
+
+        it('GET /api/quiz/attempts/:id/details requires token for guest attempt', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 8, userId: null, score: 1 }]);
+                if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1', isCorrect: true }]);
+                cb(null, []);
+            });
+
+            // Anonymous request without token is rejected with 403
+            const anonRes = await request(app).get('/api/quiz/attempts/8/details');
+            assert.strictEqual(anonRes.status, 403);
+
+            // Registered user session token matching attempt ID must not authorize guest attempt
+            const userWithSameIdToken = generateToken({ id: 8, username: 'user8', role: 'user' });
+            const userTokenRes = await request(app)
+                .get('/api/quiz/attempts/8/details')
+                .set('x-attempt-token', userWithSameIdToken);
+            assert.strictEqual(userTokenRes.status, 403);
+
+            // Guest with valid attempt token succeeds
+            const guestToken = generateToken({ attemptId: 8, role: 'guest_attempt' });
+            const guestRes = await request(app)
+                .get('/api/quiz/attempts/8/details')
+                .set('x-attempt-token', guestToken);
+            assert.strictEqual(guestRes.status, 200);
+            assert.strictEqual(guestRes.body.attempt.id, 8);
+        });
     });
 });

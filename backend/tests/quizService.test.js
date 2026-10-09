@@ -56,13 +56,12 @@ describe('backend/services/quizService', () => {
             assert.strictEqual(result[2].id, 'q3');
         });
 
-        it('applies type, difficulty, categoryId, and quizId filters', async () => {
+        it('applies type, difficulty, and categoryId filters', async () => {
             let capturedParams = [];
             mockDb.setQueryHandler((sql, params, cb) => {
                 assert.ok(sql.includes('AND type = ?'));
                 assert.ok(sql.includes('AND difficulty = ?'));
                 assert.ok(sql.includes('AND category_id = ?'));
-                assert.ok(sql.includes('AND quiz_id = ?'));
                 capturedParams = params;
                 cb(null, []);
             });
@@ -70,11 +69,10 @@ describe('backend/services/quizService', () => {
             await quizService.getQuestions({
                 type: 'matching',
                 difficulty: 'Hard',
-                categoryId: 4,
-                quizId: 2
+                categoryId: 4
             });
 
-            assert.deepStrictEqual(capturedParams, ['matching', 'Hard', 4, 2]);
+            assert.deepStrictEqual(capturedParams, ['matching', 'Hard', 4]);
         });
 
         it('ignores type filter when set to "all"', async () => {
@@ -84,6 +82,18 @@ describe('backend/services/quizService', () => {
             });
 
             await quizService.getQuestions({ type: 'all' });
+        });
+
+        it('applies quizId filter', async () => {
+            let capturedParams = [];
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('AND quiz_id = ?'));
+                capturedParams = params;
+                cb(null, []);
+            });
+
+            await quizService.getQuestions({ quizId: 3 });
+            assert.deepStrictEqual(capturedParams, [3]);
         });
 
         it('rejects on query failure', async () => {
@@ -349,6 +359,35 @@ describe('backend/services/quizService', () => {
             await assert.rejects(
                 async () => await quizService.saveAttempt({ answers: { q1: 'opt1' } }),
                 /Insert attempt failure/
+            );
+            assert.strictEqual(rolledBack, true);
+        });
+
+        it('rolls back and rejects when result_questions insert query fails', async () => {
+            let rolledBack = false;
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, [sampleQuestionRow]);
+            });
+            mockDb.setConnectionHandler((cb) => {
+                cb(null, {
+                    beginTransaction: (bCb) => bCb(null),
+                    query: (sql, params, qCb) => {
+                        if (sql.includes('INSERT INTO quiz_attempts')) {
+                            return qCb(null, { insertId: 55 });
+                        }
+                        if (sql.includes('INSERT INTO result_questions')) {
+                            return qCb(new Error('Result questions insert error'));
+                        }
+                        qCb(null, {});
+                    },
+                    rollback: (rCb) => { rolledBack = true; rCb(); },
+                    release: () => {}
+                });
+            });
+
+            await assert.rejects(
+                async () => await quizService.saveAttempt({ answers: { q1: 'opt1' } }),
+                /Result questions insert error/
             );
             assert.strictEqual(rolledBack, true);
         });
@@ -708,6 +747,66 @@ describe('backend/services/quizService', () => {
             await assert.rejects(
                 async () => await quizService.deleteQuiz(5),
                 /Delete quiz error/
+            );
+        });
+    });
+
+    describe('getAttemptDetails', () => {
+        it('resolves with attempt and questions breakdown when found', async () => {
+            const attemptRow = { id: 10, userId: 1, score: 5, maxScore: 5 };
+            const questionRows = [
+                { id: 1, questionId: 'sc-1', attempts: 1, isCorrect: 1, score: 1, prompt: 'Lock PC' }
+            ];
+
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) {
+                    assert.deepStrictEqual(params, [10]);
+                    return cb(null, [attemptRow]);
+                }
+                if (sql.includes('FROM result_questions rq')) {
+                    assert.deepStrictEqual(params, [10]);
+                    return cb(null, questionRows);
+                }
+                cb(null, []);
+            });
+
+            const result = await quizService.getAttemptDetails(10);
+            assert.strictEqual(result.id, 10);
+            assert.strictEqual(result.questions.length, 1);
+            assert.strictEqual(result.questions[0].questionId, 'sc-1');
+        });
+
+        it('resolves with null when attempt not found', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, []);
+            });
+
+            const result = await quizService.getAttemptDetails(999);
+            assert.strictEqual(result, null);
+        });
+
+        it('rejects on attempt query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(new Error('Attempt fetch error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getAttemptDetails(10),
+                /Attempt fetch error/
+            );
+        });
+
+        it('rejects on questions breakdown query error', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) {
+                    return cb(null, [{ id: 10 }]);
+                }
+                cb(new Error('Breakdown fetch error'));
+            });
+
+            await assert.rejects(
+                async () => await quizService.getAttemptDetails(10),
+                /Breakdown fetch error/
             );
         });
     });
