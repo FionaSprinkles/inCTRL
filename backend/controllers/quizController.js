@@ -476,7 +476,7 @@ exports.getAttemptDetails = async (req, res) => {
         console.error('Error fetching attempt details:', error);
         res.status(500).json({
             success: false,
-            error: error.message
+            error: 'Failed to fetch attempt details'
         });
     }
 };

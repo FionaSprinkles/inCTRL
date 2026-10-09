@@ -622,7 +622,7 @@ describe('backend/controllers/quizController', () => {
 
             await quizController.getAttemptDetails(req, res);
             assert.strictEqual(res.statusCode, 500);
-            assert.strictEqual(res.body.error, 'Detail error');
+            assert.strictEqual(res.body.error, 'Failed to fetch attempt details');
         });
     });
 });
