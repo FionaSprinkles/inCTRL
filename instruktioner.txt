@@ -33,3 +33,4 @@ Tester och testtäckning (Coverage):
     cd frontend
     npm test
 
+

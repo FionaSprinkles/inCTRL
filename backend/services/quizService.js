@@ -20,15 +20,131 @@ function formatQuestionRow(row) {
 
     return {
         id: row.id,
+        quizId: row.quiz_id !== undefined ? row.quiz_id : null,
         type: row.type,
         category: row.category_name,
         categoryId: row.category_id,
         difficulty: row.difficulty,
         prompt: row.prompt,
+        keyCombination: row.key_combination !== undefined ? row.key_combination : null,
         hint: row.hint,
         explanation: row.explanation,
         ...payload
     };
+}
+
+/**
+ * Retrieves all quizzes with category details and question count.
+ * @returns {Promise<Array<object>>} Resolves with list of quizzes.
+ */
+function getQuizzes() {
+    return new Promise((resolve, reject) => {
+        const sql = `
+            SELECT 
+                q.id,
+                q.title,
+                q.description,
+                q.category_id AS categoryId,
+                c.name AS categoryName,
+                q.difficulty,
+                q.created_at AS createdAt,
+                COUNT(qq.id) AS questionCount
+            FROM quizzes q
+            LEFT JOIN categories c ON q.category_id = c.id
+            LEFT JOIN quiz_questions qq ON qq.quiz_id = q.id
+            GROUP BY q.id
+            ORDER BY q.id ASC
+        `;
+        db.query(sql, [], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows);
+        });
+    });
+}
+
+/**
+ * Retrieves a single quiz by ID, including its associated questions.
+ * @param {number|string} id - Quiz ID.
+ * @returns {Promise<object|null>} Resolves with quiz and questions list, or null if not found.
+ */
+function getQuizById(id) {
+    return new Promise((resolve, reject) => {
+        const sql = `
+            SELECT 
+                q.id,
+                q.title,
+                q.description,
+                q.category_id AS categoryId,
+                c.name AS categoryName,
+                q.difficulty,
+                q.created_at AS createdAt
+            FROM quizzes q
+            LEFT JOIN categories c ON q.category_id = c.id
+            WHERE q.id = ?
+        `;
+        db.query(sql, [id], (err, rows) => {
+            if (err) return reject(err);
+            if (!rows || rows.length === 0) return resolve(null);
+
+            const quiz = rows[0];
+            getQuestions({ quizId: id })
+                .then(questions => {
+                    resolve({
+                        ...quiz,
+                        questions
+                    });
+                })
+                .catch(reject);
+        });
+    });
+}
+
+/**
+ * Creates a new quiz.
+ * @param {object} data - Quiz creation data.
+ * @returns {Promise<object>} Resolves with created quiz.
+ */
+function createQuiz(data) {
+    return new Promise((resolve, reject) => {
+        const { title, description = null, categoryId = null, difficulty = 'Beginner' } = data;
+        const sql = 'INSERT INTO quizzes (title, description, category_id, difficulty) VALUES (?, ?, ?, ?)';
+        db.query(sql, [title, description, categoryId || null, difficulty], (err, result) => {
+            if (err) return reject(err);
+            resolve({ id: result.insertId, title, description, categoryId, difficulty });
+        });
+    });
+}
+
+/**
+ * Updates an existing quiz by ID.
+ * @param {number|string} id - Quiz ID.
+ * @param {object} data - Updated quiz fields.
+ * @returns {Promise<object>} Resolves with query result.
+ */
+function updateQuiz(id, data) {
+    return new Promise((resolve, reject) => {
+        const { title, description = null, categoryId = null, difficulty = 'Beginner' } = data;
+        const sql = 'UPDATE quizzes SET title = ?, description = ?, category_id = ?, difficulty = ? WHERE id = ?';
+        db.query(sql, [title, description, categoryId || null, difficulty, id], (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        });
+    });
+}
+
+/**
+ * Deletes a quiz by ID.
+ * @param {number|string} id - Quiz ID.
+ * @returns {Promise<object>} Resolves with query result.
+ */
+function deleteQuiz(id) {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM quizzes WHERE id = ?';
+        db.query(sql, [id], (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        });
+    });
 }
 
 /**
@@ -57,6 +173,11 @@ function getQuestions(filters = {}) {
         if (filters.categoryId) {
             sql += ' AND category_id = ?';
             params.push(filters.categoryId);
+        }
+
+        if (filters.quizId) {
+            sql += ' AND quiz_id = ?';
+            params.push(filters.quizId);
         }
 
         sql += ' ORDER BY created_at ASC';
@@ -210,7 +331,7 @@ class ValidationError extends Error {
  * @param {number} [params.timeSpentSeconds=0] - Total seconds spent taking quiz.
  * @returns {Promise<object>} Resolves with attempt evaluation details and generated attempt ID.
  */
-function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', answers, timeSpentSeconds = 0 }) {
+function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', answers, timeSpentSeconds = 0, quizId = null }) {
     return new Promise((resolve, reject) => {
         const normalizedAnswers = normalizeAnswers(answers);
         const questionIds = Object.keys(normalizedAnswers);
@@ -269,8 +390,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
 
             const insertSql = `
                 INSERT INTO quiz_attempts 
-                (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds, quiz_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
             const params = [
                 userId || null,
@@ -279,7 +400,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
                 computedScore,
                 computedMaxScore,
                 totalAnswered,
-                timeSpentSeconds || 0
+                timeSpentSeconds || 0,
+                quizId || null
             ];
 
             db.getConnection((connErr, connection) => {
@@ -301,6 +423,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
 
                         const responseData = {
                             id: result.insertId,
+                            quizId: quizId || null,
                             score: computedScore,
                             maxScore: computedMaxScore,
                             totalAnswered,
@@ -401,6 +524,11 @@ function getUserAttempts(userId) {
 }
 
 module.exports = {
+    getQuizzes,
+    getQuizById,
+    createQuiz,
+    updateQuiz,
+    deleteQuiz,
     getQuestions,
     getQuestionById,
     createQuestion,
