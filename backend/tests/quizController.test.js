@@ -1,6 +1,8 @@
 const { describe, it, beforeEach } = require('node:test');
 const assert = require('node:assert');
+process.env.JWT_SECRET = 'test-secret-key-for-quiz-controllers';
 const { getMockDb } = require('./helpers/mockDb');
+const { generateToken } = require('../middleware/auth');
 
 const mockDb = getMockDb();
 const quizController = require('../controllers/quizController');
@@ -485,14 +487,14 @@ describe('backend/controllers/quizController', () => {
     });
 
     describe('getAttemptDetails', () => {
-        it('returns 200 with attempt details when found', async () => {
+        it('returns 200 when admin accesses any attempt details', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, score: 3 }]);
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, userId: 10, score: 3 }]);
                 if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1' }]);
                 cb(null, []);
             });
 
-            const req = { params: { id: 5 } };
+            const req = { params: { id: 5 }, user: { id: 1, role: 'admin' }, query: {}, headers: {} };
             const res = createMockResponse();
 
             await quizController.getAttemptDetails(req, res);
@@ -500,12 +502,109 @@ describe('backend/controllers/quizController', () => {
             assert.strictEqual(res.body.attempt.id, 5);
         });
 
+        it('returns 200 when owner accesses their own attempt details', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, userId: 10, score: 3 }]);
+                if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1' }]);
+                cb(null, []);
+            });
+
+            const req = { params: { id: 5 }, user: { id: 10, role: 'user' }, query: {}, headers: {} };
+            const res = createMockResponse();
+
+            await quizController.getAttemptDetails(req, res);
+            assert.strictEqual(res.statusCode, 200);
+            assert.strictEqual(res.body.attempt.id, 5);
+        });
+
+        it('returns 401 when unauthenticated caller requests registered user attempt', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, userId: 10, score: 3 }]);
+                cb(null, []);
+            });
+
+            const req = { params: { id: 5 }, user: null, query: {}, headers: {} };
+            const res = createMockResponse();
+
+            await quizController.getAttemptDetails(req, res);
+            assert.strictEqual(res.statusCode, 401);
+            assert.strictEqual(res.body.error, 'Authentication required to view this attempt');
+        });
+
+        it('returns 403 when non-owner caller requests registered user attempt', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, userId: 10, score: 3 }]);
+                cb(null, []);
+            });
+
+            const req = { params: { id: 5 }, user: { id: 99, role: 'user' }, query: {}, headers: {} };
+            const res = createMockResponse();
+
+            await quizController.getAttemptDetails(req, res);
+            assert.strictEqual(res.statusCode, 403);
+            assert.ok(res.body.error.includes('Forbidden'));
+        });
+
+        it('returns 200 when guest provides valid token via query or header or req.user', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, userId: null, score: 3 }]);
+                if (sql.includes('FROM result_questions rq')) return cb(null, [{ id: 1, questionId: 'q1' }]);
+                cb(null, []);
+            });
+
+            const guestToken = generateToken({ attemptId: 5, role: 'guest_attempt' });
+
+            // Via query token
+            const reqQuery = { params: { id: 5 }, user: null, query: { token: guestToken }, headers: {} };
+            const resQuery = createMockResponse();
+            await quizController.getAttemptDetails(reqQuery, resQuery);
+            assert.strictEqual(resQuery.statusCode, 200);
+
+            // Via x-attempt-token header
+            const reqHeader = { params: { id: 5 }, user: null, query: {}, headers: { 'x-attempt-token': guestToken } };
+            const resHeader = createMockResponse();
+            await quizController.getAttemptDetails(reqHeader, resHeader);
+            assert.strictEqual(resHeader.statusCode, 200);
+
+            // Via req.user (decoded by optionalAuth)
+            const reqUser = { params: { id: 5 }, user: { attemptId: 5, role: 'guest_attempt' }, query: {}, headers: {} };
+            const resUser = createMockResponse();
+            await quizController.getAttemptDetails(reqUser, resUser);
+            assert.strictEqual(resUser.statusCode, 200);
+        });
+
+        it('returns 403 when guest attempt requested without token or with invalid token', async () => {
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('FROM quiz_attempts a')) return cb(null, [{ id: 5, userId: null, score: 3 }]);
+                cb(null, []);
+            });
+
+            // No token provided
+            const reqNoToken = { params: { id: 5 }, user: null, query: {}, headers: {} };
+            const resNoToken = createMockResponse();
+            await quizController.getAttemptDetails(reqNoToken, resNoToken);
+            assert.strictEqual(resNoToken.statusCode, 403);
+
+            // Token for a different attempt
+            const wrongToken = generateToken({ attemptId: 999, role: 'guest_attempt' });
+            const reqWrongToken = { params: { id: 5 }, user: null, query: { token: wrongToken }, headers: {} };
+            const resWrongToken = createMockResponse();
+            await quizController.getAttemptDetails(reqWrongToken, resWrongToken);
+            assert.strictEqual(resWrongToken.statusCode, 403);
+
+            // Malformed token string
+            const reqMalformedToken = { params: { id: 5 }, user: null, query: { token: 'malformed.jwt.signature' }, headers: {} };
+            const resMalformedToken = createMockResponse();
+            await quizController.getAttemptDetails(reqMalformedToken, resMalformedToken);
+            assert.strictEqual(resMalformedToken.statusCode, 403);
+        });
+
         it('returns 404 when attempt not found', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
                 cb(null, []);
             });
 
-            const req = { params: { id: 999 } };
+            const req = { params: { id: 999 }, user: null, query: {}, headers: {} };
             const res = createMockResponse();
 
             await quizController.getAttemptDetails(req, res);
@@ -518,7 +617,7 @@ describe('backend/controllers/quizController', () => {
                 cb(new Error('Detail error'));
             });
 
-            const req = { params: { id: 5 } };
+            const req = { params: { id: 5 }, user: null, query: {}, headers: {} };
             const res = createMockResponse();
 
             await quizController.getAttemptDetails(req, res);

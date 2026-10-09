@@ -1,4 +1,6 @@
+const jwt = require('jsonwebtoken');
 const quizService = require('../services/quizService');
+const { generateToken, JWT_SECRET } = require('../middleware/auth');
 
 /**
  * Handles GET /api/quizzes.
@@ -316,10 +318,15 @@ exports.submitAttempt = async (req, res) => {
             timeSpentSeconds: safeTimeSpent
         });
 
+        const attemptToken = !authenticatedUserId
+            ? generateToken({ attemptId: attempt.id, role: 'guest_attempt' }, '7d')
+            : null;
+
         res.status(201).json({
             success: true,
             message: 'Quiz attempt evaluated and saved successfully',
-            attempt
+            attempt,
+            ...(attemptToken ? { attemptToken } : {})
         });
     } catch (error) {
         console.error('Error submitting attempt:', error);
@@ -383,6 +390,11 @@ exports.getUserAttempts = async (req, res) => {
 /**
  * Handles GET /api/quiz/attempts/:id/details.
  * Retrieves comprehensive attempt details including per-question breakdown.
+ * Access control policy:
+ * - Administrators can view any attempt details.
+ * - Registered users can only view attempts they own (req.user.id === attempt.userId).
+ * - Guest attempts require an unguessable access token matching the attempt ID.
+ * - Unauthenticated or unauthorized callers are rejected (401/403).
  * @param {import('express').Request} req - Express request object with id param.
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
@@ -397,6 +409,65 @@ exports.getAttemptDetails = async (req, res) => {
                 error: `Attempt with id '${id}' not found`
             });
         }
+
+        const caller = req.user;
+        const isAdmin = caller && caller.role === 'admin';
+
+        if (isAdmin) {
+            return res.json({
+                success: true,
+                attempt
+            });
+        }
+
+        // Ownership check for registered user attempt
+        if (attempt.userId !== null && attempt.userId !== undefined) {
+            if (!caller) {
+                return res.status(401).json({
+                    success: false,
+                    error: 'Authentication required to view this attempt'
+                });
+            }
+
+            if (Number(caller.id) !== Number(attempt.userId)) {
+                return res.status(403).json({
+                    success: false,
+                    error: 'Forbidden: You do not have permission to view this attempt'
+                });
+            }
+
+            return res.json({
+                success: true,
+                attempt
+            });
+        }
+
+        // Access policy for guest attempt (attempt.userId === null):
+        // Blocks sequential ID enumeration. Requires unguessable attempt token.
+        let guestAuthorized = false;
+        if (caller && caller.role === 'guest_attempt' && Number(caller.attemptId) === Number(id)) {
+            guestAuthorized = true;
+        }
+
+        const tokenCandidate = req.query.token || req.headers['x-attempt-token'];
+        if (!guestAuthorized && tokenCandidate) {
+            try {
+                const decoded = jwt.verify(tokenCandidate, JWT_SECRET);
+                if (decoded && (Number(decoded.attemptId) === Number(id) || Number(decoded.id) === Number(id))) {
+                    guestAuthorized = true;
+                }
+            } catch {
+                // Invalid or expired guest token
+            }
+        }
+
+        if (!guestAuthorized) {
+            return res.status(403).json({
+                success: false,
+                error: 'Forbidden: Access token required to view guest attempt details'
+            });
+        }
+
         res.json({
             success: true,
             attempt
