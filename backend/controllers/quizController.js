@@ -319,7 +319,7 @@ exports.submitAttempt = async (req, res) => {
         });
 
         const attemptToken = !authenticatedUserId
-            ? generateToken({ attemptId: attempt.id, role: 'guest_attempt' }, '7d')
+            ? generateToken({ attemptId: attempt.id, role: 'guest_attempt' })
             : null;
 
         res.status(201).json({
