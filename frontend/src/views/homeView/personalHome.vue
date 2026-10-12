@@ -49,7 +49,8 @@ import { RouterLink } from 'vue-router'
 
 
 .continue article {
-  width: 500px;
+  width: 100%;
+  max-width: 500px;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #275D69;
