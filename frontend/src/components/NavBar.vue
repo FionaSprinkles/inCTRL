@@ -20,19 +20,19 @@
         <div class="browse">
 
           <!-- On click will change const isBrowseOpen -->
-
           <button
             class="nav-link"
+            aria-controls="browse-menu"
+            :aria-expanded="isBrowseOpen"
             @click="isBrowseOpen = !isBrowseOpen"
           >
             Browse
             <span>⌄</span>
           </button>
 
-
           <!-- Browse drop-down -->
 
-          <div v-if="isBrowseOpen" class="browse-menu" >
+          <div v-if="isBrowseOpen" id="browse-menu" class="browse-menu" >
 
             <div class="category-section">
 
