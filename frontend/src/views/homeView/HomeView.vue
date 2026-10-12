@@ -2,8 +2,6 @@
 Then the router could do this navigation instead. **/
 
 <template>
-  <main>
-
     <!-- ===== LOGGED OUT ===== -->
 
     <!-- This is the homepage if a user is not logged in -->
@@ -14,7 +12,6 @@ Then the router could do this navigation instead. **/
     <!-- This is the homepage if a user is logged in -->
     <PersonalHome v-else />
 
-  </main>
 </template>
 
 <script setup>
