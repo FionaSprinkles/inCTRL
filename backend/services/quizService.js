@@ -148,11 +148,12 @@ function deleteQuiz(id) {
 }
 
 /**
- * Retrieves questions with optional filtering by type, difficulty, and category.
+ * Retrieves questions with optional filtering by type, difficulty, category, and quizId.
  * @param {object} [filters={}] - Optional filters object.
  * @param {string} [filters.type] - Format type filter (e.g. 'single_choice', 'matching', 'all').
  * @param {string} [filters.difficulty] - Question difficulty level.
  * @param {number|string} [filters.categoryId] - Unique category ID.
+ * @param {number|string} [filters.quizId] - Unique quiz ID.
  * @returns {Promise<Array<object>>} Resolves to list of formatted question objects.
  */
 function getQuestions(filters = {}) {
@@ -331,7 +332,7 @@ class ValidationError extends Error {
  * @param {number} [params.timeSpentSeconds=0] - Total seconds spent taking quiz.
  * @returns {Promise<object>} Resolves with attempt evaluation details and generated attempt ID.
  */
-function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', answers, timeSpentSeconds = 0, quizId = null }) {
+function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', quizId = null, answers, timeSpentSeconds = 0 }) {
     return new Promise((resolve, reject) => {
         const normalizedAnswers = normalizeAnswers(answers);
         const questionIds = Object.keys(normalizedAnswers);
@@ -421,8 +422,9 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
                             });
                         }
 
+                        const attemptId = result.insertId;
                         const responseData = {
-                            id: result.insertId,
+                            id: attemptId,
                             quizId: quizId || null,
                             score: computedScore,
                             maxScore: computedMaxScore,
@@ -430,17 +432,61 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
                             evaluations
                         };
 
-                        // Award XP to registered user based strictly on server-computed score (10 XP per point)
-                        if (userId && computedScore > 0) {
-                            const xpGain = computedScore * 10;
-                            connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
-                                if (xpErr) {
-                                    return connection.rollback(() => {
-                                        connection.release();
-                                        reject(xpErr);
-                                    });
-                                }
+                        const resultQuestionsSql = `
+                            INSERT INTO result_questions 
+                            (result_id, question_id, attempts, is_correct, score, user_answer) 
+                            VALUES ?
+                        `;
+                        const resultQuestionsValues = evaluations.map(ev => {
+                            const rawAnswer = normalizedAnswers[ev.questionId];
+                            const answerStr = typeof rawAnswer === 'object' && rawAnswer !== null
+                                ? JSON.stringify(rawAnswer)
+                                : String(rawAnswer ?? '');
+                            const attemptsCount = (typeof rawAnswer === 'object' && rawAnswer !== null && rawAnswer.attempts)
+                                ? Math.max(1, parseInt(rawAnswer.attempts, 10) || 1)
+                                : 1;
 
+                            return [
+                                attemptId,
+                                ev.questionId,
+                                attemptsCount,
+                                Boolean(ev.isCorrect),
+                                ev.score || 0,
+                                answerStr.slice(0, 500)
+                            ];
+                        });
+
+                        connection.query(resultQuestionsSql, [resultQuestionsValues], (rqErr) => {
+                            if (rqErr) {
+                                return connection.rollback(() => {
+                                    connection.release();
+                                    reject(rqErr);
+                                });
+                            }
+
+                            // Award XP to registered user based strictly on server-computed score (10 XP per point)
+                            if (userId && computedScore > 0) {
+                                const xpGain = computedScore * 10;
+                                connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
+                                    if (xpErr) {
+                                        return connection.rollback(() => {
+                                            connection.release();
+                                            reject(xpErr);
+                                        });
+                                    }
+
+                                    connection.commit((commitErr) => {
+                                        if (commitErr) {
+                                            return connection.rollback(() => {
+                                                connection.release();
+                                                reject(commitErr);
+                                            });
+                                        }
+                                        connection.release();
+                                        resolve(responseData);
+                                    });
+                                });
+                            } else {
                                 connection.commit((commitErr) => {
                                     if (commitErr) {
                                         return connection.rollback(() => {
@@ -451,19 +497,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', an
                                     connection.release();
                                     resolve(responseData);
                                 });
-                            });
-                        } else {
-                            connection.commit((commitErr) => {
-                                if (commitErr) {
-                                    return connection.rollback(() => {
-                                        connection.release();
-                                        reject(commitErr);
-                                    });
-                                }
-                                connection.release();
-                                resolve(responseData);
-                            });
-                        }
+                            }
+                        });
                     });
                 });
             });
@@ -523,6 +558,67 @@ function getUserAttempts(userId) {
     });
 }
 
+/**
+ * Retrieves full attempt details including per-question breakdown from result_questions.
+ * @param {number|string} attemptId - Attempt identifier.
+ * @returns {Promise<object|null>} Resolves with attempt object and questions array.
+ */
+function getAttemptDetails(attemptId) {
+    return new Promise((resolve, reject) => {
+        const attemptSql = `
+            SELECT 
+                a.id, 
+                a.quiz_id AS quizId, 
+                q.title AS quizTitle,
+                a.user_id AS userId, 
+                u.username, 
+                u.display_name AS displayName, 
+                a.guest_name AS guestName,
+                a.format_filter AS formatFilter, 
+                a.score, 
+                a.max_score AS maxScore, 
+                a.total_answered AS totalAnswered, 
+                a.time_spent_seconds AS timeSpentSeconds, 
+                a.completed_at AS completedAt
+            FROM quiz_attempts a
+            LEFT JOIN users u ON a.user_id = u.id
+            LEFT JOIN quizzes q ON a.quiz_id = q.id
+            WHERE a.id = ?
+        `;
+        db.query(attemptSql, [attemptId], (err, rows) => {
+            if (err) return reject(err);
+            if (!rows || rows.length === 0) return resolve(null);
+
+            const attempt = rows[0];
+            const detailsSql = `
+                SELECT 
+                    rq.id,
+                    rq.result_id AS resultId,
+                    rq.question_id AS questionId,
+                    rq.attempts,
+                    rq.is_correct AS isCorrect,
+                    rq.score,
+                    rq.user_answer AS userAnswer,
+                    qq.prompt,
+                    qq.key_combination AS keyCombination,
+                    qq.type,
+                    qq.difficulty
+                FROM result_questions rq
+                LEFT JOIN quiz_questions qq ON rq.question_id = qq.id
+                WHERE rq.result_id = ?
+                ORDER BY rq.id ASC
+            `;
+            db.query(detailsSql, [attemptId], (dErr, dRows) => {
+                if (dErr) return reject(dErr);
+                resolve({
+                    ...attempt,
+                    questions: dRows || []
+                });
+            });
+        });
+    });
+}
+
 module.exports = {
     getQuizzes,
     getQuizById,
@@ -535,6 +631,7 @@ module.exports = {
     updateQuestion,
     deleteQuestion,
     saveAttempt,
+    getAttemptDetails,
     getLeaderboard,
     getUserAttempts
 };
