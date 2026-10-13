@@ -1,22 +1,33 @@
-@import './base.css';
+/* ===== Global styling ===== */
 
-#app {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-weight: normal;
-  width: 100%;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #E8D8CA;
+    background-color: #3b261b;
 }
 
+main {
+    text-align: center;
+}
+
+
+/* ===== Links ===== */
+
 a {
-  text-decoration: none;
-  color: #2563eb;
-  transition: 0.2s;
+    text-decoration: none;
+    color: #85B4BE;
 }
 
 a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
+    color: #275D69;
 }
+
+
+/* ===== QUIZ ===== */
 
 kbd {
   font-family: 'Consolas', 'Courier New', monospace;
