@@ -7,8 +7,6 @@
     "start": "node app.js",
     "dev": "node --watch app.js",
     "seed": "node scripts/seedDatabase.js",
-    "generate:sql": "node scripts/generateInitSql.js",
-    "check:sql": "node scripts/generateInitSql.js --check",
     "test": "node --experimental-test-coverage --test \"tests/*.test.js\""
   },
   "keywords": [],
