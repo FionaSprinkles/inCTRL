@@ -206,7 +206,7 @@ onUnmounted(() => {
 }
 
 .browse-menu a {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 16px;
 }
 

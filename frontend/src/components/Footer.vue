@@ -64,7 +64,7 @@ import { RouterLink } from 'vue-router'
 
 .footer-col a {
   font-size: 16px;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   color: var(--color-text-muted);
   text-decoration: none;
   transition: color 0.2s ease;
