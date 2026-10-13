@@ -51,7 +51,7 @@ import './assets/global.css'
 
 <script setup>
 import { RouterLink } from 'vue-router'
-0550</script>
+</script>
 
 <style scoped>
 /* HERO SECTION*/
