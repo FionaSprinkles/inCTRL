@@ -122,7 +122,9 @@ CREATE TABLE IF NOT EXISTS result_questions (
 
 -- ----------------------------------------------------------
 -- SEED DATA: CATEGORIES
+-- Auto-generated from backend/data/categoriesSeed.json
 -- ----------------------------------------------------------
+-- BEGIN AUTO-GENERATED: CATEGORIES
 INSERT IGNORE INTO categories (id, name, slug, description, icon, display_order) VALUES
 (1, 'Essential Windows Navigation', 'essential-navigation', 'Core Windows shortcuts for navigating files, desktop, and locking the system.', 'navigation', 1),
 (2, 'System & Troubleshooting', 'system-troubleshooting', 'Task Manager, system interrupts, diagnostics and recovery commands.', 'activity', 2),
@@ -135,6 +137,7 @@ INSERT IGNORE INTO categories (id, name, slug, description, icon, display_order)
 (9, 'Text Editing & Formatting', 'text-editing', 'Cut, copy, paste, cursor navigation, text selection, and word styling.', 'edit', 9),
 (10, 'Taskbar & System Tray', 'taskbar', 'App launching, cycling pinned apps, jump lists, and system notification controls.', 'layout', 10),
 (11, 'Dialog Boxes & Settings', 'dialogs-settings', 'Navigating dialog buttons, option tabs, checkboxes, and Windows Settings.', 'settings', 11);
+-- END AUTO-GENERATED: CATEGORIES
 
 -- ----------------------------------------------------------
 -- SEED DATA: DEMO USERS
@@ -154,7 +157,9 @@ INSERT IGNORE INTO quizzes (id, title, description, category_id, difficulty) VAL
 
 -- ----------------------------------------------------------
 -- SEED DATA: WINDOWS SHORTCUTS
+-- Auto-generated from backend/data/windowsShortcutsSeed.json
 -- ----------------------------------------------------------
+-- BEGIN AUTO-GENERATED: WINDOWS SHORTCUTS
 INSERT IGNORE INTO windows_shortcuts (id, title, key_combo, description, category_id, difficulty) VALUES
 (1, 'Direct Task Manager', 'Ctrl + Shift + Esc', 'Launches Task Manager directly without going through the Ctrl+Alt+Del security screen.', 2, 'Intermediate'),
 (2, 'Show Desktop', 'Win + D', 'Minimizes all windows to show the desktop. Pressing it again restores all windows.', 1, 'Beginner'),
@@ -473,6 +478,7 @@ INSERT IGNORE INTO windows_shortcuts (id, title, key_combo, description, categor
 (318, 'Cycle through the windows of the group', 'Ctrl + click a grouped taskbar button', 'Cycle through the windows of the group.', 10, 'Beginner'),
 (319, 'Go back to the settings home page', 'Backspace', 'Go back to the settings home page.', 11, 'Beginner'),
 (320, 'Search settings', 'Type on any page with search box', 'Search settings.', 11, 'Beginner');
+-- END AUTO-GENERATED: WINDOWS SHORTCUTS
 
 -- ----------------------------------------------------------
 -- SEED DATA: QUIZ QUESTIONS (All 9 Question Formats)
