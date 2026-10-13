@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import CategoriesView from '../views/CategoriesView.vue'
 import QuizPrototypeView from '../views/QuizPrototypeView.vue'
 
 const router = createRouter({
@@ -6,6 +7,15 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'categories',
+      component: CategoriesView,
+    },
+    {
+      path: '/categories',
+      redirect: '/',
+    },
+    {
+      path: '/quiz',
       name: 'quiz',
       component: QuizPrototypeView,
     },
