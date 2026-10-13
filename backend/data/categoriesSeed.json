@@ -1,0 +1,13 @@
+[
+  {"id":1,"name":"Essential Windows Navigation","slug":"essential-navigation","description":"Core Windows shortcuts for navigating files, desktop, and locking the system.","icon":"navigation","display_order":1},
+  {"id":2,"name":"System & Troubleshooting","slug":"system-troubleshooting","description":"Task Manager, system interrupts, diagnostics and recovery commands.","icon":"activity","display_order":2},
+  {"id":3,"name":"File Explorer & Windows Tools","slug":"file-explorer","description":"Fast keyboard operations for managing directories, renaming, and properties.","icon":"folder","display_order":3},
+  {"id":4,"name":"Multitasking & Window Management","slug":"multitasking","description":"App switching, Task View, and window focus management.","icon":"layers","display_order":4},
+  {"id":5,"name":"Window Snapping & Layout","slug":"window-snapping","description":"Snap Assist, multi-monitor controls, and screen quadrant arrangements.","icon":"grid","display_order":5},
+  {"id":6,"name":"Virtual Desktops","slug":"virtual-desktops","description":"Creating, switching, and organizing virtual workspaces in Windows 10/11.","icon":"monitor","display_order":6},
+  {"id":7,"name":"Windows Power Keys","slug":"power-keys","description":"Clipboard history, emoji picker, Settings, and quick links.","icon":"zap","display_order":7},
+  {"id":8,"name":"Interactive Keyboard Practice","slug":"keyboard-practice","description":"Live typing exercises testing muscle memory on common commands.","icon":"terminal","display_order":8},
+  {"id":9,"name":"Text Editing & Formatting","slug":"text-editing","description":"Cut, copy, paste, cursor navigation, text selection, and word styling.","icon":"edit","display_order":9},
+  {"id":10,"name":"Taskbar & System Tray","slug":"taskbar","description":"App launching, cycling pinned apps, jump lists, and system notification controls.","icon":"layout","display_order":10},
+  {"id":11,"name":"Dialog Boxes & Settings","slug":"dialogs-settings","description":"Navigating dialog buttons, option tabs, checkboxes, and Windows Settings.","icon":"settings","display_order":11}
+]
