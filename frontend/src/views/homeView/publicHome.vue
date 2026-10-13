@@ -1,86 +1,63 @@
+import './assets/global.css'
+
 <template>
-
   <main class="public-home">
-
+    <NavBar />
     <section class="hero">
-
-      <p class="eyebrow">MASTER WINDOWS SHORTCUTS
-      </p>
+      <p class="eyebrow">MASTER WINDOWS SHORTCUTS</p>
 
       <h1>Take control of your keyboard.</h1>
 
-      <p>
-        Learn practical Windows shortcuts through focused,
-        challenging quizzes.
-      </p>
+      <p>Learn practical Windows shortcuts through focused, challenging quizzes.</p>
 
       <div class="buttons">
-        <RouterLink to="/login" class="primary-button">
-          Get started
-        </RouterLink>
+        <RouterLink to="/login" class="btn-hero"> Get started </RouterLink>
 
-        <RouterLink to="/courses" class="secondary-button">
-          Explore courses
-        </RouterLink>
+        <RouterLink to="/courses" class="btn-hero"> Explore courses </RouterLink>
       </div>
-
     </section>
 
     <section class="how-it-works">
-
-      <h3 class="eyebrow">HOW INCTRL WORKS</h3>
+      <p class="eyebrow">HOW INCTRL WORKS</p>
 
       <h2>Learn. Practice. Improve.</h2>
 
-      <p>
-        Turn Windows shortcuts into practical skills through
-        interactive quizzes and instant feedback.
+      <p class="section-lead">
+        Turn Windows shortcuts into practical skills through interactive quizzes and instant
+        feedback.
       </p>
 
       <div class="features">
-
         <article>
           <span>01</span>
           <h3>Choose what to learn</h3>
-          <p>
-            Pick a category and difficulty level.
-          </p>
+          <p>Pick a category and difficulty level.</p>
         </article>
 
         <article>
           <span>02</span>
           <h3>Test your knowledge</h3>
-          <p>
-            Challenge yourself with shortcut quizzes.
-          </p>
+          <p>Challenge yourself with shortcut quizzes.</p>
         </article>
 
         <article>
           <span>03</span>
           <h3>Learn from mistakes</h3>
-          <p>
-            Get instant feedback and see the correct answer.
-          </p>
+          <p>Get instant feedback and see the correct answer.</p>
         </article>
-
       </div>
-
     </section>
-
   </main>
-
+  <Footer />
 </template>
 
-
 <script setup>
-
 import { RouterLink } from 'vue-router'
-
+import NavBar from '@/components/NavBar.vue'
+import Footer from '@/components/Footer.vue'
 </script>
 
-
 <style scoped>
-
 /* HERO SECTION*/
 .hero {
   max-width: 800px;
@@ -90,9 +67,10 @@ import { RouterLink } from 'vue-router'
 }
 
 .eyebrow {
-  color: #85B4BE;
+  color: #85b4be;
   font-size: 0.9rem;
   font-weight: bold; /* makes the font bold */
+  margin-top: -10px;
 }
 
 h1 {
@@ -107,17 +85,23 @@ h1 {
   margin-top: 2rem; /* Makes space above the element */
 }
 
-.buttons a{
+.buttons a {
   padding: 0.9rem 1.5rem;
   text-decoration: none;
-  color: #E8D8CA;
-  border: 1px solid #85B4BE;
-
+  background-color: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid #85b4be;
+  transition: all 0.25s ease;
+  font-size: 16px;
+  padding: 0.7rem 1.2rem;
 }
-.buttons a:hover{
-  background-color: #694627;
-}
 
+.buttons a:hover {
+  background-color: var(--color-button-hover);
+  color: var(--color-button-text);
+  border-color: #fdfbf7;
+  box-shadow: 0 0 30px rgba(45, 212, 191, 0.3);
+}
 
 /* HOW IT WORKS SECTION*/
 .how-it-works {
@@ -137,12 +121,26 @@ h1 {
 
 .features article {
   padding: 2rem;
-  background-color: #275D69;
-  text-align: left; /* text inside boxes to the left */
+  background-color: rgba(4, 47, 46, 0.4);
+  border-color: #2dd4bf;
+  text-align: center;
+  transition: box-shadow 0.3s ease;
 }
 
 .features span {
-  color: #85B4BE;
+  color: var(--color-text-muted);
   font-weight: bold;
+}
+
+.features article:hover {
+  box-shadow: 0 0 50px 10px rgba(230, 213, 184, 0.7);
+}
+
+.features article p {
+  font-style: italic;
+}
+
+.section-lead {
+  font-style: italic;
 }
 </style>
