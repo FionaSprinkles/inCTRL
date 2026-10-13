@@ -2,7 +2,6 @@ import './assets/global.css'
 
 <template>
   <main class="public-home">
-    <NavBar />
     <section class="hero">
       <p class="eyebrow">MASTER WINDOWS SHORTCUTS</p>
 
@@ -48,7 +47,6 @@ import './assets/global.css'
       </div>
     </section>
   </main>
-  <Footer />
 </template>
 
 <script setup>
