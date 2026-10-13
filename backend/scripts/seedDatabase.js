@@ -4,67 +4,70 @@ const categories = require('../data/categoriesSeed.json');
 const shortcuts = require('../data/windowsShortcutsSeed.json');
 
 /**
- * Seeds or updates the database with categories and Windows shortcuts.
+ * Helper to run a SQL query as a Promise against the callback-based db pool.
  */
-async function seedDatabase() {
-    console.log('🌱 Starting database seed process...');
-
+function executeQuery(sql, params) {
     return new Promise((resolve, reject) => {
-        // 1. Seed categories
-        console.log(`📦 Seeding ${categories.length} categories...`);
-        let pendingCategories = categories.length;
-
-        categories.forEach(cat => {
-            const sqlCat = `
-                INSERT INTO categories (id, name, slug, description, icon, display_order)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                    name = VALUES(name),
-                    slug = VALUES(slug),
-                    description = VALUES(description),
-                    icon = VALUES(icon),
-                    display_order = VALUES(display_order)
-            `;
-            db.query(sqlCat, [cat.id, cat.name, cat.slug, cat.description, cat.icon, cat.display_order], (err) => {
-                if (err) {
-                    console.error(`❌ Failed to seed category ${cat.name}:`, err.message);
-                    return reject(err);
-                }
-                pendingCategories--;
-                if (pendingCategories === 0) {
-                    console.log('✅ Categories successfully seeded/updated.');
-
-                    // 2. Seed shortcuts
-                    console.log(`📦 Seeding ${shortcuts.length} shortcuts...`);
-                    let pendingShortcuts = shortcuts.length;
-
-                    shortcuts.forEach(s => {
-                        const sqlShortcut = `
-                            INSERT INTO windows_shortcuts (id, title, key_combo, description, category_id, difficulty)
-                            VALUES (?, ?, ?, ?, ?, ?)
-                            ON DUPLICATE KEY UPDATE
-                                title = VALUES(title),
-                                key_combo = VALUES(key_combo),
-                                description = VALUES(description),
-                                category_id = VALUES(category_id),
-                                difficulty = VALUES(difficulty)
-                        `;
-                        db.query(sqlShortcut, [s.id, s.title, s.key_combo, s.description, s.category_id, s.difficulty], (sErr) => {
-                            if (sErr) {
-                                console.error(`❌ Failed to seed shortcut ${s.title}:`, sErr.message);
-                                return reject(sErr);
-                            }
-                            pendingShortcuts--;
-                            if (pendingShortcuts === 0) {
-                                console.log('✅ All Windows shortcuts successfully seeded/updated.');
-                                resolve();
-                            }
-                        });
-                    });
-                }
-            });
+        db.query(sql, params, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
         });
     });
+}
+
+/**
+ * Seeds or updates the database with categories and Windows shortcuts.
+ * Queries are executed sequentially to avoid dangling operations if an error occurs.
+ */
+async function seedDatabase(categoriesToSeed = categories, shortcutsToSeed = shortcuts) {
+    console.log('🌱 Starting database seed process...');
+
+    const cats = categoriesToSeed || [];
+    const scs = shortcutsToSeed || [];
+
+    // 1. Seed categories
+    console.log(`📦 Seeding ${cats.length} categories...`);
+    for (const cat of cats) {
+        const sqlCat = `
+            INSERT INTO categories (id, name, slug, description, icon, display_order)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                name = VALUES(name),
+                slug = VALUES(slug),
+                description = VALUES(description),
+                icon = VALUES(icon),
+                display_order = VALUES(display_order)
+        `;
+        try {
+            await executeQuery(sqlCat, [cat.id, cat.name, cat.slug, cat.description, cat.icon, cat.display_order]);
+        } catch (err) {
+            console.error(`❌ Failed to seed category ${cat.name}:`, err.message);
+            throw err;
+        }
+    }
+    console.log('✅ Categories successfully seeded/updated.');
+
+    // 2. Seed shortcuts
+    console.log(`📦 Seeding ${scs.length} shortcuts...`);
+    for (const s of scs) {
+        const sqlShortcut = `
+            INSERT INTO windows_shortcuts (id, title, key_combo, description, category_id, difficulty)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                title = VALUES(title),
+                key_combo = VALUES(key_combo),
+                description = VALUES(description),
+                category_id = VALUES(category_id),
+                difficulty = VALUES(difficulty)
+        `;
+        try {
+            await executeQuery(sqlShortcut, [s.id, s.title, s.key_combo, s.description, s.category_id, s.difficulty]);
+        } catch (err) {
+            console.error(`❌ Failed to seed shortcut ${s.title}:`, err.message);
+            throw err;
+        }
+    }
+    console.log('✅ All Windows shortcuts successfully seeded/updated.');
 }
 
 if (require.main === module) {
