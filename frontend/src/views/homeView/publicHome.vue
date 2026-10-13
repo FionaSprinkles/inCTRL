@@ -51,9 +51,7 @@ import './assets/global.css'
 
 <script setup>
 import { RouterLink } from 'vue-router'
-import NavBar from '@/components/NavBar.vue'
-import Footer from '@/components/Footer.vue'
-</script>
+0550</script>
 
 <style scoped>
 /* HERO SECTION*/
@@ -84,14 +82,13 @@ h1 {
 }
 
 .buttons a {
-  padding: 0.9rem 1.5rem;
+  padding: 0.7rem 1.2rem;
   text-decoration: none;
   background-color: var(--color-button);
   color: var(--color-button-text);
   border: 1px solid #85b4be;
   transition: all 0.25s ease;
   font-size: 16px;
-  padding: 0.7rem 1.2rem;
 }
 
 .buttons a:hover {
