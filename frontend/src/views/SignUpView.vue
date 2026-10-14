@@ -12,6 +12,7 @@
 
       <!-- Sign up form -->
       <form @submit.prevent="handleSubmit">
+        <input type="text" placeholder="Username" required />
         <input type="text" placeholder="First name" required />
         <input type="text" placeholder="Last name" required />
         <input type="email" placeholder="Email" required />
@@ -57,7 +58,7 @@ function handleSubmit() {
 .glass-card {
   width: 100%; /* Takes the full available width on small screens */
   max-width: 380px; /* Never gets wider than 380px on large screens */
-  padding: 2rem;
+  padding: 1rem 2rem;
   text-align: center;
 
   background: rgba(255, 255, 255, 0.09); /* Makes background more transparent */
