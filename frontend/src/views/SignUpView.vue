@@ -12,11 +12,35 @@
 
       <!-- Sign up form -->
       <form @submit.prevent="handleSubmit">
-        <input type="text" placeholder="Username" required />
-        <input type="text" placeholder="First name" required />
-        <input type="text" placeholder="Last name" required />
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
+        <input
+          type="text"
+          placeholder="Username"
+          aria-label="Username"
+          autocomplete="username"
+          required
+        />
+        <input
+          type="text"
+          placeholder="First name"
+          aria-label="First name"
+          autocomplete="given-name"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Last name"
+          aria-label="Last name"
+          autocomplete="family-name"
+          required
+        />
+        <input type="email" placeholder="Email" aria-label="Email" autocomplete="email" required />
+        <input
+          type="password"
+          placeholder="Password"
+          aria-label="Password"
+          autocomplete="new-password"
+          required
+        />
         <button type="submit" class="btn-primary">Sign Up</button>
       </form>
 
