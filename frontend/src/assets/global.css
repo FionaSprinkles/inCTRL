@@ -17,11 +17,12 @@
 
     /* Fonts */
     --font-heading: 'Newsreader', serif; /* h1 */
-    --font-display: 'Cormorant Garamond', serif; /* h2, h3, links */
-    --font-body: 'Jost', sans-serif; /* p, buttons, small text */
+    --font-display: 'Cormorant Garamond', serif; /* h2, h3, links, buttons */
+    --font-body: 'Jost', sans-serif; /* p, small text */
 }
 
-/* Background */
+/* ===== Layout ===== */
+/* Base page styles */
 body {
     background: var(--bg-gradient);
     background-attachment: fixed;
@@ -33,6 +34,7 @@ body {
     line-height: 1.5;
 }
 
+/* ===== Typography ===== */
 /* Heading */
 h1 {
     font-family: var(--font-heading);
@@ -77,6 +79,7 @@ p {
     color: var(--color-text-main);
 }
 
+/* ===== Links & buttons ===== */
 /* Router links */
 a {
     font-family: var(--font-display);
@@ -99,7 +102,8 @@ button {
     border: none;
 }
 
-/* Quiz: keyboard keys */
+/* ===== Quiz ===== */
+/* Keyboard keys */
 kbd {
     font-family: 'Consolas', 'Courier New', monospace;
 }
