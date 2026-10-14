@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/homeView/HomeView.vue'
 import CategoriesView from '../views/CategoriesView.vue'
 import QuizPrototypeView from '../views/QuizPrototypeView.vue'
 
@@ -7,12 +8,13 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'categories',
-      component: CategoriesView,
+      name: 'home',
+      component: HomeView,
     },
     {
       path: '/categories',
-      redirect: '/',
+      name: 'categories',
+      component: CategoriesView,
     },
     {
       path: '/quiz',
