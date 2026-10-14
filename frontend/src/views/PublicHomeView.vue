@@ -89,6 +89,7 @@ h1 {
   border: 1px solid #85b4be;
   transition: all 0.25s ease;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .buttons a:hover {
