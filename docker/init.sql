@@ -127,11 +127,14 @@ INSERT IGNORE INTO categories (id, name, slug, description, icon, display_order)
 (1, 'Essential Windows Navigation', 'essential-navigation', 'Core Windows shortcuts for navigating files, desktop, and locking the system.', 'navigation', 1),
 (2, 'System & Troubleshooting', 'system-troubleshooting', 'Task Manager, system interrupts, diagnostics and recovery commands.', 'activity', 2),
 (3, 'File Explorer & Windows Tools', 'file-explorer', 'Fast keyboard operations for managing directories, renaming, and properties.', 'folder', 3),
-(4, 'Multitasking & Window Management', 'multitasking', 'App switching, Task View, and virtual desktop navigation.', 'layers', 4),
+(4, 'Multitasking & Window Management', 'multitasking', 'App switching, Task View, and window focus management.', 'layers', 4),
 (5, 'Window Snapping & Layout', 'window-snapping', 'Snap Assist, multi-monitor controls, and screen quadrant arrangements.', 'grid', 5),
 (6, 'Virtual Desktops', 'virtual-desktops', 'Creating, switching, and organizing virtual workspaces in Windows 10/11.', 'monitor', 6),
 (7, 'Windows Power Keys', 'power-keys', 'Clipboard history, emoji picker, Settings, and quick links.', 'zap', 7),
-(8, 'Interactive Keyboard Practice', 'keyboard-practice', 'Live typing exercises testing muscle memory on common commands.', 'terminal', 8);
+(8, 'Interactive Keyboard Practice', 'keyboard-practice', 'Live typing exercises testing muscle memory on common commands.', 'terminal', 8),
+(9, 'Text Editing & Formatting', 'text-editing', 'Cut, copy, paste, cursor navigation, text selection, and word styling.', 'edit', 9),
+(10, 'Taskbar & System Tray', 'taskbar', 'App launching, cycling pinned apps, jump lists, and system notification controls.', 'layout', 10),
+(11, 'Dialog Boxes & Settings', 'dialogs-settings', 'Navigating dialog buttons, option tabs, checkboxes, and Windows Settings.', 'settings', 11);
 
 -- ----------------------------------------------------------
 -- SEED DATA: DEMO USERS
@@ -151,24 +154,8 @@ INSERT IGNORE INTO quizzes (id, title, description, category_id, difficulty) VAL
 
 -- ----------------------------------------------------------
 -- SEED DATA: WINDOWS SHORTCUTS
+-- Seeded via backend/scripts/seedDatabase.js (npm run seed)
 -- ----------------------------------------------------------
-INSERT IGNORE INTO windows_shortcuts (id, title, key_combo, description, category_id, difficulty) VALUES
-(1, 'Direct Task Manager', 'Ctrl + Shift + Esc', 'Launches Task Manager directly without going through the Ctrl+Alt+Del security screen.', 2, 'Intermediate'),
-(2, 'Show Desktop', 'Win + D', 'Minimizes all windows to show the desktop. Pressing it again restores all windows.', 1, 'Beginner'),
-(3, 'File Explorer', 'Win + E', 'Directly opens a new File Explorer window.', 3, 'Beginner'),
-(4, 'Lock PC', 'Win + L', 'Instantly locks Windows session requiring PIN or password.', 1, 'Beginner'),
-(5, 'Clipboard History', 'Win + V', 'Opens popup menu of recently copied text and screenshots.', 7, 'Beginner'),
-(6, 'Emoji & Symbol Picker', 'Win + .', 'Opens the Windows emoji, kaomoji, and special character palette.', 7, 'Beginner'),
-(7, 'Snipping Tool Overlay', 'Win + Shift + S', 'Takes rectangular, freeform, window, or fullscreen screenshots.', 7, 'Intermediate'),
-(8, 'New Virtual Desktop', 'Win + Ctrl + D', 'Creates and immediately switches to a new virtual desktop.', 6, 'Intermediate'),
-(9, 'Switch Virtual Desktops', 'Win + Ctrl + Left/Right', 'Smoothly slides between active virtual desktops.', 6, 'Intermediate'),
-(10, 'Close Virtual Desktop', 'Win + Ctrl + F4', 'Closes the current active virtual desktop.', 6, 'Advanced'),
-(11, 'Quick App Switcher', 'Alt + Tab', 'Toggles between open application windows.', 4, 'Beginner'),
-(12, 'Task View', 'Win + Tab', 'Opens timeline view of all open windows and virtual desktops.', 4, 'Beginner'),
-(13, 'Snap Window Left/Right', 'Win + Left/Right Arrow', 'Snaps active window to left or right half of the monitor.', 5, 'Intermediate'),
-(14, 'Maximize / Snap Top', 'Win + Up Arrow', 'Maximizes active window or snaps to top half.', 5, 'Beginner'),
-(15, 'Run Dialog', 'Win + R', 'Opens Run command box for executing tools, scripts, or apps.', 2, 'Beginner'),
-(16, 'Power User Menu', 'Win + X', 'Opens context menu with Device Manager, Disk Mgmt, Terminal, etc.', 7, 'Intermediate');
 
 -- ----------------------------------------------------------
 -- SEED DATA: QUIZ QUESTIONS (All 9 Question Formats)

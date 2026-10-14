@@ -6,7 +6,7 @@ const db = require('../connectionMySQL');
  */
 function getCategories() {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT id, name, slug, description, icon, display_order AS displayOrder FROM categories ORDER BY display_order ASC, name ASC';
+        const sql = 'SELECT id, name, slug, description, icon, display_order AS displayOrder, (SELECT COUNT(*) FROM windows_shortcuts WHERE category_id = categories.id) AS shortcutCount FROM categories ORDER BY display_order ASC, name ASC';
         db.query(sql, (err, rows) => {
             if (err) return reject(err);
             resolve(rows);
