@@ -7,7 +7,8 @@ const shortcuts = require('../data/windowsShortcutsSeed.json');
 const quizzes = require('../data/quizzesSeed.json');
 
 /**
- * Loads all questions from modular JSON files inside backend/data/quizQuestions
+ * Loads all questions from modular JSON files inside backend/data/quizQuestions.
+ * Throws an error if any file cannot be read, contains malformed JSON, or is not an array.
  */
 function loadAllQuizQuestions() {
     const questionsDir = path.resolve(__dirname, '../data/quizQuestions');
@@ -16,10 +17,14 @@ function loadAllQuizQuestions() {
     let all = [];
     for (const f of files) {
         try {
-            const content = JSON.parse(fs.readFileSync(path.join(questionsDir, f), 'utf-8'));
-            if (Array.isArray(content)) all = all.concat(content);
+            const raw = fs.readFileSync(path.join(questionsDir, f), 'utf-8');
+            const content = JSON.parse(raw);
+            if (!Array.isArray(content)) {
+                throw new Error(`File content must be a JSON array, got ${typeof content}`);
+            }
+            all = all.concat(content);
         } catch (e) {
-            console.error(`Error reading ${f}:`, e.message);
+            throw new Error(`Failed to load quiz question file "${f}": ${e.message}`);
         }
     }
     return all;
