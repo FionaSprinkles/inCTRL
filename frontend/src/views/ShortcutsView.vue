@@ -1,0 +1,113 @@
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const shortcuts = ref([])
+const loading = ref(true)
+const error = ref('')
+
+async function fetchShortcuts() {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const res = await fetch('/api/shortcuts')
+    const data = await res.json().catch(() => null)
+    if (!res.ok || !data || data.success === false || !Array.isArray(data.shortcuts)) {
+      throw new Error('Kunde inte hämta kortkommandon.')
+    }
+    shortcuts.value = data.shortcuts
+  } catch {
+    shortcuts.value = []
+    error.value = 'Kunde inte hämta kortkommandon.'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(fetchShortcuts)
+</script>
+
+<template>
+  <main class="shortcuts-page">
+    <h1>Kortkommandon</h1>
+
+    <p v-if="error" role="alert">{{ error }}</p>
+    <p v-else-if="loading">Hämtar kortkommandon...</p>
+    <p v-else-if="shortcuts.length === 0">Inga kortkommandon att visa.</p>
+
+    <div v-else class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Kortkommando</th>
+            <th scope="col">Vad det gör</th>
+            <th scope="col">Kategori</th>
+            <th scope="col">Svårighetsgrad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="shortcut in shortcuts" :key="shortcut.id">
+            <td><kbd>{{ shortcut.keyCombo }}</kbd></td>
+            <td>{{ shortcut.description }}</td>
+            <td>{{ shortcut.categoryName || 'Okategoriserad' }}</td>
+            <td>{{ shortcut.difficulty }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</template>
+
+<style scoped>
+.shortcuts-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 450;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+kbd {
+  color: var(--color-text-heading);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  white-space: nowrap;
+}
+</style>
