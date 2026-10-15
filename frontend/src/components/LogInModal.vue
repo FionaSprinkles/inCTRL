@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
 // "open" is controlled by the parent (navbar) and decides if the modal is visible
-defineProps({ open: Boolean })
+const props = defineProps({ open: Boolean })
 const emit = defineEmits(['close', 'login'])
 
 // Form field values
