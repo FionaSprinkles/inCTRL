@@ -1,8 +1,29 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 const db = require('../connectionMySQL');
+const fs = require('fs');
+const path = require('path');
 const categories = require('../data/categoriesSeed.json');
 const shortcuts = require('../data/windowsShortcutsSeed.json');
 const quizzes = require('../data/quizzesSeed.json');
+
+/**
+ * Loads all questions from modular JSON files inside backend/data/quizQuestions
+ */
+function loadAllQuizQuestions() {
+    const questionsDir = path.resolve(__dirname, '../data/quizQuestions');
+    if (!fs.existsSync(questionsDir)) return [];
+    const files = fs.readdirSync(questionsDir).filter(f => f.endsWith('.json')).sort();
+    let all = [];
+    for (const f of files) {
+        try {
+            const content = JSON.parse(fs.readFileSync(path.join(questionsDir, f), 'utf-8'));
+            if (Array.isArray(content)) all = all.concat(content);
+        } catch (e) {
+            console.error(`Error reading ${f}:`, e.message);
+        }
+    }
+    return all;
+}
 
 /**
  * Helper to run a SQL query as a Promise against the callback-based db pool.
@@ -32,7 +53,7 @@ async function seedDatabase(
     const cats = isDefaultRun ? categories : (categoriesToSeed || []);
     const scs = isDefaultRun ? shortcuts : (shortcutsToSeed || []);
     const qzs = isDefaultRun ? quizzes : (quizzesToSeed || []);
-    const qqs = isDefaultRun ? [] : (questionsToSeed || []);
+    const qqs = isDefaultRun ? loadAllQuizQuestions() : (questionsToSeed || []);
 
     // 1. Seed categories
     console.log(`📦 Seeding ${cats.length} categories...`);
@@ -162,4 +183,4 @@ if (require.main === module) {
         });
 }
 
-module.exports = { seedDatabase };
+module.exports = { seedDatabase, loadAllQuizQuestions };

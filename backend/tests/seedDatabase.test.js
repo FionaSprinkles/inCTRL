@@ -3,7 +3,7 @@ const assert = require('node:assert');
 const { getMockDb } = require('./helpers/mockDb');
 
 const mockDb = getMockDb();
-const { seedDatabase } = require('../scripts/seedDatabase');
+const { seedDatabase, loadAllQuizQuestions } = require('../scripts/seedDatabase');
 
 describe('backend/scripts/seedDatabase', () => {
     beforeEach(() => {
@@ -186,5 +186,21 @@ describe('backend/scripts/seedDatabase', () => {
             async () => await seedDatabase([], [], [], questions),
             /Question insert failed/
         );
+    });
+
+    it('loadAllQuizQuestions loads array of questions or returns empty array if folder empty', () => {
+        const questions = loadAllQuizQuestions();
+        assert.ok(Array.isArray(questions));
+    });
+
+    it('runs default seed with all data when no arguments are passed', async () => {
+        const executedQueries = [];
+        mockDb.setQueryHandler((sql, params, cb) => {
+            executedQueries.push({ sql, params });
+            cb(null, { affectedRows: 1 });
+        });
+
+        await seedDatabase();
+        assert.ok(executedQueries.length > 300);
     });
 });
