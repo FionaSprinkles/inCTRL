@@ -112,8 +112,6 @@ const showLogin = ref(false)
 const isLoggedIn = false
 
 function handleLogin(credentials) {
-  console.log(credentials)
-  // anropa ditt API här
   showLogin.value = false
 }
 
