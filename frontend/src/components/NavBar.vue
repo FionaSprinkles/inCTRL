@@ -28,6 +28,10 @@
             <div class="category-section">
               <h2>Courses by category</h2>
 
+              <RouterLink to="/categories" class="nav-link" @click="isBrowseOpen = false">
+                All Courses
+              </RouterLink>
+
               <RouterLink to="/courses/windows" class="nav-link" @click="isBrowseOpen = false">
                 Windows
               </RouterLink>
