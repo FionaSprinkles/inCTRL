@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
+import { ref, watch, onUnmounted } from 'vue'
 
 // "open" is controlled by the parent (navbar) and decides if the modal is visible
 const props = defineProps({ open: Boolean })
@@ -10,16 +10,30 @@ const emit = defineEmits(['close', 'login'])
 const email = ref('')
 const password = ref('')
 
+// Close tab with Esc
+function onKeydown(e) {
+  if (e.key === 'Escape') {
+    emit('close')
+  }
+}
+
 // Clear the form whenever the modal is closed, so credentials never linger
 watch(
   () => props.open,
   (isOpen) => {
-    if (!isOpen) {
+    if (isOpen) {
+      document.addEventListener('keydown', onKeydown)
+    } else {
+      document.removeEventListener('keydown', onKeydown)
       email.value = ''
       password.value = ''
     }
   },
 )
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeydown)
+})
 
 // Runs when the form is submitted
 function submit() {
