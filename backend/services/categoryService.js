@@ -31,6 +31,25 @@ function getCategoryById(id) {
 }
 
 /**
+ * Retrieves a category by its slug.
+ */
+function getCategoryBySlug(slug) {
+    return new Promise((resolve, reject) => {
+        const sql = `
+            SELECT id, name, slug, description, icon, display_order AS displayOrder
+            FROM categories
+            WHERE slug = ?
+        `;
+
+        db.query(sql, [slug], (err, rows) => {
+            if (err) return reject(err);
+            if (!rows || rows.length === 0) return resolve(null);
+            resolve(rows[0]);
+        });
+    });
+}
+
+/**
  * Creates a new shortcut category in the database.
  * @param {object} params - Category parameters.
  * @param {string} params.name - Category display name.
