@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
 // "open" is controlled by the parent (navbar) and decides if the modal is visible
@@ -9,6 +9,17 @@ const emit = defineEmits(['close', 'login'])
 // Form field values
 const email = ref('')
 const password = ref('')
+
+// Clear the form whenever the modal is closed, so credentials never linger
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (!isOpen) {
+      email.value = ''
+      password.value = ''
+    }
+  },
+)
 
 // Runs when the form is submitted
 function submit() {
