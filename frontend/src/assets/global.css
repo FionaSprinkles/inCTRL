@@ -71,8 +71,8 @@ h3 {
 /* Main body text & paragraphs */
 p {
     font-family: var(--font-body);
-    font-size: 16px;
-    font-weight: 300;
+    font-size: 17px;
+    font-weight: 350;
     line-height: 1.5;
     letter-spacing: 1px;
     margin-bottom: 20px;
@@ -85,7 +85,7 @@ a {
     font-family: var(--font-display);
     color: var(--color-text-main);
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 450;
     letter-spacing: 1px;
     text-decoration: none;
 }
