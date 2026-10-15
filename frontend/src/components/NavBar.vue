@@ -103,7 +103,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import LoginModal from './LogInModal.vue'
+import LoginModal from './LoginModal.vue'
 
 const isBrowseOpen = ref(false)
 const showLogin = ref(false)
@@ -206,7 +206,7 @@ onUnmounted(() => {
   -webkit-backdrop-filter: blur(16px) saturate(160%); /* Safari support for backdrop filter */
   border: 1px solid rgba(255, 255, 255, 0.25); /* Subtle light border for glass edge */
   border-radius: 20px; /* Rounded corners */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* Soft shadow */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* Soft shado% */
 }
 
 /* Dropdown heading */
