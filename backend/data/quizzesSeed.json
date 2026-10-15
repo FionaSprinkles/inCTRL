@@ -1,0 +1,282 @@
+[
+  {
+    "id": 1,
+    "title": "Essential Navigation: Desktop & Windows",
+    "description": "Core Windows shortcuts for clearing screen, minimizing windows, and revealing desktop.",
+    "category_id": 1,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 2,
+    "title": "Essential Navigation: System Lock & Tools",
+    "description": "Essential shortcuts to lock your PC, summon Run, and open File Explorer.",
+    "category_id": 1,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 3,
+    "title": "Essential Navigation: Window Control & Menus",
+    "description": "Master system menus, window closing, and desktop toggles.",
+    "category_id": 1,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 4,
+    "title": "System & Troubleshooting: Diagnostics & Recovery",
+    "description": "Task Manager, system interrupts, emergency menus, and recovery tools.",
+    "category_id": 2,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 5,
+    "title": "File Explorer: Folder Navigation Basics",
+    "description": "Back, Forward, Up one level, and folder browsing fundamentals.",
+    "category_id": 3,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 6,
+    "title": "File Explorer: File Creation & Renaming",
+    "description": "Create new folders, rename items with F2, and delete files.",
+    "category_id": 3,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 7,
+    "title": "File Explorer: Selection & Search Operations",
+    "description": "Selecting all items, jumping with arrow keys, and focusing search.",
+    "category_id": 3,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 8,
+    "title": "File Explorer: View Modes & Layout Panes",
+    "description": "Toggling preview pane, details pane, and changing icon size views.",
+    "category_id": 3,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 9,
+    "title": "File Explorer: File Properties & Launching",
+    "description": "Inspect file properties with Alt+Enter, launch items, and duplicate tabs.",
+    "category_id": 3,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 10,
+    "title": "File Explorer: Address Bar & Command Shells",
+    "description": "Address bar focus, path jumping, and terminal command shortcuts.",
+    "category_id": 3,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 11,
+    "title": "Multitasking: App Switching & Task View",
+    "description": "Alt+Tab switcher, Task View timeline, and cycling active applications.",
+    "category_id": 4,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 12,
+    "title": "Window Snapping: Half-Screen & Maximize",
+    "description": "Snap Assist controls, maximizing, restoring down, and split-screen.",
+    "category_id": 5,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 13,
+    "title": "Window Snapping: Quadrants & Multi-Monitor",
+    "description": "Snap to 2x2 corner quadrants and shift windows across multiple monitors.",
+    "category_id": 5,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 14,
+    "title": "Virtual Desktops: Creation & Workspace Management",
+    "description": "Add new desktops, switch between workspaces, and close virtual desktops.",
+    "category_id": 6,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 15,
+    "title": "Windows Power Keys: Quick Access & Launchers",
+    "description": "Win key combinations to summon Search, Settings, and Action Center.",
+    "category_id": 7,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 16,
+    "title": "Windows Power Keys: Accessibility & Ease of Access",
+    "description": "Magnifier, Narrator, High Contrast, and accessibility shortcuts.",
+    "category_id": 7,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 17,
+    "title": "Windows Power Keys: Clipboard History & Symbols",
+    "description": "Win+V clipboard history, emoji picker, and special characters.",
+    "category_id": 7,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 18,
+    "title": "Windows Power Keys: Screen Snip & Capture",
+    "description": "Snipping Tool overlay, Print Screen variations, and window snips.",
+    "category_id": 7,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 19,
+    "title": "Windows Power Keys: Display & Multiple Monitors",
+    "description": "Project flyout, screen orientation, and external monitor controls.",
+    "category_id": 7,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 20,
+    "title": "Windows Power Keys: Game Bar & Media Controls",
+    "description": "Xbox Game Bar screen recording, mic muting, and gaming overlays.",
+    "category_id": 7,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 21,
+    "title": "Windows Power Keys: Quick Settings & Notifications",
+    "description": "Calendar flyout, network and volume quick toggles, and notification center.",
+    "category_id": 7,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 22,
+    "title": "Windows Power Keys: Power User Menu & Terminal",
+    "description": "Win+X quick link menu, PowerShell, Terminal, and Device Manager.",
+    "category_id": 7,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 23,
+    "title": "Windows Power Keys: Advanced System Utilities",
+    "description": "Feedback Hub, Dictation, System About specs, and quick lock tricks.",
+    "category_id": 7,
+    "difficulty": "Advanced"
+  },
+  {
+    "id": 24,
+    "title": "Hands-On Keyboard: Speed Run Drills 1",
+    "description": "Live keystroke practice testing muscle memory on core shortcuts.",
+    "category_id": 8,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 25,
+    "title": "Hands-On Keyboard: Speed Run Drills 2",
+    "description": "Fast-paced key builder and live press drills for intermediate combos.",
+    "category_id": 8,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 26,
+    "title": "Text Editing: Cursor Navigation Essentials",
+    "description": "Arrow keys, Home, End, Page Up, and Page Down navigation.",
+    "category_id": 9,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 27,
+    "title": "Text Editing: Word & Paragraph Jumping",
+    "description": "Ctrl+Arrow keys to leap across whole words and paragraphs.",
+    "category_id": 9,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 28,
+    "title": "Text Editing: Character & Line Selection",
+    "description": "Shift+Arrow keys and Shift+Home/End for precise text selection.",
+    "category_id": 9,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 29,
+    "title": "Text Editing: Document & Block Selection",
+    "description": "Select to document beginning/end and select whole paragraphs.",
+    "category_id": 9,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 30,
+    "title": "Text Editing: Rapid Deletions & Erasing",
+    "description": "Backspace vs Del, and Ctrl+Backspace to erase whole words.",
+    "category_id": 9,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 31,
+    "title": "Text Editing: Formatting, Clipboard & Undo",
+    "description": "Bold, Italic, Underline, Cut, Copy, Paste, Undo, and Redo.",
+    "category_id": 9,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 32,
+    "title": "Taskbar: Pinned App Number Shortcuts",
+    "description": "Win + Number (1-9) to launch and switch pinned taskbar applications.",
+    "category_id": 10,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 33,
+    "title": "Taskbar: System Tray & Toolbars",
+    "description": "Cycle taskbar items with Win+T, focus notification tray with Win+B.",
+    "category_id": 10,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 34,
+    "title": "Taskbar: Focus & Multi-Window Controls",
+    "description": "Open new instances with Shift+Click, Run as admin with Ctrl+Shift+Click.",
+    "category_id": 10,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 35,
+    "title": "Dialog Boxes: Button Navigation & Defaults",
+    "description": "Tab between fields, Enter to confirm, and Esc to cancel dialogs.",
+    "category_id": 11,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 36,
+    "title": "Dialog Boxes: Dropdowns, Checkboxes & Tabs",
+    "description": "Spacebar to toggle checkboxes, arrow keys for dropdowns, Ctrl+Tab for tabs.",
+    "category_id": 11,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 37,
+    "title": "Windows Settings: System Navigation & Controls",
+    "description": "Win+I for Settings, searching settings, and navigating system pages.",
+    "category_id": 11,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 38,
+    "title": "Windows Novice Certification",
+    "description": "Foundational challenge testing essential navigation, basic editing, and explorer.",
+    "category_id": null,
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 39,
+    "title": "Windows Power User Certification",
+    "description": "Intermediate challenge spanning snapping, power keys, taskbar, and virtual desktops.",
+    "category_id": null,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 40,
+    "title": "Keyboard Ninja Grandmaster",
+    "description": "Comprehensive elite test spanning advanced diagnostics, system shell, and power combos.",
+    "category_id": null,
+    "difficulty": "Advanced"
+  }
+]

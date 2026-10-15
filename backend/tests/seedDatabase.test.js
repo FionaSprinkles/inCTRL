@@ -114,4 +114,77 @@ describe('backend/scripts/seedDatabase', () => {
         // 1 category query + 1 shortcut query, 2nd shortcut query was not executed
         assert.strictEqual(callCount, 2);
     });
+
+    it('successfully seeds quizzes and questions sequentially', async () => {
+        const quizzes = [
+            { id: 1, title: 'Quiz 1', description: 'Desc Q1', category_id: 1, difficulty: 'Beginner' }
+        ];
+        const questions = [
+            {
+                id: 'sc-1',
+                quiz_id: 1,
+                type: 'single_choice',
+                category_id: 1,
+                category_name: 'Cat 1',
+                difficulty: 'Beginner',
+                prompt: 'Prompt 1',
+                key_combination: 'Win + D',
+                hint: 'Hint 1',
+                explanation: 'Explanation 1',
+                payload_json: '{"options":[]}'
+            }
+        ];
+
+        const executedQueries = [];
+        mockDb.setQueryHandler((sql, params, cb) => {
+            executedQueries.push({ sql, params });
+            cb(null, { affectedRows: 1 });
+        });
+
+        await seedDatabase([], [], quizzes, questions);
+
+        assert.strictEqual(executedQueries.length, 2);
+        assert.ok(executedQueries[0].sql.includes('INSERT INTO quizzes'));
+        assert.deepStrictEqual(executedQueries[0].params, [1, 'Quiz 1', 'Desc Q1', 1, 'Beginner']);
+        assert.ok(executedQueries[1].sql.includes('INSERT INTO quiz_questions'));
+        assert.strictEqual(executedQueries[1].params[0], 'sc-1');
+        assert.strictEqual(executedQueries[1].params[1], 1);
+        assert.strictEqual(executedQueries[1].params[2], 'single_choice');
+    });
+
+    it('stops execution and rejects immediately if a quiz query fails', async () => {
+        const quizzes = [
+            { id: 1, title: 'Quiz 1', description: 'Desc Q1', category_id: 1, difficulty: 'Beginner' }
+        ];
+
+        mockDb.setQueryHandler((sql, params, cb) => {
+            if (sql.includes('INSERT INTO quizzes')) {
+                return cb(new Error('Quiz insert failed'));
+            }
+            cb(null, { affectedRows: 1 });
+        });
+
+        await assert.rejects(
+            async () => await seedDatabase([], [], quizzes, []),
+            /Quiz insert failed/
+        );
+    });
+
+    it('stops execution and rejects immediately if a question query fails', async () => {
+        const questions = [
+            { id: 'q-1', quiz_id: 1, type: 'single_choice', category_name: 'Cat 1', prompt: 'P1' }
+        ];
+
+        mockDb.setQueryHandler((sql, params, cb) => {
+            if (sql.includes('INSERT INTO quiz_questions')) {
+                return cb(new Error('Question insert failed'));
+            }
+            cb(null, { affectedRows: 1 });
+        });
+
+        await assert.rejects(
+            async () => await seedDatabase([], [], [], questions),
+            /Question insert failed/
+        );
+    });
 });
