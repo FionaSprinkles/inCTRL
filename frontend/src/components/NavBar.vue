@@ -78,7 +78,7 @@
     <template v-if="!isLoggedIn">
       <div class="nav-right">
         <RouterLink to="/login" class="nav-link btn-auth"> Log in </RouterLink>
-        <RouterLink to="/login" class="nav-link btn-auth"> Sign up </RouterLink>
+        <RouterLink to="/signup" class="nav-link btn-auth"> Sign up </RouterLink>
       </div>
     </template>
 
@@ -228,6 +228,7 @@ onUnmounted(() => {
   font-size: 16px;
   transition: all 0.25s ease; /* Smooth hover transition */
   border-radius: 40px;
+  background-color: #1d7874;
 }
 
 /* Hover for log in / sign up buttons */
