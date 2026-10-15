@@ -79,4 +79,5 @@ module.exports = {
     getCategories,
     getCategoryById,
     createCategory
+    getCategoryBySlug
 };

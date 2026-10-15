@@ -25,20 +25,25 @@ exports.getCategories = async (req, res) => {
 };
 
 /**
- * Handles GET /api/categories/:id.
- * Retrieves category details by ID.
+ * Handles GET /api/categories/:identifier.
+ * Retrieves category details by ID or slug. 
  * @param {import('express').Request} req - Express request object with id param.
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
  */
 exports.getCategory = async (req, res) => {
     try {
-        const { id } = req.params;
-        const category = await categoryService.getCategoryById(id);
+
+        const {identifier} = req.params;
+        
+        const category = /^\d+$/.test(identifier) // This is a test to see if the string contains only numbers or letters. Will return true if string is numbers.
+        ?await categoryService.getCategoryById(identifier); //If ?true return id
+        : await categoryService.getCategoryBySlug(identifier);// else :false retturn slug
+
         if (!category) {
             return res.status(404).json({
                 success: false,
-                error: `Category with id ${id} not found`
+                error: `Category with ${identifier} not found`
             });
         }
         res.json({
