@@ -77,7 +77,7 @@
 
     <template v-if="!isLoggedIn">
       <div class="nav-right">
-        <RouterLink to="/login" class="nav-link btn-auth"> Log in </RouterLink>
+        <button class="nav-link btn-auth" @click="showLogin = true">Log in</button>
         <RouterLink to="/signup" class="nav-link btn-auth"> Sign up </RouterLink>
       </div>
     </template>
@@ -94,6 +94,8 @@
       </div>
     </template>
   </nav>
+
+  <LoginModal :open="showLogin" @close="showLogin = false" @login="handleLogin" />
 </template>
 
 <!-- ===== SCRIPTS ======-->
@@ -101,11 +103,19 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import LoginModal from './LoginModal.vue'
 
 const isBrowseOpen = ref(false)
+const showLogin = ref(false)
 
 // This is just for testing. Will change later.
 const isLoggedIn = false
+
+function handleLogin(credentials) {
+  console.log(credentials)
+  // anropa ditt API här
+  showLogin.value = false
+}
 
 // This function makes the browse drop down disappear when clicking elsewhere
 function closeBrowse(event) {
