@@ -78,6 +78,6 @@ function createCategory({ name, slug, description = '', icon = 'keyboard' }) {
 module.exports = {
     getCategories,
     getCategoryById,
-    createCategory
+    createCategory,
     getCategoryBySlug
 };

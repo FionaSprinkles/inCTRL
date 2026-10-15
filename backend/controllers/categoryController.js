@@ -37,7 +37,7 @@ exports.getCategory = async (req, res) => {
         const {identifier} = req.params;
         
         const category = /^\d+$/.test(identifier) // This is a test to see if the string contains only numbers or letters. Will return true if string is numbers.
-        ?await categoryService.getCategoryById(identifier); //If ?true return id
+        ? await categoryService.getCategoryById(identifier) //If ?true return id
         : await categoryService.getCategoryBySlug(identifier);// else :false retturn slug
 
         if (!category) {
