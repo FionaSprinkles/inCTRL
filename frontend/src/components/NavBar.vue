@@ -103,7 +103,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import LoginModal from './LoginModal.vue'
+import LoginModal from './LogInModal.vue'
 
 const isBrowseOpen = ref(false)
 const showLogin = ref(false)
