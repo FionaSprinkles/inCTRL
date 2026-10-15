@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import Pagination from '@/components/Pagination.vue'
 
 const shortcuts = ref([])
 const loading = ref(true)
@@ -35,26 +36,37 @@ onMounted(fetchShortcuts)
     <p v-else-if="loading">Hämtar kortkommandon...</p>
     <p v-else-if="shortcuts.length === 0">Inga kortkommandon att visa.</p>
 
-    <div v-else class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Kortkommando</th>
-            <th scope="col">Vad det gör</th>
-            <th scope="col">Kategori</th>
-            <th scope="col">Svårighetsgrad</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="shortcut in shortcuts" :key="shortcut.id">
-            <td><kbd>{{ shortcut.keyCombo }}</kbd></td>
-            <td>{{ shortcut.description }}</td>
-            <td>{{ shortcut.categoryName || 'Okategoriserad' }}</td>
-            <td>{{ shortcut.difficulty }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <Pagination
+      v-else
+      :items="shortcuts"
+      :page-size="10"
+      previous-label="Föregående"
+      next-label="Nästa"
+      label="Sidnumrering"
+    >
+      <template #default="{ items }">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Kortkommando</th>
+                <th scope="col">Vad det gör</th>
+                <th scope="col">Kategori</th>
+                <th scope="col">Svårighetsgrad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="shortcut in items" :key="shortcut.id">
+                <td><kbd>{{ shortcut.keyCombo }}</kbd></td>
+                <td>{{ shortcut.description }}</td>
+                <td>{{ shortcut.categoryName || 'Okategoriserad' }}</td>
+                <td>{{ shortcut.difficulty }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </template>
+    </Pagination>
   </main>
 </template>
 
