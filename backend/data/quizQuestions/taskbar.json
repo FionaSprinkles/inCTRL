@@ -322,7 +322,7 @@
     "key_combination": "Shift + right-click a taskbar button",
     "hint": "Consider how taskbar items are numbered or clicked.",
     "explanation": "Shift + right-click a taskbar button: Show the window menu for the app. (Show the window menu for the app).",
-    "payload": {"options":[{"id":"opt-1","label":"Shift + click a taskbar button","text":"Shift + click a taskbar button","isCorrect":false},{"id":"opt-2","label":"Shift + right-click a taskbar button","text":"Shift + right-click a taskbar button","isCorrect":true},{"id":"opt-3","label":"Alt + Shift + Arrow","text":"Alt + Shift + Arrow","isCorrect":false},{"id":"opt-4","label":"Shift + right-click an app icon on the taskbar","text":"Shift + right-click an app icon on the taskbar","isCorrect":false}]}
+    "payload": {"options":[{"id":"opt-1","label":"Shift + click a taskbar button","text":"Shift + click a taskbar button","isCorrect":false},{"id":"opt-2","label":"Shift + right-click a taskbar button","text":"Shift + right-click a taskbar button","isCorrect":true},{"id":"opt-3","label":"Alt + Shift + Arrow","text":"Alt + Shift + Arrow","isCorrect":false},{"id":"opt-4","label":"Ctrl + right-click a taskbar button","text":"Ctrl + right-click a taskbar button","isCorrect":false}]}
   },
   {
     "id": "q-bar-026",
@@ -335,6 +335,6 @@
     "key_combination": "Ctrl + click a grouped taskbar button",
     "hint": "Consider how taskbar items are numbered or clicked.",
     "explanation": "Ctrl + click a grouped taskbar button: Cycle through the windows of the group. (Cycle through the windows of the group).",
-    "payload": {"options":[{"id":"opt-1","label":"Ctrl + Shift + select an app icon on the taskbar","text":"Ctrl + Shift + select an app icon on the taskbar","isCorrect":false},{"id":"opt-2","label":"Ctrl + select a grouped app icon on the taskbar","text":"Ctrl + select a grouped app icon on the taskbar","isCorrect":false},{"id":"opt-3","label":"Shift + click a taskbar button","text":"Shift + click a taskbar button","isCorrect":false},{"id":"opt-4","label":"Ctrl + click a grouped taskbar button","text":"Ctrl + click a grouped taskbar button","isCorrect":true}]}
+    "payload": {"options":[{"id":"opt-1","label":"Ctrl + Shift + select an app icon on the taskbar","text":"Ctrl + Shift + select an app icon on the taskbar","isCorrect":false},{"id":"opt-2","label":"Alt + click a grouped taskbar button","text":"Alt + click a grouped taskbar button","isCorrect":false},{"id":"opt-3","label":"Shift + click a taskbar button","text":"Shift + click a taskbar button","isCorrect":false},{"id":"opt-4","label":"Ctrl + click a grouped taskbar button","text":"Ctrl + click a grouped taskbar button","isCorrect":true}]}
   }
 ]

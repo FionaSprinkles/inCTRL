@@ -10,7 +10,7 @@
     "key_combination": "Win + Left/Right Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Left/Right Arrow: Snaps active window to left or right half of the monitor. (Snap Window Left/Right).",
-    "payload": {"options":[{"id":"opt-1","label":"Win + Left/Right Arrow","text":"Win + Left/Right Arrow","isCorrect":true},{"id":"opt-2","label":"Win + Down Arrow","text":"Win + Down Arrow","isCorrect":false},{"id":"opt-3","label":"Win + Left Arrow","text":"Win + Left Arrow","isCorrect":false},{"id":"opt-4","label":"Win + Alt + Up Arrow","text":"Win + Alt + Up Arrow","isCorrect":false}]}
+    "payload": {"options":[{"id":"opt-1","label":"Win + Left/Right Arrow","text":"Win + Left/Right Arrow","isCorrect":true},{"id":"opt-2","label":"Win + Down Arrow","text":"Win + Down Arrow","isCorrect":false},{"id":"opt-3","label":"Win + Home","text":"Win + Home","isCorrect":false},{"id":"opt-4","label":"Win + Alt + Up Arrow","text":"Win + Alt + Up Arrow","isCorrect":false}]}
   },
   {
     "id": "q-snap-002",
@@ -218,6 +218,6 @@
     "key_combination": "Win + Shift + Left Arrow or Right Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Shift + Left Arrow or Right Arrow: Move an app or window in the desktop from one monitor to another. (Move an app or window in the desktop from one monito...).",
-    "payload": {"options":[{"id":"opt-1","label":"Win + Shift + Left Arrow or Right Arrow","text":"Win + Shift + Left Arrow or Right Arrow","isCorrect":true},{"id":"opt-2","label":"Win + Right Arrow","text":"Win + Right Arrow","isCorrect":false},{"id":"opt-3","label":"Win + Shift + Right Arrow","text":"Win + Shift + Right Arrow","isCorrect":false},{"id":"opt-4","label":"Win + Alt + Up Arrow","text":"Win + Alt + Up Arrow","isCorrect":false}]}
+    "payload": {"options":[{"id":"opt-1","label":"Win + Shift + Left Arrow or Right Arrow","text":"Win + Shift + Left Arrow or Right Arrow","isCorrect":true},{"id":"opt-2","label":"Win + Right Arrow","text":"Win + Right Arrow","isCorrect":false},{"id":"opt-3","label":"Win + Shift + Up Arrow","text":"Win + Shift + Up Arrow","isCorrect":false},{"id":"opt-4","label":"Win + Alt + Up Arrow","text":"Win + Alt + Up Arrow","isCorrect":false}]}
   }
 ]
