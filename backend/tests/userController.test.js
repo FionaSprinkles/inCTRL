@@ -174,6 +174,8 @@ describe('backend/controllers/userController', () => {
                     username: 'charlie',
                     email: 'charlie@example.com',
                     password: 'password123',
+                    firstName: 'Charlie',
+                    lastName: 'Testsson',
                     displayName: 'Charlie'
                 }
             };
