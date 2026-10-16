@@ -1,31 +1,31 @@
 [
   {
     "id": 1,
-    "title": "Essential Navigation: Desktop & Windows",
-    "description": "Core Windows shortcuts for clearing screen, minimizing windows, and revealing desktop.",
+    "title": "Essential Navigation Mastery",
+    "description": "Core Windows shortcuts for navigating files, desktop, and locking the system.",
     "category_id": 1,
     "difficulty": "Beginner"
   },
   {
     "id": 2,
+    "title": "System & Troubleshooting Diagnostics",
+    "description": "Task Manager, system interrupts, diagnostics and recovery commands.",
+    "category_id": 2,
+    "difficulty": "Intermediate"
+  },
+  {
+    "id": 3,
+    "title": "Power User & Virtual Desktops",
+    "description": "Clipboard history, virtual desktops, and power menu commands.",
+    "category_id": 6,
+    "difficulty": "Advanced"
+  },
+  {
+    "id": 4,
     "title": "Essential Navigation: System Lock & Tools",
     "description": "Essential shortcuts to lock your PC, summon Run, and open File Explorer.",
     "category_id": 1,
     "difficulty": "Beginner"
-  },
-  {
-    "id": 3,
-    "title": "Essential Navigation: Window Control & Menus",
-    "description": "Master system menus, window closing, and desktop toggles.",
-    "category_id": 1,
-    "difficulty": "Intermediate"
-  },
-  {
-    "id": 4,
-    "title": "System & Troubleshooting: Diagnostics & Recovery",
-    "description": "Task Manager, system interrupts, emergency menus, and recovery tools.",
-    "category_id": 2,
-    "difficulty": "Intermediate"
   },
   {
     "id": 5,
@@ -92,9 +92,9 @@
   },
   {
     "id": 14,
-    "title": "Virtual Desktops: Creation & Workspace Management",
-    "description": "Add new desktops, switch between workspaces, and close virtual desktops.",
-    "category_id": 6,
+    "title": "Essential Navigation: Window Control & Menus",
+    "description": "Master system menus, window closing, and desktop toggles.",
+    "category_id": 1,
     "difficulty": "Intermediate"
   },
   {

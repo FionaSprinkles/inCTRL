@@ -77,8 +77,8 @@
 
     <template v-if="!isLoggedIn">
       <div class="nav-right">
-        <RouterLink to="/login" class="nav-link btn-auth"> Log in </RouterLink>
-        <RouterLink to="/login" class="nav-link btn-auth"> Sign up </RouterLink>
+        <button class="nav-link btn-auth" @click="showLogin = true">Log in</button>
+        <RouterLink to="/signup" class="nav-link btn-auth"> Sign up </RouterLink>
       </div>
     </template>
 
@@ -94,6 +94,8 @@
       </div>
     </template>
   </nav>
+
+  <LoginModal :open="showLogin" @close="showLogin = false" @login="handleLogin" />
 </template>
 
 <!-- ===== SCRIPTS ======-->
@@ -101,11 +103,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import LoginModal from './LoginModal.vue'
 
 const isBrowseOpen = ref(false)
+const showLogin = ref(false)
 
 // This is just for testing. Will change later.
 const isLoggedIn = false
+
+function handleLogin(credentials) {
+  showLogin.value = false
+}
 
 // This function makes the browse drop down disappear when clicking elsewhere
 function closeBrowse(event) {
@@ -198,7 +206,7 @@ onUnmounted(() => {
   -webkit-backdrop-filter: blur(16px) saturate(160%); /* Safari support for backdrop filter */
   border: 1px solid rgba(255, 255, 255, 0.25); /* Subtle light border for glass edge */
   border-radius: 20px; /* Rounded corners */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* Soft shadow */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* Soft shado% */
 }
 
 /* Dropdown heading */
@@ -228,6 +236,7 @@ onUnmounted(() => {
   font-size: 16px;
   transition: all 0.25s ease; /* Smooth hover transition */
   border-radius: 40px;
+  background-color: #1d7874;
 }
 
 /* Hover for log in / sign up buttons */
