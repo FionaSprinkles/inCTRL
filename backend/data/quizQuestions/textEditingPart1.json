@@ -280,7 +280,7 @@
     "category_name": "Text Editing & Formatting",
     "difficulty": "Beginner",
     "prompt": "What keyboard shortcut is used to: Delete characters to the right of the cursor.?",
-    "key_combination": "Del or Del",
+    "key_combination": "Del or Delete",
     "hint": "Combines keys: Del",
     "explanation": "Pressing Del will delete characters to the right of the cursor..",
     "payload": {"placeholder":"e.g. Del","canonicalAnswer":"Del","acceptedAnswers":["Del","del"]}
@@ -348,7 +348,7 @@
     "key_combination": "Page Down or PgDn",
     "hint": "Combines keys: Page Down",
     "explanation": "Pressing Page Down will move the cursor forward by one page..",
-    "payload": {"placeholder":"e.g. Page Down","canonicalAnswer":"Page Down","acceptedAnswers":["Page Down","page down"]}
+    "payload": {"placeholder":"e.g. Page Down","canonicalAnswer":"Page Down","acceptedAnswers":["Page Down","page down","PgDn","pgdn","Pg Dn","pg dn"]}
   },
   {
     "id": "q-txt1-028",

@@ -205,7 +205,7 @@
     "key_combination": "Ctrl + V or Shift + Insert",
     "hint": "Combines keys: Ctrl  + ?",
     "explanation": "Pressing Ctrl + V will paste the selected text..",
-    "payload": {"placeholder":"e.g. Ctrl + V","canonicalAnswer":"Ctrl + V","acceptedAnswers":["Ctrl + V","Ctrl+V","ctrl + v","ctrl+v","Control + V","control+V"]}
+    "payload": {"placeholder":"e.g. Ctrl + V","canonicalAnswer":"Ctrl + V","acceptedAnswers":["Ctrl + V","Ctrl+V","ctrl + v","ctrl+v","Control + V","control+V","Shift + Insert","Shift+Insert","shift + insert","shift+insert","Shift + Ins","shift + ins"]}
   },
   {
     "id": "q-txt2-047",
