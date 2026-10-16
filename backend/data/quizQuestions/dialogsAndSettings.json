@@ -6,7 +6,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Stop or leave the current task, or dismiss a dialog box.?",
+    "prompt": "Which keyboard shortcut is used to: Stop or leave the current task, or dismiss a dialog box?",
     "key_combination": "Esc",
     "hint": "Think about keyboard navigation across dialog controls.",
     "explanation": "Esc: Stop or leave the current task, or dismiss a dialog box. (Stop or leave the current task, or dismiss a dialog box).",
@@ -19,11 +19,11 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Select a region of the screen to capture a screenshot to the clipboard. You can then open the Snipping Tool to share or markup the image. Note: You can turn off this default behavior. Select Start > Settings > Accessibility > Keyboard , and set Use the Print Screen button to open screen snipping to Off.?",
+    "prompt": "What keyboard shortcut is used to: Select a region of the screen to capture a screenshot to the clipboard. You can then open the Snipping Tool to share or markup the image. Note: You can turn off this default behavior. Select Start > Settings > Accessibility > Keyboard , and set Use the Print Screen button to open screen snipping to Off?",
     "key_combination": "PrtScn",
     "hint": "Combines keys: PrtScn",
     "explanation": "Pressing PrtScn will select a region of the screen to capture a screenshot to the clipboard. You can then open the Snipping Tool to share or markup the image.",
-    "payload": {"placeholder":"e.g. PrtScn","canonicalAnswer":"PrtScn","acceptedAnswers":["PrtScn","prtscn"]}
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"PrtScn","acceptedAnswers":["PrtScn","prtscn"]}
   },
   {
     "id": "q-dlg-003",
@@ -32,7 +32,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: If turned on in settings, enable or disable color filters.:",
+    "prompt": "Assemble the keyboard shortcut to: If turned on in settings, enable or disable color filters:",
     "key_combination": "Win + Ctrl + C",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Win + Ctrl + C.",
@@ -45,10 +45,10 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Opens the Settings app to the System > About page.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Opens the Settings app to the System > About page:",
     "key_combination": "Win + Pause",
     "hint": "Target: Win + Pause",
-    "explanation": "Win + Pause instantly triggers: Opens the Settings app to the System > About page..",
+    "explanation": "Win + Pause instantly triggers: Opens the Settings app to the System > About page.",
     "payload": {"displayCombo":"Win + Pause","targetKeys":["Win","Pause"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Enter","Esc","Pause","Space","Tab","Win"]}
   },
   {
@@ -61,8 +61,8 @@
     "prompt": "True or False:",
     "key_combination": "Win + U",
     "hint": "Check the dialog action assigned to Win + U.",
-    "explanation": "True! Win + U does open the settings app to the accessibility section..",
-    "payload": {"statement":"Pressing \"Win + U\" will open the settings app to the accessibility section..","correctAnswer":true}
+    "explanation": "True! Win + U does open the settings app to the accessibility section.",
+    "payload": {"statement":"Pressing \"Win + U\" will open the settings app to the accessibility section.","correctAnswer":true}
   },
   {
     "id": "q-dlg-006",
@@ -71,7 +71,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Display the items in the active list.?",
+    "prompt": "Which keyboard shortcut is used to: Display the items in the active list?",
     "key_combination": "F4",
     "hint": "Think about keyboard navigation across dialog controls.",
     "explanation": "F4: Display the items in the active list. (Display the items in the active list).",
@@ -84,11 +84,11 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Move forward through tabs.?",
+    "prompt": "What keyboard shortcut is used to: Move forward through tabs?",
     "key_combination": "Ctrl + Tab",
     "hint": "Combines keys: Ctrl  + ?",
-    "explanation": "Pressing Ctrl + Tab will move forward through tabs..",
-    "payload": {"placeholder":"e.g. Ctrl + Tab","canonicalAnswer":"Ctrl + Tab","acceptedAnswers":["Ctrl + Tab","Ctrl+Tab","ctrl + tab","ctrl+tab","Control + Tab","control+Tab"]}
+    "explanation": "Pressing Ctrl + Tab will move forward through tabs.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Ctrl + Tab","acceptedAnswers":["Ctrl + Tab","Ctrl+Tab","ctrl + tab","ctrl+tab","Control + Tab","control+Tab"]}
   },
   {
     "id": "q-dlg-008",
@@ -97,7 +97,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Move back through tabs.:",
+    "prompt": "Assemble the keyboard shortcut to: Move back through tabs:",
     "key_combination": "Ctrl + Shift + Tab",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Ctrl + Shift + Tab.",
@@ -110,7 +110,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Move to that tab number.?",
+    "prompt": "Which keyboard shortcut is used to: Move to that tab number?",
     "key_combination": "Ctrl + 1, 2, 3,...",
     "hint": "Think about keyboard navigation across dialog controls.",
     "explanation": "Ctrl + 1, 2, 3,...: Move to that tab number. (Move to that tab number).",
@@ -123,11 +123,11 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Move forward through options.?",
+    "prompt": "What keyboard shortcut is used to: Move forward through options?",
     "key_combination": "Tab",
     "hint": "Combines keys: Tab",
-    "explanation": "Pressing Tab will move forward through options..",
-    "payload": {"placeholder":"e.g. Tab","canonicalAnswer":"Tab","acceptedAnswers":["Tab","tab"]}
+    "explanation": "Pressing Tab will move forward through options.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Tab","acceptedAnswers":["Tab","tab"]}
   },
   {
     "id": "q-dlg-011",
@@ -136,7 +136,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Move back through options.:",
+    "prompt": "Assemble the keyboard shortcut to: Move back through options:",
     "key_combination": "Shift + Tab",
     "hint": "Requires 2 keys combined together.",
     "explanation": "The correct combination is: Shift + Tab.",
@@ -165,8 +165,8 @@
     "prompt": "True or False:",
     "key_combination": "Space",
     "hint": "Check the dialog action assigned to Space.",
-    "explanation": "True! Space does select or clear the check box if the active option is a check box..",
-    "payload": {"statement":"Pressing \"Space\" will select or clear the check box if the active option is a check box..","correctAnswer":true}
+    "explanation": "True! Space does select or clear the check box if the active option is a check box.",
+    "payload": {"statement":"Pressing \"Space\" will select or clear the check box if the active option is a check box.","correctAnswer":true}
   },
   {
     "id": "q-dlg-014",
@@ -175,7 +175,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Open a folder one level up if a folder is selected in the Save As or Open dialog box.?",
+    "prompt": "Which keyboard shortcut is used to: Open a folder one level up if a folder is selected in the Save As or Open dialog box?",
     "key_combination": "Backspace",
     "hint": "Think about keyboard navigation across dialog controls.",
     "explanation": "Backspace: Open a folder one level up if a folder is selected in the Save As or Open dialog box. (Open a folder one level up if a folder is selected i...).",
@@ -188,11 +188,11 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Select a button if the active option is a group of option buttons.?",
+    "prompt": "What keyboard shortcut is used to: Select a button if the active option is a group of option buttons?",
     "key_combination": "Arrow keys",
     "hint": "Combines keys: Arrow keys",
-    "explanation": "Pressing Arrow keys will select a button if the active option is a group of option buttons..",
-    "payload": {"placeholder":"e.g. Arrow keys","canonicalAnswer":"Arrow keys","acceptedAnswers":["Arrow keys","arrow keys"]}
+    "explanation": "Pressing Arrow keys will select a button if the active option is a group of option buttons.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Arrow keys","acceptedAnswers":["Arrow keys","arrow keys"]}
   },
   {
     "id": "q-dlg-016",
@@ -201,7 +201,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Move focus through the currently selected region. Scroll the page.:",
+    "prompt": "Assemble the keyboard shortcut to: Move focus through the currently selected region. Scroll the page:",
     "key_combination": "Arrow keys",
     "hint": "Requires 1 keys combined together.",
     "explanation": "The correct combination is: Arrow keys.",
@@ -214,7 +214,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Navigate backwards.?",
+    "prompt": "Which keyboard shortcut is used to: Navigate backwards?",
     "key_combination": "Backspace",
     "hint": "Think about keyboard navigation across dialog controls.",
     "explanation": "Backspace: Navigate backwards. (Navigate backwards).",
@@ -227,11 +227,11 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Select the current item in focus.?",
+    "prompt": "What keyboard shortcut is used to: Select the current item in focus?",
     "key_combination": "Enter or Space",
     "hint": "Combines keys: Enter or Space",
-    "explanation": "Pressing Enter or Space will select the current item in focus..",
-    "payload": {"placeholder":"e.g. Enter","canonicalAnswer":"Enter","acceptedAnswers":["Enter","enter","Space","space"]}
+    "explanation": "Pressing Enter or Space will select the current item in focus.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Enter","acceptedAnswers":["Enter","enter","Space","space"]}
   },
   {
     "id": "q-dlg-019",
@@ -240,7 +240,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Cycle backward through regions.:",
+    "prompt": "Assemble the keyboard shortcut to: Cycle backward through regions:",
     "key_combination": "Shift + Tab",
     "hint": "Requires 2 keys combined together.",
     "explanation": "The correct combination is: Shift + Tab.",
@@ -253,10 +253,10 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Cycle forward through regions.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Cycle forward through regions:",
     "key_combination": "Tab",
     "hint": "Target: Tab",
-    "explanation": "Tab instantly triggers: Cycle forward through regions..",
+    "explanation": "Tab instantly triggers: Cycle forward through regions.",
     "payload": {"displayCombo":"Tab","targetKeys":["Tab"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Enter","Esc","Space","Tab"]}
   },
   {
@@ -269,8 +269,8 @@
     "prompt": "True or False:",
     "key_combination": "Win + I",
     "hint": "Check the dialog action assigned to Win + I.",
-    "explanation": "True! Win + I does open the settings app..",
-    "payload": {"statement":"Pressing \"Win + I\" will open the settings app..","correctAnswer":true}
+    "explanation": "True! Win + I does open the settings app.",
+    "payload": {"statement":"Pressing \"Win + I\" will open the settings app.","correctAnswer":true}
   },
   {
     "id": "q-dlg-022",
@@ -279,7 +279,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Display the System Properties dialog box.?",
+    "prompt": "Which keyboard shortcut is used to: Display the System Properties dialog box?",
     "key_combination": "Win + Pause",
     "hint": "Think about keyboard navigation across dialog controls.",
     "explanation": "Win + Pause: Display the System Properties dialog box. (Display the System Properties dialog box).",
@@ -292,7 +292,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Move to nth tab.?",
+    "prompt": "Which keyboard shortcut is used to: Move to nth tab?",
     "key_combination": "Ctrl + number (number 1–9)",
     "hint": "Think about keyboard navigation across dialog controls.",
     "explanation": "Ctrl + number (number 1–9): Move to nth tab. (Move to nth tab).",
@@ -305,7 +305,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Go back to the settings home page.:",
+    "prompt": "Assemble the keyboard shortcut to: Go back to the settings home page:",
     "key_combination": "Backspace",
     "hint": "Requires 1 keys combined together.",
     "explanation": "The correct combination is: Backspace.",

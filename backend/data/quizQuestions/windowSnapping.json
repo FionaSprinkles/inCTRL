@@ -6,7 +6,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Snaps active window to left or right half of the monitor.?",
+    "prompt": "Which keyboard shortcut is used to: Snaps active window to left or right half of the monitor?",
     "key_combination": "Win + Left/Right Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Left/Right Arrow: Snaps active window to left or right half of the monitor. (Snap Window Left/Right).",
@@ -19,11 +19,11 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Maximizes active window or snaps to top half.?",
+    "prompt": "What keyboard shortcut is used to: Maximizes active window or snaps to top half?",
     "key_combination": "Win + Up Arrow",
     "hint": "Combines keys: Win  + ?",
-    "explanation": "Pressing Win + Up Arrow will maximizes active window or snaps to top half..",
-    "payload": {"placeholder":"e.g. Win + Up Arrow","canonicalAnswer":"Win + Up Arrow","acceptedAnswers":["Win + Up Arrow","Win+Up Arrow","win + up arrow","win+up arrow","Windows + Up Arrow","windows+Up Arrow"]}
+    "explanation": "Pressing Win + Up Arrow will maximize active window or snaps to top half.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Win + Up Arrow","acceptedAnswers":["Win + Up Arrow","Win+Up Arrow","win + up arrow","win+up arrow","Windows + Up Arrow","windows+Up Arrow"]}
   },
   {
     "id": "q-snap-003",
@@ -32,7 +32,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Snap the active window to the bottom half of the screen.:",
+    "prompt": "Assemble the keyboard shortcut to: Snap the active window to the bottom half of the screen:",
     "key_combination": "Win + Alt + Down Arrow",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Win + Alt + Down Arrow.",
@@ -45,7 +45,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Snap the active window to the top half of the screen.?",
+    "prompt": "Which keyboard shortcut is used to: Snap the active window to the top half of the screen?",
     "key_combination": "Win + Alt + Up Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Alt + Up Arrow: Snap the active window to the top half of the screen. (Snap the active window to the top half of the screen).",
@@ -61,8 +61,8 @@
     "prompt": "True or False:",
     "key_combination": "Win + Down Arrow",
     "hint": "Check the action assigned to Win + Down Arrow.",
-    "explanation": "True! Win + Down Arrow does minimize the active window..",
-    "payload": {"statement":"Pressing \"Win + Down Arrow\" will minimize the active window..","correctAnswer":true}
+    "explanation": "True! Win + Down Arrow does minimize the active window.",
+    "payload": {"statement":"Pressing \"Win + Down Arrow\" will minimize the active window.","correctAnswer":true}
   },
   {
     "id": "q-snap-006",
@@ -71,7 +71,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Snap the window to the left side of the screen.?",
+    "prompt": "Which keyboard shortcut is used to: Snap the window to the left side of the screen?",
     "key_combination": "Win + Left Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Left Arrow: Snap the window to the left side of the screen. (Snap the window to the left side of the screen).",
@@ -84,11 +84,11 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Snap the window to the right side of the screen.?",
+    "prompt": "What keyboard shortcut is used to: Snap the window to the right side of the screen?",
     "key_combination": "Win + Right Arrow",
     "hint": "Combines keys: Win  + ?",
-    "explanation": "Pressing Win + Right Arrow will snap the window to the right side of the screen..",
-    "payload": {"placeholder":"e.g. Win + Right Arrow","canonicalAnswer":"Win + Right Arrow","acceptedAnswers":["Win + Right Arrow","Win+Right Arrow","win + right arrow","win+right arrow","Windows + Right Arrow","windows+Right Arrow"]}
+    "explanation": "Pressing Win + Right Arrow will snap the window to the right side of the screen.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Win + Right Arrow","acceptedAnswers":["Win + Right Arrow","Win+Right Arrow","win + right arrow","win+right arrow","Windows + Right Arrow","windows+Right Arrow"]}
   },
   {
     "id": "q-snap-008",
@@ -97,7 +97,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: If a window is snapped or maximized, restore it.:",
+    "prompt": "Assemble the keyboard shortcut to: If a window is snapped or maximized, restore it:",
     "key_combination": "Win + Shift + Down Arrow",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Win + Shift + Down Arrow.",
@@ -110,7 +110,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Move the active window to the monitor on the left.?",
+    "prompt": "Which keyboard shortcut is used to: Move the active window to the monitor on the left?",
     "key_combination": "Win + Shift + Left Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Shift + Left Arrow: Move the active window to the monitor on the left. (Move the active window to the monitor on the left).",
@@ -123,11 +123,11 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Move the active window to the monitor on the right.?",
+    "prompt": "What keyboard shortcut is used to: Move the active window to the monitor on the right?",
     "key_combination": "Win + Shift + Right Arrow",
     "hint": "Combines keys: Win  + ? + ?",
-    "explanation": "Pressing Win + Shift + Right Arrow will move the active window to the monitor on the right..",
-    "payload": {"placeholder":"e.g. Win + Shift + Right Arrow","canonicalAnswer":"Win + Shift + Right Arrow","acceptedAnswers":["Win + Shift + Right Arrow","Win+Shift+Right Arrow","win + shift + right arrow","win+shift+right arrow","Windows + Shift + Right Arrow","windows+Shift+Right Arrow"]}
+    "explanation": "Pressing Win + Shift + Right Arrow will move the active window to the monitor on the right.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Win + Shift + Right Arrow","acceptedAnswers":["Win + Shift + Right Arrow","Win+Shift+Right Arrow","win + shift + right arrow","win+shift+right arrow","Windows + Shift + Right Arrow","windows+Shift+Right Arrow"]}
   },
   {
     "id": "q-snap-011",
@@ -136,7 +136,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Stretch the desktop window to the top and bottom of the screen.:",
+    "prompt": "Assemble the keyboard shortcut to: Stretch the desktop window to the top and bottom of the screen:",
     "key_combination": "Win + Shift + Up Arrow",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Win + Shift + Up Arrow.",
@@ -149,10 +149,10 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Open the snap layouts.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Open the snap layouts:",
     "key_combination": "Win + Z",
     "hint": "Target: Win + Z",
-    "explanation": "Win + Z instantly triggers: Open the snap layouts..",
+    "explanation": "Win + Z instantly triggers: Open the snap layouts.",
     "payload": {"displayCombo":"Win + Z","targetKeys":["Win","Z"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Down Arrow","Shift","Up Arrow","Win","Z"]}
   },
   {
@@ -165,8 +165,8 @@
     "prompt": "True or False:",
     "key_combination": "Win + Down Arrow",
     "hint": "Check the action assigned to Win + Down Arrow.",
-    "explanation": "True! Win + Down Arrow does remove current app from screen or minimize the desktop window..",
-    "payload": {"statement":"Pressing \"Win + Down Arrow\" will remove current app from screen or minimize the desktop window..","correctAnswer":true}
+    "explanation": "True! Win + Down Arrow does remove current app from screen or minimize the desktop window.",
+    "payload": {"statement":"Pressing \"Win + Down Arrow\" will remove current app from screen or minimize the desktop window.","correctAnswer":true}
   },
   {
     "id": "q-snap-014",
@@ -175,7 +175,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Maximize the app or desktop window to the left side of the screen.?",
+    "prompt": "Which keyboard shortcut is used to: Maximize the app or desktop window to the left side of the screen?",
     "key_combination": "Win + Left Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Left Arrow: Maximize the app or desktop window to the left side of the screen. (Maximize the app or desktop window to the left side...).",
@@ -188,11 +188,11 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Maximize the app or desktop window to the right side of the screen.?",
+    "prompt": "What keyboard shortcut is used to: Maximize the app or desktop window to the right side of the screen?",
     "key_combination": "Win + Right Arrow",
     "hint": "Combines keys: Win  + ?",
-    "explanation": "Pressing Win + Right Arrow will maximize the app or desktop window to the right side of the screen..",
-    "payload": {"placeholder":"e.g. Win + Right Arrow","canonicalAnswer":"Win + Right Arrow","acceptedAnswers":["Win + Right Arrow","Win+Right Arrow","win + right arrow","win+right arrow","Windows + Right Arrow","windows+Right Arrow"]}
+    "explanation": "Pressing Win + Right Arrow will maximize the app or desktop window to the right side of the screen.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Win + Right Arrow","acceptedAnswers":["Win + Right Arrow","Win+Right Arrow","win + right arrow","win+right arrow","Windows + Right Arrow","windows+Right Arrow"]}
   },
   {
     "id": "q-snap-016",
@@ -201,7 +201,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Restore or minimize active desktop windows vertically, maintaining width.:",
+    "prompt": "Assemble the keyboard shortcut to: Restore or minimize active desktop windows vertically, maintaining width:",
     "key_combination": "Win + Shift + Down Arrow",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Win + Shift + Down Arrow.",
@@ -214,7 +214,7 @@
     "category_id": 5,
     "category_name": "Window Snapping & Layout",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Move an app or window in the desktop from one monitor to another.?",
+    "prompt": "Which keyboard shortcut is used to: Move an app or window in the desktop from one monitor to another?",
     "key_combination": "Win + Shift + Left Arrow or Right Arrow",
     "hint": "Directional arrows are commonly used for Window Snapping.",
     "explanation": "Win + Shift + Left Arrow or Right Arrow: Move an app or window in the desktop from one monitor to another. (Move an app or window in the desktop from one monito...).",
