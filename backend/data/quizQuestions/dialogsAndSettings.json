@@ -7,10 +7,10 @@
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
     "prompt": "Which keyboard shortcut is used to: Stop or leave the current task, or dismiss a dialog box.?",
-    "key_combination": "Esc or Esc",
+    "key_combination": "Esc",
     "hint": "Think about keyboard navigation across dialog controls.",
-    "explanation": "Esc or Esc: Stop or leave the current task, or dismiss a dialog box. (Stop or leave the current task, or dismiss a dialog box).",
-    "payload": {"options":[{"id":"opt-1","label":"Win + U","text":"Win + U","isCorrect":false},{"id":"opt-2","label":"Ctrl + number (number 1–9)","text":"Ctrl + number (number 1–9)","isCorrect":false},{"id":"opt-3","label":"Win + Pause","text":"Win + Pause","isCorrect":false},{"id":"opt-4","label":"Esc or Esc","text":"Esc or Esc","isCorrect":true}]}
+    "explanation": "Esc: Stop or leave the current task, or dismiss a dialog box. (Stop or leave the current task, or dismiss a dialog box).",
+    "payload": {"options":[{"id":"opt-1","label":"Win + U","text":"Win + U","isCorrect":false},{"id":"opt-2","label":"Ctrl + number (number 1–9)","text":"Ctrl + number (number 1–9)","isCorrect":false},{"id":"opt-3","label":"Win + Pause","text":"Win + Pause","isCorrect":false},{"id":"opt-4","label":"Esc","text":"Esc","isCorrect":true}]}
   },
   {
     "id": "q-dlg-002",
@@ -19,10 +19,10 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Select a region of the screen to capture a screenshot to the clipboard. You can then open the Snipping Tool to share or markup the image. Note: You can turn off this default behavior. Select Start > Settings > Accessibility > Keyboard , and set Use the Print Screen button to open screen snipping to Off. Open the Settings app?",
-    "key_combination": "PrtScn or PrtScn",
+    "prompt": "What keyboard shortcut is used to: Select a region of the screen to capture a screenshot to the clipboard. You can then open the Snipping Tool to share or markup the image. Note: You can turn off this default behavior. Select Start > Settings > Accessibility > Keyboard , and set Use the Print Screen button to open screen snipping to Off.?",
+    "key_combination": "PrtScn",
     "hint": "Combines keys: PrtScn",
-    "explanation": "Pressing PrtScn will select a region of the screen to capture a screenshot to the clipboard. you can then open the snipping tool to share or markup the image. note: you can turn off this default behavior. select start > settings > accessibility > keyboard , and set use the print screen button to open screen snipping to off. open the settings app.",
+    "explanation": "Pressing PrtScn will select a region of the screen to capture a screenshot to the clipboard. You can then open the Snipping Tool to share or markup the image.",
     "payload": {"placeholder":"e.g. PrtScn","canonicalAnswer":"PrtScn","acceptedAnswers":["PrtScn","prtscn"]}
   },
   {
@@ -32,7 +32,7 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: If turned on in settings, enable or disable color filters. Open the Settings app:",
+    "prompt": "Assemble the keyboard shortcut to: If turned on in settings, enable or disable color filters.:",
     "key_combination": "Win + Ctrl + C",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Win + Ctrl + C.",
@@ -149,11 +149,11 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Perform the command (or select the option) that is used with that letter.:",
-    "key_combination": "Alt + underlined letter",
-    "hint": "Target: Alt + underlined letter",
-    "explanation": "Alt + underlined letter instantly triggers: Perform the command (or select the option) that is used with that letter..",
-    "payload": {"displayCombo":"Alt + underlined letter","targetKeys":["Alt","underlined letter"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Enter","Esc","Space","Tab","underlined letter"]}
+    "prompt": "Hands on keyboard! In a dialog box, press the shortcut to trigger an option with the underlined letter 'O' (such as Open):",
+    "key_combination": "Alt + O",
+    "hint": "Target: Alt + O",
+    "explanation": "Alt + O (Alt + underlined letter) performs the command or selects the option that is used with that letter.",
+    "payload": {"displayCombo":"Alt + O","targetKeys":["Alt","O"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Enter","Esc","O","Space","Tab"]}
   },
   {
     "id": "q-dlg-013",
@@ -229,9 +229,9 @@
     "difficulty": "Beginner",
     "prompt": "What keyboard shortcut is used to: Select the current item in focus.?",
     "key_combination": "Enter or Space",
-    "hint": "Combines keys: Enter",
-    "explanation": "Pressing Enter will select the current item in focus..",
-    "payload": {"placeholder":"e.g. Enter","canonicalAnswer":"Enter","acceptedAnswers":["Enter","enter"]}
+    "hint": "Combines keys: Enter or Space",
+    "explanation": "Pressing Enter or Space will select the current item in focus..",
+    "payload": {"placeholder":"e.g. Enter","canonicalAnswer":"Enter","acceptedAnswers":["Enter","enter","Space","space"]}
   },
   {
     "id": "q-dlg-019",
@@ -318,10 +318,10 @@
     "category_id": 11,
     "category_name": "Dialog Boxes & Settings",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Search settings.?",
-    "key_combination": "Type on any page with search box",
-    "hint": "Think about keyboard navigation across dialog controls.",
-    "explanation": "Type on any page with search box: Search settings. (Search settings).",
-    "payload": {"options":[{"id":"opt-1","label":"Space","text":"Space","isCorrect":false},{"id":"opt-2","label":"Type on any page with search box","text":"Type on any page with search box","isCorrect":true},{"id":"opt-3","label":"Ctrl + Shift + Tab","text":"Ctrl + Shift + Tab","isCorrect":false},{"id":"opt-4","label":"Ctrl + Tab","text":"Ctrl + Tab","isCorrect":false}]}
+    "prompt": "Which keyboard shortcut focuses the search box in Windows Settings?",
+    "key_combination": "Ctrl + E",
+    "hint": "Think of the standard Windows search focus shortcut (Ctrl + letter).",
+    "explanation": "Ctrl + E selects and focuses the search box in Windows Settings.",
+    "payload": {"options":[{"id":"opt-1","label":"Space","text":"Space","isCorrect":false},{"id":"opt-2","label":"Ctrl + E","text":"Ctrl + E","isCorrect":true},{"id":"opt-3","label":"Ctrl + Shift + Tab","text":"Ctrl + Shift + Tab","isCorrect":false},{"id":"opt-4","label":"Ctrl + Tab","text":"Ctrl + Tab","isCorrect":false}]}
   }
 ]
