@@ -19,8 +19,8 @@ const router = createRouter({
       component: CategoriesView,
     },
     {
-      path: '/kortkommandon',
-      name: 'kortkommandon',
+      path: '/shortcuts',
+      name: 'shortcuts',
       component: ShortcutsView,
     },
     {

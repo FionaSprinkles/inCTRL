@@ -14,12 +14,12 @@ async function fetchShortcuts() {
     const res = await fetch('/api/shortcuts')
     const data = await res.json().catch(() => null)
     if (!res.ok || !data || data.success === false || !Array.isArray(data.shortcuts)) {
-      throw new Error('Kunde inte hämta kortkommandon.')
+      throw new Error('Could not load shortcuts.')
     }
     shortcuts.value = data.shortcuts
   } catch {
     shortcuts.value = []
-    error.value = 'Kunde inte hämta kortkommandon.'
+    error.value = 'Could not load shortcuts.'
   } finally {
     loading.value = false
   }
@@ -30,36 +30,29 @@ onMounted(fetchShortcuts)
 
 <template>
   <main class="shortcuts-page">
-    <h1>Kortkommandon</h1>
+    <h1>Shortcuts</h1>
 
     <p v-if="error" role="alert">{{ error }}</p>
-    <p v-else-if="loading">Hämtar kortkommandon...</p>
-    <p v-else-if="shortcuts.length === 0">Inga kortkommandon att visa.</p>
+    <p v-else-if="loading">Loading shortcuts...</p>
+    <p v-else-if="shortcuts.length === 0">No shortcuts to show.</p>
 
-    <Pagination
-      v-else
-      :items="shortcuts"
-      :page-size="10"
-      previous-label="Föregående"
-      next-label="Nästa"
-      label="Sidnumrering"
-    >
+    <Pagination v-else :items="shortcuts" :page-size="10">
       <template #default="{ items }">
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th scope="col">Kortkommando</th>
-                <th scope="col">Vad det gör</th>
-                <th scope="col">Kategori</th>
-                <th scope="col">Svårighetsgrad</th>
+                <th scope="col">Shortcut</th>
+                <th scope="col">What it does</th>
+                <th scope="col">Category</th>
+                <th scope="col">Difficulty</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="shortcut in items" :key="shortcut.id">
                 <td><kbd>{{ shortcut.keyCombo }}</kbd></td>
                 <td>{{ shortcut.description }}</td>
-                <td>{{ shortcut.categoryName || 'Okategoriserad' }}</td>
+                <td>{{ shortcut.categoryName || 'Uncategorized' }}</td>
                 <td>{{ shortcut.difficulty }}</td>
               </tr>
             </tbody>
@@ -103,7 +96,7 @@ th {
   font-size: 16px;
   font-weight: 450;
   letter-spacing: 1px;
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
