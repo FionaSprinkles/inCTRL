@@ -3,16 +3,17 @@
     <!-- Glassmorphism card holding all content -->
     <div class="glass-card">
       <h1>Sign Up</h1>
-      <!-- Paragraph with the "already have an account" text -->
+
+      <!-- Link to the login modal for existing users -->
       <p class="member">
         Already a member?
-        <!-- Navigates to /login -->
-        <RouterLink to="/login">Log in</RouterLink>
+        <button type="button" class="link-button" @click="goToLogin">Log in</button>
       </p>
 
-      <!-- Sign up form -->
+      <!-- Sign up form. Each input is bound to a ref with v-model -->
       <form @submit.prevent="handleSubmit">
         <input
+          v-model="username"
           type="text"
           placeholder="Username"
           aria-label="Username"
@@ -20,6 +21,7 @@
           required
         />
         <input
+          v-model="firstName"
           type="text"
           placeholder="First name"
           aria-label="First name"
@@ -27,45 +29,103 @@
           required
         />
         <input
+          v-model="lastName"
           type="text"
           placeholder="Last name"
           aria-label="Last name"
           autocomplete="family-name"
           required
         />
-        <input type="email" placeholder="Email" aria-label="Email" autocomplete="email" required />
         <input
+          v-model="email"
+          type="email"
+          placeholder="Email"
+          aria-label="Email"
+          autocomplete="email"
+          required
+        />
+        <!-- minlength matches the backend password rule -->
+        <input
+          v-model="password"
           type="password"
           placeholder="Password"
           aria-label="Password"
           autocomplete="new-password"
+          minlength="8"
           required
         />
-        <button type="submit" class="btn-primary">Sign Up</button>
+
+        <!-- Error message from the backend, "Username or email already in use" -->
+        <p v-if="error" class="error" role="alert">{{ error }}</p>
+
+        <!-- Disabled while the request is running to prevent double submits -->
+        <button type="submit" class="btn-primary" :disabled="loading">
+          {{ loading ? 'Creating account...' : 'Sign Up' }}
+        </button>
       </form>
 
       <!-- Divider text with a line on each side -->
       <div class="divider"><span>or sign up with</span></div>
 
-      <!-- Social login buttons (no backend) -->
+      <!-- Social login buttons (no backend yet) -->
       <div class="social">
         <button type="button" class="btn-social">Google</button>
         <button type="button" class="btn-social">Apple</button>
         <button type="button" class="btn-social">Facebook</button>
       </div>
 
-      <!-- Navigates to home page  -->
+      <!-- Navigates to home page -->
       <RouterLink to="/" class="back-link">Back to home</RouterLink>
     </div>
   </div>
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { register } from '@/services/authService'
+import { useLoginModal } from '@/composables/useLoginModal'
+import { useAuth } from '@/composables/useAuth'
 
-// Runs when the form is submitted
-function handleSubmit() {
-  console.log('Form submitted')
+const router = useRouter()
+const { openLogin } = useLoginModal() // Shared state for the login modal in the navbar
+const { setUser } = useAuth() // Shared logged-in user state
+
+// Form field values
+const username = ref('')
+const firstName = ref('')
+const lastName = ref('')
+const email = ref('')
+const password = ref('')
+
+const error = ref('')
+const loading = ref(false)
+
+// Go to the home page, then open the login modal
+async function goToLogin() {
+  await router.push('/')
+  openLogin()
+}
+
+// Create the account, log the user in and go to the home page
+async function handleSubmit() {
+  error.value = ''
+  loading.value = true
+  try {
+    const data = await register({
+      username: username.value,
+      email: email.value,
+      password: password.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
+    })
+    setUser(data.user) // Updates the navbar right away
+    router.push('/')
+  } catch (err) {
+    error.value = err.message // Show the error to the user
+  } finally {
+    loading.value = false // Always re-enable the button
+  }
 }
 </script>
 
@@ -98,12 +158,18 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
-.member a {
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
   font-size: 18px;
+  font-family: inherit;
+  color: inherit;
   text-decoration: underline;
+  cursor: pointer;
 }
 
-.member a:hover {
+.link-button:hover {
   color: var(--color-button-text);
 }
 
@@ -210,5 +276,11 @@ input:focus {
 /* Back to home link hover */
 .back-link:hover {
   color: var(--color-button-text);
+}
+
+.error {
+  color: #ff8a8a;
+  font-size: 0.9rem;
+  margin: 0;
 }
 </style>
