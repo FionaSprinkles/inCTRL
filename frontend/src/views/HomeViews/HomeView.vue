@@ -5,18 +5,18 @@ Then the router could do this navigation instead. **/
     <!-- ===== LOGGED OUT ===== -->
 
     <!-- This is the homepage if a user is not logged in -->
-    <PublicHome v-if="!isLoggedIn" />
+    <PublicHomeView v-if="!isLoggedIn" />
 
     <!-- ===== LOGGED IN ===== -->
 
     <!-- This is the homepage if a user is logged in -->
-    <PersonalHome v-else />
+    <PersonalHomeView v-else />
 
 </template>
 
 <script setup>
-import PublicHome from '../homeView/publicHome.vue'
-import PersonalHome from '../homeView/personalHome.vue'
+import PublicHomeView from './PublicHomeView.vue'
+import PersonalHomeView from './PersonalHomeView.vue'
 
 //This is for testing. Will change later
 const isLoggedIn = false

@@ -1,5 +1,7 @@
 const { describe, it, beforeEach } = require('node:test');
 const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
 const { getMockDb } = require('./helpers/mockDb');
 
 const mockDb = getMockDb();
@@ -191,6 +193,30 @@ describe('backend/scripts/seedDatabase', () => {
     it('loadAllQuizQuestions loads array of questions or returns empty array if folder empty', () => {
         const questions = loadAllQuizQuestions();
         assert.ok(Array.isArray(questions));
+    });
+
+    it('loadAllQuizQuestions throws if a question file is malformed JSON', () => {
+        const questionsDir = path.resolve(__dirname, '../data/quizQuestions');
+        const badFile = path.join(questionsDir, '_bad_syntax_test.json');
+        try {
+            if (!fs.existsSync(questionsDir)) fs.mkdirSync(questionsDir, { recursive: true });
+            fs.writeFileSync(badFile, '{ bad json', 'utf-8');
+            assert.throws(() => loadAllQuizQuestions(), /Failed to load quiz question file "_bad_syntax_test.json"/);
+        } finally {
+            if (fs.existsSync(badFile)) fs.unlinkSync(badFile);
+        }
+    });
+
+    it('loadAllQuizQuestions throws if a question file is not an array', () => {
+        const questionsDir = path.resolve(__dirname, '../data/quizQuestions');
+        const nonArrayFile = path.join(questionsDir, '_not_array_test.json');
+        try {
+            if (!fs.existsSync(questionsDir)) fs.mkdirSync(questionsDir, { recursive: true });
+            fs.writeFileSync(nonArrayFile, JSON.stringify({ not: 'an array' }), 'utf-8');
+            assert.throws(() => loadAllQuizQuestions(), /File content must be a JSON array/);
+        } finally {
+            if (fs.existsSync(nonArrayFile)) fs.unlinkSync(nonArrayFile);
+        }
     });
 
     it('runs default seed with all data when no arguments are passed', async () => {
