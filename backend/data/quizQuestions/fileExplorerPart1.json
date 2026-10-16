@@ -140,7 +140,7 @@
     "key_combination": "Ctrl + D or Del",
     "hint": "Combines keys: Ctrl  + ?",
     "explanation": "Pressing Ctrl + D will delete the selected item and move it to the recycle bin..",
-    "payload": {"placeholder":"e.g. Ctrl + D","canonicalAnswer":"Ctrl + D","acceptedAnswers":["Ctrl + D","Ctrl+D","ctrl + d","ctrl+d","Control + D","control+D"]}
+    "payload": {"placeholder":"e.g. Ctrl + D","canonicalAnswer":"Ctrl + D","acceptedAnswers":["Ctrl + D","Ctrl+D","ctrl + d","ctrl+d","Control + D","control+D","Del","del","Delete","delete"]}
   },
   {
     "id": "q-exp1-012",
