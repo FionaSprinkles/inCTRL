@@ -9,8 +9,65 @@ categoriesSeed.json
 +
 MySQL
 +
-GET /api/categories
+GET /api/categories/:slug
 +
 categoryViewTemplate.vue
 */
 
+<template>
+  <main v-if="category">
+    <h1>{{ category.name }}</h1>
+    <p>{{ category.description }}</p>
+  </main>
+
+  <p v-else-if="loading">Loading category...</p>
+
+  <p v-else-if="error">{{ error }}</p>
+</template>
+
+
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const category = ref(null) // gets information of what the category contains, like id, name, slug and description
+const loading = ref(true) // knows if we are trying to load info from backend
+const error = ref('') // gets error message
+
+
+// fetch category from backend
+async function fetchCategory() {
+  loading.value = true
+  error.value = '' 
+
+  try {
+    const slug = route.params.slug //get category slug
+    const response = await fetch(`/api/categories/${slug}`) // make http-call with slug
+
+    console.log(response)
+
+    if (!response.ok) {
+      const data = await response.json()//read response and convert to json
+        .catch(() => ({}))// if json cant be read use empty object
+
+      throw new Error(data.error || `Server error (${response.status})`)
+
+    
+    }
+
+    const data = await response.json()
+    category.value = data.category
+  } catch (err) {
+    error.value = err.message || 'Could not load category.'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchCategory()
+})
+</script>
