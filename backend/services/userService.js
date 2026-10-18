@@ -131,13 +131,14 @@ async function register({ username, email, firstName, lastName, password, displa
 
 /**
  * Authenticates user credentials with bcrypt comparison and returns profile data.
- * @param {object} params - Login credentials.
- * @param {string} params.username - Username or email address.
- * @param {string} params.password - Plaintext password to verify.
+ *
+ * @param {object} params Login credentials.
+ * @param {string} params.email Username or email address.
+ * @param {string} params.password Plaintext password to verify.
  * @returns {Promise<object>} Resolves with authenticated user profile.
  */
-async function login({ username, password }) {
-    const user = await getUserByUsernameOrEmail(username);
+async function login({ email, password }) {
+    const user = await getUserByUsernameOrEmail(email);
     if (!user) {
         throw new Error('Invalid username/email or password');
     }
@@ -159,6 +160,7 @@ async function login({ username, password }) {
         xp: user.xp
     };
 }
+
 
 /**
  * Updates an existing user's display name or avatar.
