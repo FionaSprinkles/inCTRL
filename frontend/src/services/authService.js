@@ -50,10 +50,12 @@ export async function register({ username, email, password, firstName, lastName 
   return data
 }
 
-// Logs in with username or email.
-export function login(username, password) {
-  return request('/api/users/login', {
+// Logs in with email and password, then saves the session
+export async function login({ email, password }) {
+  const data = await request('/api/users/login', {
     method: 'POST',
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ email, password }),
   })
+  saveSession(data)
+  return data
 }
