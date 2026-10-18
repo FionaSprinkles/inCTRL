@@ -32,24 +32,15 @@
                 All Courses
               </RouterLink>
 
-              <RouterLink to="/courses/windows" class="nav-link" @click="isBrowseOpen = false">
-                Windows
-              </RouterLink>
-
-              <RouterLink to="/courses/office" class="nav-link" @click="isBrowseOpen = false">
-                Microsoft Office
-              </RouterLink>
-
-              <RouterLink to="/courses/productivity" class="nav-link" @click="isBrowseOpen = false">
-                Productivity
-              </RouterLink>
-
-              <RouterLink to="/courses/internet" class="nav-link" @click="isBrowseOpen = false">
-                Internet
-              </RouterLink>
-
-              <RouterLink to="/courses/programming" class="nav-link" @click="isBrowseOpen = false">
-                Programming
+              <!-- This link gets fetched categories from backend-->
+              <RouterLink
+                v-for="category in categories"
+                :key="category.id"
+                :to="`/categories/${category.slug}`"
+                class="nav-link"
+                @click="isBrowseOpen = false"
+              >
+                {{ category.name }}
               </RouterLink>
             </div>
           </div>
@@ -58,7 +49,6 @@
         <!-- Logged out -->
 
         <template v-if="!isLoggedIn">
-          <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
 
           <RouterLink to="/about" class="nav-link"> About </RouterLink>
         </template>
@@ -66,9 +56,8 @@
         <!-- Logged in -->
 
         <template v-else>
-          <RouterLink to="/" class="nav-link"> Home </RouterLink>
+          
 
-          <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
 
           <RouterLink to="/quiz" class="nav-link"> Quiz </RouterLink>
         </template>
@@ -92,7 +81,7 @@
       <div class="nav-right">
         <!-- Change this later -->
 
-        <div class="user">Fiona</div>
+        <RouterLink to="/" class="user"> Fiona </RouterLink>
 
         <RouterLink to="/log-out" class="nav-link"> Log out </RouterLink>
       </div>
@@ -109,7 +98,7 @@ import { RouterLink } from 'vue-router'
 const isBrowseOpen = ref(false)
 
 // This is just for testing. Will change later.
-const isLoggedIn = false
+const isLoggedIn = true
 
 // This function makes the browse drop down disappear when clicking elsewhere
 function closeBrowse(event) {
@@ -122,6 +111,30 @@ onMounted(() => {
 })
 onUnmounted(() => {
   document.removeEventListener('click', closeBrowse)
+})
+
+
+// This function fetches categories from backend. 
+// Right now categories are displayed in drop down menu.
+const categories = ref([])
+
+async function fetchCategories() {
+  try {
+    const response = await fetch('/api/categories')
+
+    if (!response.ok) {
+      throw new Error('Could not fetch categories')
+    }
+
+    const data = await response.json()
+    categories.value = data.categories || []
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+  }
+}
+
+onMounted(() => {
+  fetchCategories()
 })
 </script>
 
