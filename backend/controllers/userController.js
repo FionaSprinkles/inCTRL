@@ -152,15 +152,15 @@ exports.register = async (req, res) => {
  */
 exports.login = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        if (!username || !password) {
+        const { email, password } = req.body;
+        if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                error: 'Username and password are required'
+                error: 'Email and password are required'
             });
         }
 
-        const user = await userService.login({ username, password });
+        const user = await userService.login({ email, password });
         const token = generateToken({ id: user.id, username: user.username, role: user.role });
 
         res.json({
