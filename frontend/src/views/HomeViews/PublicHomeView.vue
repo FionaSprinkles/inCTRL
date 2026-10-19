@@ -10,9 +10,9 @@ import './assets/global.css'
       <p>Learn practical Windows shortcuts through focused, challenging quizzes.</p>
 
       <div class="buttons">
-        <RouterLink to="/login" class="btn-hero"> Get started </RouterLink>
+        <RouterLink to="/signup" class="btn-hero"> Get started </RouterLink>
 
-        <RouterLink to="/courses" class="btn-hero"> Explore courses </RouterLink>
+        <RouterLink to="/categories" class="btn-hero"> Explore categories </RouterLink>
       </div>
     </section>
 
@@ -29,20 +29,20 @@ import './assets/global.css'
       <div class="features">
         <article>
           <span>01</span>
-          <h3>Choose what to learn</h3>
-          <p>Pick a category and difficulty level.</p>
+          <h3>Create an account</h3>
+          <p>Sign up to start your journey and keep track of your learning progress.</p>
         </article>
 
         <article>
           <span>02</span>
-          <h3>Test your knowledge</h3>
-          <p>Challenge yourself with shortcut quizzes.</p>
+          <h3>Choose what to learn & Test your knowledge</h3>
+          <p>Pick a category and difficulty level. Challenge yourself with shortcut quizzes.</p>
         </article>
 
         <article>
           <span>03</span>
-          <h3>Learn from mistakes</h3>
-          <p>Get instant feedback and see the correct answer.</p>
+          <h3>Climb to the top!</h3>
+          <p>Keep improving your skills, earn points, and climb the leaderboard!</p>
         </article>
       </div>
     </section>

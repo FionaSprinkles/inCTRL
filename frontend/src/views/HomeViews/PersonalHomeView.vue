@@ -19,6 +19,13 @@
       </article>
     </section>
 
+    <!--At a later stage: The history section should have a small widget of History.vue component-->
+    <section class="history">
+      <RouterLink to="/history">
+        History
+      </RouterLink>    
+    </section>
+
   </main>
 </template>
 
@@ -29,6 +36,9 @@ import { RouterLink } from 'vue-router'
 
 <style scoped>
 
+.personal-home {
+  text-align: center;
+}
 .continue {
   justify-content: center; /* Help buttons to be in center of the page */
   gap: 1rem; /* Makes space of 1rem between elements */
