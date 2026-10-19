@@ -147,8 +147,9 @@ describe('backend/services/userService', () => {
                 if (sql.includes('INSERT INTO users')) {
                     assert.strictEqual(params[0], 'newuser');
                     assert.strictEqual(params[1], 'newuser@example.com');
-                    assert.ok(bcrypt.compareSync('secret123', params[2]));
-                    assert.strictEqual(params[3], 'New User');
+                    assert.strictEqual(params[2], 'Test');
+                    assert.strictEqual(params[3], 'Testsson');
+                    assert.ok(bcrypt.compareSync('secret123', params[4]));
                     return cb(null, { insertId: 42 });
                 }
                 cb(null, []);
@@ -158,7 +159,9 @@ describe('backend/services/userService', () => {
                 username: 'newuser',
                 email: 'newuser@example.com',
                 password: 'secret123',
-                displayName: 'New User'
+                displayName: 'New User',
+                firstName: 'Test',
+                lastName: 'Testsson'
             });
 
             assert.deepStrictEqual(result, {
@@ -166,6 +169,8 @@ describe('backend/services/userService', () => {
                 username: 'newuser',
                 email: 'newuser@example.com',
                 displayName: 'New User',
+                firstName: 'Test',
+                lastName: 'Testsson',
                 role: 'user',
                 xp: 0
             });
@@ -204,7 +209,9 @@ describe('backend/services/userService', () => {
                 async () => await userService.register({
                     username: 'test',
                     email: 'test@example.com',
-                    password: 'password'
+                    password: 'password',
+                    firstName: 'Test',
+                    lastName: 'Testsson'
                 }),
                 /Insert duplicate error/
             );
@@ -220,6 +227,8 @@ describe('backend/services/userService', () => {
                 email: 'login@example.com',
                 password_hash: passwordHash,
                 display_name: 'Login User',
+                first_name: 'Login',
+                last_name: 'User',
                 role: 'user',
                 avatar: 'avatar1.png',
                 xp: 250
@@ -230,7 +239,7 @@ describe('backend/services/userService', () => {
             });
 
             const result = await userService.login({
-                username: 'loginuser',
+                email: 'login@example.com',
                 password: 'correctpassword'
             });
 
@@ -238,6 +247,8 @@ describe('backend/services/userService', () => {
                 id: 10,
                 username: 'loginuser',
                 email: 'login@example.com',
+                firstName: 'Login',
+                lastName: 'User',
                 displayName: 'Login User',
                 role: 'user',
                 avatar: 'avatar1.png',

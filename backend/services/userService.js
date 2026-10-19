@@ -47,7 +47,7 @@ function getUserById(id) {
 function getUserProfileById(id) {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT id, username, email, display_name AS displayName, role, avatar, xp, created_at AS createdAt
+            SELECT id, username, email, first_name AS firstName, last_name AS lastName, display_name AS displayName, role, avatar, xp, created_at AS createdAt
             FROM users 
             WHERE id = ?
         `;
@@ -80,16 +80,20 @@ function getUserByUsernameOrEmail(identifier) {
  * @param {object} params - Registration data.
  * @param {string} params.username - Desired username.
  * @param {string} params.email - User email address.
+ * @param {string} params.firstName - User first name.
+ * @param {string} params.lastName - User last name.
  * @param {string} params.password - Plaintext password to hash.
  * @param {string} [params.displayName] - Optional display name.
  * @returns {Promise<object>} Resolves with newly created user record.
  */
-async function register({ username, email, password, displayName }) {
+async function register({ username, email, firstName, lastName, password, displayName }) {
     const u = username.trim();
     const e = email.trim().toLowerCase();
     const existing = (await getUserByUsernameOrEmail(u)) || (await getUserByUsernameOrEmail(e));
     if (existing) {
-        throw new Error('Username or email already in use');
+        const err = new Error('Username or email already in use');
+        err.status = 409;
+        throw err;
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -97,18 +101,27 @@ async function register({ username, email, password, displayName }) {
 
     return new Promise((resolve, reject) => {
         const sql = `
-            INSERT INTO users (username, email, password_hash, display_name, role)
-            VALUES (?, ?, ?, ?, 'user')
+            INSERT INTO users (username, email, first_name, last_name, password_hash, display_name, role)
+            VALUES (?, ?, ?, ?, ?, ?, 'user')
         `;
-        const params = [username.trim(), email.trim().toLowerCase(), passwordHash, displayName || username];
+        const params = [u, e, firstName.trim(), lastName.trim(), passwordHash, displayName || username.trim()];
 
         db.query(sql, params, (err, result) => {
-            if (err) return reject(err);
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    const dup = new Error('Username or email already in use');
+                    dup.status = 409;
+                    return reject(dup);
+                }
+                return reject(err);
+            }
             resolve({
                 id: result.insertId,
-                username,
-                email,
-                displayName: displayName || username,
+                username: u,
+                email: e,
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                displayName: displayName || username.trim(),
                 role: 'user',
                 xp: 0
             });
@@ -118,13 +131,14 @@ async function register({ username, email, password, displayName }) {
 
 /**
  * Authenticates user credentials with bcrypt comparison and returns profile data.
- * @param {object} params - Login credentials.
- * @param {string} params.username - Username or email address.
- * @param {string} params.password - Plaintext password to verify.
+ *
+ * @param {object} params Login credentials.
+ * @param {string} params.email Username or email address.
+ * @param {string} params.password Plaintext password to verify.
  * @returns {Promise<object>} Resolves with authenticated user profile.
  */
-async function login({ username, password }) {
-    const user = await getUserByUsernameOrEmail(username);
+async function login({ email, password }) {
+    const user = await getUserByUsernameOrEmail(email);
     if (!user) {
         throw new Error('Invalid username/email or password');
     }
@@ -138,12 +152,15 @@ async function login({ username, password }) {
         id: user.id,
         username: user.username,
         email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
         displayName: user.display_name,
         role: user.role,
         avatar: user.avatar,
         xp: user.xp
     };
 }
+
 
 /**
  * Updates an existing user's display name or avatar.
