@@ -99,15 +99,32 @@ exports.getMe = async (req, res) => {
  */
 exports.register = async (req, res) => {
     try {
-        const { username, email, password, displayName } = req.body;
-        if (!username || !email || !password) {
+        const { username, email, firstName, lastName, password, displayName } = req.body;
+        if (!username || !email || !firstName || !lastName || !password) {
             return res.status(400).json({
                 success: false,
-                error: 'Username, email, and password are required'
+                error: 'Username, email, first name, last name, and password are required'
             });
         }
 
-        const user = await userService.register({ username, email, password, displayName });
+        // Validation
+        if ([username, email, firstName, lastName, password].some((v) => typeof v !== 'string')) {
+            return res.status(400).json({ success: false, error: 'Invalid input' });
+        }
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                error: 'Password must be at least 8 characters'
+            });
+        }
+        if (!firstName.trim() || !lastName.trim() || !username.trim()) {
+            return res.status(400).json({
+                success: false,
+                error: 'Username, first name and last name cannot be empty'
+            });
+        }
+
+        const user = await userService.register({ username, email, firstName, lastName, password, displayName });
         const token = generateToken({ id: user.id, username: user.username, role: user.role });
 
         res.status(201).json({
@@ -118,9 +135,10 @@ exports.register = async (req, res) => {
         });
     } catch (error) {
         console.error('Error registering user:', error);
-        res.status(400).json({
+        const status = error.status || 500;
+        res.status(status).json({
             success: false,
-            error: error.message
+            error: status === 500 ? 'Internal server error' : error.message
         });
     }
 };
@@ -134,15 +152,15 @@ exports.register = async (req, res) => {
  */
 exports.login = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        if (!username || !password) {
+        const { email, password } = req.body;
+        if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                error: 'Username and password are required'
+                error: 'Email and password are required'
             });
         }
 
-        const user = await userService.login({ username, password });
+        const user = await userService.login({ email, password });
         const token = generateToken({ id: user.id, username: user.username, role: user.role });
 
         res.json({
