@@ -28,7 +28,7 @@ categoryViewTemplate.vue
 
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -42,6 +42,7 @@ const error = ref('') // gets error message
 async function fetchCategory() {
   loading.value = true
   error.value = '' 
+  category.value = null
 
   try {
     const slug = route.params.slug //get category slug
@@ -67,7 +68,10 @@ async function fetchCategory() {
   }
 }
 
-onMounted(() => {
-  fetchCategory()
-})
+watch(
+  () => route.params.slug, //watch this route if anything changes
+  () => { //what to put in when it changes
+    fetchCategory()
+},
+{ immediate : true} ) //run change imediatly
 </script>
