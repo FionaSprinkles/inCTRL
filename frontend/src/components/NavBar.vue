@@ -56,6 +56,8 @@
         <template v-if="!isLoggedIn">
           <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
 
+          <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
+
           <RouterLink to="/about" class="nav-link"> About </RouterLink>
         </template>
 
@@ -67,6 +69,12 @@
           <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
 
           <RouterLink to="/quiz" class="nav-link"> Quiz </RouterLink>
+
+          <RouterLink to="/history" class="nav-link"> History </RouterLink>
+
+          <RouterLink to="/shortcuts" class="nav-link"> Shortcuts List </RouterLink>
+
+          <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
         </template>
       </div>
     </div>
@@ -109,7 +117,7 @@ const isBrowseOpen = ref(false)
 const showLogin = ref(false)
 
 // This is just for testing. Will change later.
-const isLoggedIn = false
+const isLoggedIn = true
 
 function handleLogin(credentials) {
   showLogin.value = false
