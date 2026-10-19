@@ -104,16 +104,24 @@ import { RouterLink, useRouter } from 'vue-router'
 import LoginModal from './LoginModal.vue'
 import { useLoginModal } from '@/composables/useLoginModal'
 import { useAuth } from '@/composables/useAuth'
+import { login } from '@/services/authService'
 
 const router = useRouter()
 const isBrowseOpen = ref(false) // Is the browse dropdown open?
 const { showLogin, openLogin, closeLogin } = useLoginModal() // Shared login modal state
-const { isLoggedIn, firstName, logout } = useAuth() // Shared logged-in user state
+const { isLoggedIn, firstName, setUser, logout } = useAuth()
 
 // Runs when the modal emits "login"
-function handleLogin(credentials) {
-  // TODO: Call authentication API once ready
-  closeLogin()
+async function handleLogin(credentials) {
+  try {
+    const data = await login(credentials)
+
+    setUser(data.user)
+
+    closeLogin()
+  } catch (error) {
+    alert(error.message || 'Login failed')
+  }
 }
 
 // Clears the session and goes back to the home page

@@ -164,7 +164,9 @@ describe('backend API integration tests (app & routes)', () => {
             const res = await request(app).post('/api/users/register').send({
                 username: 'tester',
                 email: 'tester@test.com',
-                password: 'password123'
+                password: 'password123',
+                firstName: 'Test',
+                lastName: 'Testersson'
             });
 
             assert.strictEqual(res.status, 201);
@@ -177,14 +179,14 @@ describe('backend API integration tests (app & routes)', () => {
             mockDb.setQueryHandler((sql, params, cb) => {
                 cb(null, [{
                     id: 3,
-                    username: 'user3',
+                    email: 'user@test.com',
                     password_hash: passwordHash,
                     role: 'user'
                 }]);
             });
 
             const res = await request(app).post('/api/users/login').send({
-                username: 'user3',
+                email: 'user@test.com',
                 password: 'correctpass'
             });
 
