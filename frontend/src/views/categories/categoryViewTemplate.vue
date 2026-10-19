@@ -44,8 +44,9 @@ async function fetchCategory() {
   error.value = '' 
   category.value = null
 
+  const slug = route.params.slug //get category slug
   try {
-    const slug = route.params.slug //get category slug
+    
     const response = await fetch(`/api/categories/${slug}`) // make http-call with slug
 
     console.log(response)
@@ -60,11 +61,19 @@ async function fetchCategory() {
     }
 
     const data = await response.json()
+
+    if (route.params.slug !== slug) return // if slug in url doesnt match slug request - return
+
     category.value = data.category
   } catch (err) {
+
+    if (route.params.slug !== slug) return// if slug in url doesnt match slug request - return
+
     error.value = err.message || 'Could not load category.'
   } finally {
-    loading.value = false
+    if (route.params.slug === slug) { // this asks "does the url slug match the requested slug from the start of the call?"
+    loading.value = false // stop loading and go to page
+    }
   }
 }
 
