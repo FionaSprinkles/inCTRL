@@ -53,21 +53,20 @@ function getCategoryBySlug(slug) {
  * Creates a new shortcut category in the database.
  * @param {object} params - Category parameters.
  * @param {string} params.name - Category display name.
- * @param {string} [params.slug] - URL-friendly slug.
+ * @param {string} params.slug - URL-friendly slug. Must be only letters (a-z) and connect words with hyphen (-). No numbers.
  * @param {string} [params.description=''] - Optional category description.
  * @param {string} [params.icon='keyboard'] - Category icon identifier.
  * @returns {Promise<object>} Resolves with created category record.
  */
 function createCategory({ name, slug, description = '', icon = 'keyboard' }) {
     return new Promise((resolve, reject) => {
-        const generatedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const sql = 'INSERT INTO categories (name, slug, description, icon) VALUES (?, ?, ?, ?)';
-        db.query(sql, [name, generatedSlug, description, icon], (err, result) => {
+        db.query(sql, [name, slug, description, icon], (err, result) => {
             if (err) return reject(err);
             resolve({
                 id: result.insertId,
                 name,
-                slug: generatedSlug,
+                slug,
                 description,
                 icon
             });
