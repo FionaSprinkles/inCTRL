@@ -23,24 +23,19 @@
             <div class="category-section">
               <h2>Courses by category</h2>
 
-              <RouterLink to="/courses/windows" class="nav-link" @click="isBrowseOpen = false">
-                Windows
+              <RouterLink to="/categories" class="nav-link" @click="isBrowseOpen = false">
+                All Courses
               </RouterLink>
 
-              <RouterLink to="/courses/office" class="nav-link" @click="isBrowseOpen = false">
-                Microsoft Office
-              </RouterLink>
-
-              <RouterLink to="/courses/productivity" class="nav-link" @click="isBrowseOpen = false">
-                Productivity
-              </RouterLink>
-
-              <RouterLink to="/courses/internet" class="nav-link" @click="isBrowseOpen = false">
-                Internet
-              </RouterLink>
-
-              <RouterLink to="/courses/programming" class="nav-link" @click="isBrowseOpen = false">
-                Programming
+              <!-- This link gets fetched categories from backend-->
+              <RouterLink
+                v-for="category in categories"
+                :key="category.id"
+                :to="`/categories/${category.slug}`"
+                class="nav-link"
+                @click="isBrowseOpen = false"
+              >
+                {{ category.name }}
               </RouterLink>
             </div>
           </div>
@@ -48,7 +43,6 @@
 
         <!-- Links for logged out users -->
         <template v-if="!isLoggedIn">
-          <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
 
           <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
 
@@ -57,9 +51,8 @@
 
         <!-- Links for logged in users -->
         <template v-else>
-          <RouterLink to="/" class="nav-link"> Home </RouterLink>
+          
 
-          <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
 
           <RouterLink to="/quiz" class="nav-link"> Quiz </RouterLink>
 
@@ -143,6 +136,30 @@ onMounted(() => {
 })
 onUnmounted(() => {
   document.removeEventListener('click', closeBrowse)
+})
+
+
+// This function fetches categories from backend. 
+// Right now categories are displayed in drop down menu.
+const categories = ref([])
+
+async function fetchCategories() {
+  try {
+    const response = await fetch('/api/categories')
+
+    if (!response.ok) {
+      throw new Error('Could not fetch categories')
+    }
+
+    const data = await response.json()
+    categories.value = data.categories || []
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+  }
+}
+
+onMounted(() => {
+  fetchCategories()
 })
 </script>
 
