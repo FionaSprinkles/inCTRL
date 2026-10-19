@@ -27,6 +27,9 @@ exports.getCategories = async (req, res) => {
 /**
  * Handles GET /api/categories/:identifier.
  * Retrieves category details by ID or slug. 
+ * 
+ * The slug is only allowed letters (a-z) and hyphen (-).
+ * 
  * @param {import('express').Request} req - Express request object with id param.
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
@@ -62,19 +65,35 @@ exports.getCategory = async (req, res) => {
 /**
  * Handles POST /api/categories.
  * Creates a new shortcut category (admin only).
+ * 
+ * slugRegex rule: 
+ * "[a-z]+" there must be a letter between a-z.
+ * "(?:-[a-z]+)*" allows more groups of words with hyphen (-) inbetween.
+ * 
  * @param {import('express').Request} req - Express request object with category payload.
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
  */
 exports.createCategory = async (req, res) => {
+    
     try {
         const { name, slug, description, icon } = req.body;
+
+        const slugRegex = /^[a-z]+(?:-[a-z]+)*$/;
+
         if (!name) {
             return res.status(400).json({
                 success: false,
                 error: 'Category name is required'
             });
         }
+
+        if (!slugRegex.test(slug)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Slug must contain only lowercase letters (a-z) and single hyphens (-) between words'
+        });
+    }
 
         const category = await categoryService.createCategory({ name, slug, description, icon });
         res.status(201).json({
