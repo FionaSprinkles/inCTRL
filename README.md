@@ -5,7 +5,7 @@ A web application to learn Windows shortcuts in a fun and interactive way.
 ## Tech Stack
 
 * **Frontend:** HTML, CSS, JavaScript, Vue.js
-* **Backend:** Node.js, Express
+* **Backend:** Node.js
 * **Database:** MySQL (Docker)
 
 ## Features

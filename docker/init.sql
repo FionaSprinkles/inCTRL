@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     display_name VARCHAR(100) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     role ENUM('user', 'admin') DEFAULT 'user',
     avatar VARCHAR(255) DEFAULT 'default-avatar.png',
     xp INT DEFAULT 0,
