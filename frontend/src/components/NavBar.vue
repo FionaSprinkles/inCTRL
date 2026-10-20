@@ -262,4 +262,9 @@ onUnmounted(() => {
   color: var(--color-button-text);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
 }
+
+.user {
+  font-family: var(--font-display);
+  font-size: 20px;
+}
 </style>
