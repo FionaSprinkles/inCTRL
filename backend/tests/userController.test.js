@@ -159,7 +159,7 @@ describe('backend/controllers/userController', () => {
 
             await userController.register(req, res);
             assert.strictEqual(res.statusCode, 400);
-            assert.strictEqual(res.body.error, 'Username, email, and password are required');
+            assert.strictEqual(res.body.error, 'Username, email, first name, last name, and password are required');
         });
 
         it('returns 201 with auth token and created user on success', async () => {
@@ -174,6 +174,8 @@ describe('backend/controllers/userController', () => {
                     username: 'charlie',
                     email: 'charlie@example.com',
                     password: 'password123',
+                    firstName: 'Charlie',
+                    lastName: 'Testsson',
                     displayName: 'Charlie'
                 }
             };
@@ -199,13 +201,15 @@ describe('backend/controllers/userController', () => {
                 body: {
                     username: 'charlie',
                     email: 'charlie@example.com',
+                    firstName: 'Charlie',
+                    lastName: 'Testsson',
                     password: 'password123'
                 }
             };
             const res = createMockResponse();
 
             await userController.register(req, res);
-            assert.strictEqual(res.statusCode, 400);
+            assert.strictEqual(res.statusCode, 409);
             assert.strictEqual(res.body.error, 'Username or email already in use');
         });
     });
@@ -217,7 +221,7 @@ describe('backend/controllers/userController', () => {
 
             await userController.login(req, res);
             assert.strictEqual(res.statusCode, 400);
-            assert.strictEqual(res.body.error, 'Username and password are required');
+            assert.strictEqual(res.body.error, 'Email and password are required');
         });
 
         it('returns 200 with token and user profile on successful authentication', async () => {
@@ -236,7 +240,7 @@ describe('backend/controllers/userController', () => {
                 cb(null, [userRow]);
             });
 
-            const req = { body: { username: 'alice', password: 'validpass' } };
+            const req = { body: { email: 'alice@test.com', password: 'validpass' } };
             const res = createMockResponse();
 
             await userController.login(req, res);
@@ -251,7 +255,7 @@ describe('backend/controllers/userController', () => {
                 cb(null, []);
             });
 
-            const req = { body: { username: 'alice', password: 'wrong' } };
+            const req = { body: { email: 'alice@test.com', password: 'wrong' } };
             const res = createMockResponse();
 
             await userController.login(req, res);

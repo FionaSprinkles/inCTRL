@@ -4,15 +4,11 @@
   <nav class="navbar">
     <RouterLink to="/" class="logo"> InCtrl </RouterLink>
 
-    <!-- Left side of the nav-bar -->
-
+    <!-- Left side of the navbar -->
     <div class="nav-left">
       <div class="nav-links">
-        <!-- Browse -->
-        <!-- The browse drop down can probably be moved to a separate component at a later stage-->
-
+        <!-- Browse dropdown -->
         <div class="browse">
-          <!-- On click will change const isBrowseOpen -->
           <button
             class="nav-link"
             aria-controls="browse-menu"
@@ -22,110 +18,148 @@
             Browse
           </button>
 
-          <!-- Browse drop-down -->
-
+          <!-- Category links -->
           <div v-if="isBrowseOpen" id="browse-menu" class="browse-menu">
             <div class="category-section">
               <h2>Courses by category</h2>
 
-              <RouterLink to="/courses/windows" class="nav-link" @click="isBrowseOpen = false">
-                Windows
+              <RouterLink to="/categories" class="nav-link" @click="isBrowseOpen = false">
+                All Courses
               </RouterLink>
 
-              <RouterLink to="/courses/office" class="nav-link" @click="isBrowseOpen = false">
-                Microsoft Office
-              </RouterLink>
-
-              <RouterLink to="/courses/productivity" class="nav-link" @click="isBrowseOpen = false">
-                Productivity
-              </RouterLink>
-
-              <RouterLink to="/courses/internet" class="nav-link" @click="isBrowseOpen = false">
-                Internet
-              </RouterLink>
-
-              <RouterLink to="/courses/programming" class="nav-link" @click="isBrowseOpen = false">
-                Programming
+              <!-- This link gets fetched categories from backend-->
+              <RouterLink
+                v-for="category in categories"
+                :key="category.id"
+                :to="`/categories/${category.slug}`"
+                class="nav-link"
+                @click="isBrowseOpen = false"
+              >
+                {{ category.name }}
               </RouterLink>
             </div>
           </div>
         </div>
 
-        <!-- Logged out -->
-
+        <!-- Links for logged out users -->
         <template v-if="!isLoggedIn">
-          <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
+
+          <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
 
           <RouterLink to="/about" class="nav-link"> About </RouterLink>
         </template>
 
-        <!-- Logged in -->
-
+        <!-- Links for logged in users -->
         <template v-else>
-          <RouterLink to="/" class="nav-link"> Home </RouterLink>
+          
 
-          <RouterLink to="/courses" class="nav-link"> Courses </RouterLink>
 
           <RouterLink to="/quiz" class="nav-link"> Quiz </RouterLink>
+
+          <RouterLink to="/history" class="nav-link"> History </RouterLink>
+
+          <RouterLink to="/shortcuts" class="nav-link"> Shortcuts List </RouterLink>
+
+          <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
         </template>
       </div>
     </div>
 
-    <!-- Right side of the nav-bar -->
+    <!-- Right side of the navbar -->
 
-    <!-- Logged out -->
-
+    <!-- Logged out: log in opens the modal, sign up goes to /signup -->
     <template v-if="!isLoggedIn">
       <div class="nav-right">
-        <button class="nav-link btn-auth" @click="showLogin = true">Log in</button>
+        <button class="nav-link btn-auth" @click="openLogin">Log in</button>
         <RouterLink to="/signup" class="nav-link btn-auth"> Sign up </RouterLink>
       </div>
     </template>
 
-    <!-- Logged in -->
-
+    <!-- Logged in: shows the user's first name and a log out button -->
     <template v-else>
       <div class="nav-right">
-        <!-- Change this later -->
+        <div class="user">{{ firstName }}</div>
 
-        <div class="user">Fiona</div>
-
-        <RouterLink to="/log-out" class="nav-link"> Log out </RouterLink>
+        <button class="nav-link" @click="handleLogout">Log out</button>
       </div>
     </template>
   </nav>
 
-  <LoginModal :open="showLogin" @close="showLogin = false" @login="handleLogin" />
+  <!-- Visibility is controlled by the shared state in useLoginModal -->
+  <LoginModal :open="showLogin" @close="closeLogin" @login="handleLogin" />
 </template>
 
 <!-- ===== SCRIPTS ======-->
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import LoginModal from './LoginModal.vue'
+import { useLoginModal } from '@/composables/useLoginModal'
+import { useAuth } from '@/composables/useAuth'
+import { login } from '@/services/authService'
 
-const isBrowseOpen = ref(false)
-const showLogin = ref(false)
+const router = useRouter()
+const isBrowseOpen = ref(false) // Is the browse dropdown open?
+const { showLogin, openLogin, closeLogin } = useLoginModal() // Shared login modal state
+const { isLoggedIn, firstName, setUser, logout } = useAuth()
 
-// This is just for testing. Will change later.
-const isLoggedIn = false
+// Runs when the modal emits "login"
+async function handleLogin(credentials) {
+  try {
+    const data = await login(credentials)
 
-function handleLogin(credentials) {
-  showLogin.value = false
+    setUser(data.user)
+
+    closeLogin()
+  } catch (error) {
+    alert(error.message || 'Login failed')
+  }
 }
 
-// This function makes the browse drop down disappear when clicking elsewhere
+// Clears the session and goes back to the home page
+function handleLogout() {
+  logout()
+  router.push('/')
+}
+
+// Closes the browse dropdown when clicking outside of it
 function closeBrowse(event) {
   if (!event.target.closest('.browse')) {
     isBrowseOpen.value = false
   }
 }
+
+// The click listener lives on the document, so it must be removed on unmount
 onMounted(() => {
   document.addEventListener('click', closeBrowse)
 })
 onUnmounted(() => {
   document.removeEventListener('click', closeBrowse)
+})
+
+
+// This function fetches categories from backend. 
+// Right now categories are displayed in drop down menu.
+const categories = ref([])
+
+async function fetchCategories() {
+  try {
+    const response = await fetch('/api/categories')
+
+    if (!response.ok) {
+      throw new Error('Could not fetch categories')
+    }
+
+    const data = await response.json()
+    categories.value = data.categories || []
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+  }
+}
+
+onMounted(() => {
+  fetchCategories()
 })
 </script>
 

@@ -31,17 +31,36 @@ function getCategoryById(id) {
 }
 
 /**
+ * Retrieves a category by its slug.
+ */
+function getCategoryBySlug(slug) {
+    return new Promise((resolve, reject) => {
+        const sql = `
+            SELECT id, name, slug, description, icon, display_order AS displayOrder
+            FROM categories
+            WHERE slug = ?
+        `;
+
+        db.query(sql, [slug], (err, rows) => {
+            if (err) return reject(err);
+            if (!rows || rows.length === 0) return resolve(null);
+            resolve(rows[0]);
+        });
+    });
+}
+
+/**
  * Creates a new shortcut category in the database.
  * @param {object} params - Category parameters.
  * @param {string} params.name - Category display name.
- * @param {string} [params.slug] - URL-friendly slug.
+ * @param {string} params.slug - URL-friendly slug. Must be only letters (a-z) and connect words with hyphen (-). No numbers.
  * @param {string} [params.description=''] - Optional category description.
  * @param {string} [params.icon='keyboard'] - Category icon identifier.
  * @returns {Promise<object>} Resolves with created category record.
  */
 function createCategory({ name, slug, description = '', icon = 'keyboard' }) {
     return new Promise((resolve, reject) => {
-        const generatedSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const generatedSlug = slug || (name ? name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : '');
         const sql = 'INSERT INTO categories (name, slug, description, icon) VALUES (?, ?, ?, ?)';
         db.query(sql, [name, generatedSlug, description, icon], (err, result) => {
             if (err) return reject(err);
@@ -59,5 +78,6 @@ function createCategory({ name, slug, description = '', icon = 'keyboard' }) {
 module.exports = {
     getCategories,
     getCategoryById,
-    createCategory
+    createCategory,
+    getCategoryBySlug
 };
