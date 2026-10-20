@@ -5,6 +5,21 @@ const { checkShortcutMatch } = require('../utils/keyboardUtils');
  * @param {object|Array} answers - Raw answers provided by the client.
  * @returns {Record<string, any>} Normalized dictionary mapping question IDs to answers.
  */
+
+/**
+ * Normalizes an individual key token (e.g. mapping browser arrow keys to display labels).
+ * @param {any} k - Raw key token.
+ * @returns {string} Lowercase normalized key name.
+ */
+function normalizeKeyToken(k) {
+    const s = String(k).trim().toLowerCase();
+    if (s === 'arrowup') return 'up arrow';
+    if (s === 'arrowdown') return 'down arrow';
+    if (s === 'arrowleft') return 'left arrow';
+    if (s === 'arrowright') return 'right arrow';
+    return s;
+}
+
 function normalizeAnswers(answers) {
     if (!answers || typeof answers !== 'object') {
         return {};

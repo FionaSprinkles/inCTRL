@@ -111,10 +111,10 @@
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
     "prompt": "Hands on keyboard! Press the shortcut to: Select multiple items:",
-    "key_combination": "Shift + Arrow keys",
-    "hint": "Target: Shift + Arrow keys",
-    "explanation": "Shift + Arrow keys instantly triggers: Select multiple items.",
-    "payload": {"displayCombo":"Shift + Arrow keys","targetKeys":["Shift","Arrow keys"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Arrow keys","D","Enter","P","Shift"]}
+    "key_combination": "Shift + Down Arrow",
+    "hint": "Target: Shift + Down Arrow",
+    "explanation": "Shift + Down Arrow instantly triggers: Select multiple items.",
+    "payload": {"displayCombo":"Shift + Down Arrow","targetKeys":["Shift","Down Arrow"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","D","Down Arrow","Enter","P","Shift"]}
   },
   {
     "id": "q-exp2-037",

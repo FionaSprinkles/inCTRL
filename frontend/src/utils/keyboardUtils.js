@@ -19,6 +19,10 @@ export function normalizeShortcutString(input) {
     .replace(/\bescape\b/g, 'esc')
     .replace(/\bdelete\b/g, 'del')
     .replace(/\bprintscreen\b/g, 'prtscn')
+    .replace(/\barrowup\b/g, 'up arrow')
+    .replace(/\barrowdown\b/g, 'down arrow')
+    .replace(/\barrowleft\b/g, 'left arrow')
+    .replace(/\barrowright\b/g, 'right arrow')
     .replace(/\s*\+\s*/g, '+')
     .replace(/\s*-\s*/g, '+')
     .replace(/\s+/g, '+')
@@ -61,6 +65,10 @@ export function getKeyLabelFromEvent(e) {
   if (e.key === 'Escape') return 'Esc'
   if (e.key === 'Delete') return 'Del'
   if (e.key === ' ') return 'Space'
+  if (e.key === 'ArrowUp') return 'Up Arrow'
+  if (e.key === 'ArrowDown') return 'Down Arrow'
+  if (e.key === 'ArrowLeft') return 'Left Arrow'
+  if (e.key === 'ArrowRight') return 'Right Arrow'
   if (e.key.length === 1) return e.key.toUpperCase()
   return e.key
 }

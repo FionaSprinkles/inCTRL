@@ -19,6 +19,8 @@ describe('backend/utils/keyboardUtils', () => {
             assert.strictEqual(normalizeShortcutString('Escape'), 'esc');
             assert.strictEqual(normalizeShortcutString('Delete'), 'del');
             assert.strictEqual(normalizeShortcutString('PrintScreen'), 'prtscn');
+            assert.strictEqual(normalizeShortcutString('Shift + ArrowDown'), 'shift+down+arrow');
+            assert.strictEqual(normalizeShortcutString('ArrowUp + ArrowLeft + ArrowRight'), 'up+arrow+left+arrow+right+arrow');
         });
 
         it('normalizes various separators (plus, dash, spaces)', () => {
@@ -45,6 +47,7 @@ describe('backend/utils/keyboardUtils', () => {
             assert.strictEqual(checkShortcutMatch('c + ctrl', ['ctrl+c']), true);
             assert.strictEqual(checkShortcutMatch('Windows + Shift + S', ['win+shift+s']), true);
             assert.strictEqual(checkShortcutMatch('s + win + shift', ['win+shift+s']), true);
+            assert.strictEqual(checkShortcutMatch('Shift + ArrowDown', ['Shift + Down Arrow']), true);
         });
 
         it('returns false when no variation matches', () => {

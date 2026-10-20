@@ -6,6 +6,21 @@ import { checkShortcutMatch } from '../utils/keyboardUtils.js'
  * @param {any} userAnswer - Answer provided by the user.
  * @returns {{ isCorrect: boolean, feedback: string, score: number, maxScore: number }} Evaluation result object.
  */
+
+/**
+ * Normalizes an individual key token (e.g. mapping browser arrow keys to display labels).
+ * @param {any} k - Raw key token.
+ * @returns {string} Lowercase normalized key name.
+ */
+function normalizeKeyToken(k) {
+  const s = String(k).trim().toLowerCase()
+  if (s === 'arrowup') return 'up arrow'
+  if (s === 'arrowdown') return 'down arrow'
+  if (s === 'arrowleft') return 'left arrow'
+  if (s === 'arrowright') return 'right arrow'
+  return s
+}
+
 export function validateAnswer(question, userAnswer) {
   if (!question || userAnswer === undefined || userAnswer === null) {
     return { isCorrect: false, feedback: 'No answer provided', score: 0, maxScore: 1 }
