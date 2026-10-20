@@ -81,10 +81,10 @@ export function validateAnswer(question, userAnswer) {
       // If order matters or doesn't matter:
       let isCorrect = false
       if (question.orderMatters) {
-        isCorrect = keys.length === target.length && keys.every((k, i) => k.toLowerCase() === target[i].toLowerCase())
+        isCorrect = keys.length === target.length && keys.every((k, i) => normalizeKeyToken(k) === normalizeKeyToken(target[i]))
       } else {
-        const sortedUser = [...keys].map(k => k.toLowerCase()).sort()
-        const sortedTarget = [...target].map(k => k.toLowerCase()).sort()
+        const sortedUser = [...keys].map(normalizeKeyToken).sort()
+        const sortedTarget = [...target].map(normalizeKeyToken).sort()
         isCorrect = sortedUser.length === sortedTarget.length && sortedUser.every((k, i) => k === sortedTarget[i])
       }
 
@@ -169,8 +169,8 @@ export function validateAnswer(question, userAnswer) {
       const pressed = Array.isArray(userAnswer) ? userAnswer : []
       const target = question.targetKeys || []
 
-      const normPressed = pressed.map(k => k.toLowerCase()).sort()
-      const normTarget = target.map(k => k.toLowerCase()).sort()
+      const normPressed = pressed.map(normalizeKeyToken).sort()
+      const normTarget = target.map(normalizeKeyToken).sort()
 
       const isCorrect =
         normPressed.length === normTarget.length &&

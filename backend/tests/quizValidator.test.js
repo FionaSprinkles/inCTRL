@@ -210,6 +210,24 @@ describe('backend/services/quizValidator', () => {
             const res = validateAnswer(qUnordered, 'ctrl+alt');
             assert.strictEqual(res.isCorrect, false);
         });
+
+        it('normalizes browser ArrowDown/ArrowUp/ArrowLeft/ArrowRight in key_builder', () => {
+            const arrowQ = {
+                type: 'key_builder',
+                targetCombo: ['Alt', 'Up Arrow'],
+                orderMatters: false
+            };
+            const res = validateAnswer(arrowQ, ['Alt', 'ArrowUp']);
+            assert.strictEqual(res.isCorrect, true);
+
+            const arrowOrdered = {
+                type: 'key_builder',
+                targetCombo: ['Shift', 'Down Arrow'],
+                orderMatters: true
+            };
+            const resOrdered = validateAnswer(arrowOrdered, ['Shift', 'ArrowDown']);
+            assert.strictEqual(resOrdered.isCorrect, true);
+        });
     });
 
     describe('validateAnswer - matching', () => {
@@ -324,6 +342,17 @@ describe('backend/services/quizValidator', () => {
         it('handles non-array inputs', () => {
             const res = validateAnswer(q, 'Win+E');
             assert.strictEqual(res.isCorrect, false);
+        });
+
+        it('normalizes browser ArrowDown/ArrowUp/ArrowLeft/ArrowRight in live_press', () => {
+            const arrowQ = {
+                type: 'live_press',
+                targetKeys: ['Shift', 'Down Arrow'],
+                displayCombo: 'Shift + Down Arrow'
+            };
+            const res = validateAnswer(arrowQ, ['Shift', 'ArrowDown']);
+            assert.strictEqual(res.isCorrect, true);
+            assert.ok(res.feedback.includes('Keyboard combo captured! (Shift + Down Arrow)'));
         });
     });
 
