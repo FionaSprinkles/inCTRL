@@ -166,7 +166,7 @@
     "key_combination": "Shift + mouse right-click",
     "hint": "Think about shortcuts starting with Shift.",
     "explanation": "Shift + mouse right-click: Display the Show more options context menu for the selected item. (Display the Show more options context menu for the s...).",
-    "payload": {"options":[{"id":"opt-1","label":"Shift + F10","text":"Shift + F10","isCorrect":false},{"id":"opt-2","label":"Alt + Shift + P","text":"Alt + Shift + P","isCorrect":false},{"id":"opt-3","label":"Home","text":"Home","isCorrect":false},{"id":"opt-4","label":"Shift + mouse right-click","text":"Shift + mouse right-click","isCorrect":true}]}
+    "payload": {"options":[{"id":"opt-1","label":"F5","text":"F5","isCorrect":false},{"id":"opt-2","label":"Alt + Shift + P","text":"Alt + Shift + P","isCorrect":false},{"id":"opt-3","label":"Home","text":"Home","isCorrect":false},{"id":"opt-4","label":"Shift + mouse right-click","text":"Shift + mouse right-click","isCorrect":true}]}
   },
   {
     "id": "q-exp2-041",
