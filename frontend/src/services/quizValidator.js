@@ -14,10 +14,10 @@ import { checkShortcutMatch } from '../utils/keyboardUtils.js'
  */
 function normalizeKeyToken(k) {
   const s = String(k).trim().toLowerCase()
-  if (s === 'arrowup') return 'up arrow'
-  if (s === 'arrowdown') return 'down arrow'
-  if (s === 'arrowleft') return 'left arrow'
-  if (s === 'arrowright') return 'right arrow'
+  if (s === 'arrowup' || s === 'up' || s === 'up arrow') return 'up arrow'
+  if (s === 'arrowdown' || s === 'down' || s === 'down arrow') return 'down arrow'
+  if (s === 'arrowleft' || s === 'left' || s === 'left arrow') return 'left arrow'
+  if (s === 'arrowright' || s === 'right' || s === 'right arrow') return 'right arrow'
   return s
 }
 
@@ -76,11 +76,12 @@ export function validateAnswer(question, userAnswer) {
 
     case 'key_builder': {
       const keys = Array.isArray(userAnswer) ? userAnswer : []
-      const target = question.targetCombo || []
+      const target = question.targetCombo || question.payload?.targetCombo || []
+      const orderMatters = question.orderMatters ?? question.payload?.orderMatters ?? false
 
       // If order matters or doesn't matter:
       let isCorrect = false
-      if (question.orderMatters) {
+      if (orderMatters) {
         isCorrect = keys.length === target.length && keys.every((k, i) => normalizeKeyToken(k) === normalizeKeyToken(target[i]))
       } else {
         const sortedUser = [...keys].map(normalizeKeyToken).sort()
@@ -167,7 +168,7 @@ export function validateAnswer(question, userAnswer) {
     case 'live_press': {
       // userAnswer: array of pressed key names, e.g. ['Win', 'E']
       const pressed = Array.isArray(userAnswer) ? userAnswer : []
-      const target = question.targetKeys || []
+      const target = question.targetKeys || question.payload?.targetKeys || []
 
       const normPressed = pressed.map(normalizeKeyToken).sort()
       const normTarget = target.map(normalizeKeyToken).sort()

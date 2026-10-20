@@ -228,6 +228,22 @@ describe('backend/services/quizValidator', () => {
             const resOrdered = validateAnswer(arrowOrdered, ['Shift', 'ArrowDown']);
             assert.strictEqual(resOrdered.isCorrect, true);
         });
+
+        it('normalizes short arrow targets such as Left in key_builder (e.g. q-txt2-033)', () => {
+            const textEditingQuestions = require('../data/quizQuestions/textEditingPart2.json');
+            const qTxt2033 = textEditingQuestions.find(q => q.id === 'q-txt2-033');
+            assert.ok(qTxt2033, 'Question q-txt2-033 must exist in seeded data');
+
+            const res = validateAnswer(qTxt2033, ['Shift', 'Ctrl', 'ArrowLeft']);
+            assert.strictEqual(res.isCorrect, true);
+            assert.strictEqual(res.score, 1);
+
+            const resVirtual = validateAnswer(qTxt2033, ['Shift', 'Ctrl', 'Left']);
+            assert.strictEqual(resVirtual.isCorrect, true);
+
+            const resDisplay = validateAnswer(qTxt2033, ['Shift', 'Ctrl', 'Left Arrow']);
+            assert.strictEqual(resDisplay.isCorrect, true);
+        });
     });
 
     describe('validateAnswer - matching', () => {
@@ -353,6 +369,16 @@ describe('backend/services/quizValidator', () => {
             const res = validateAnswer(arrowQ, ['Shift', 'ArrowDown']);
             assert.strictEqual(res.isCorrect, true);
             assert.ok(res.feedback.includes('Keyboard combo captured! (Shift + Down Arrow)'));
+        });
+
+        it('normalizes short arrow targets such as Right/Left/Up/Down in live_press', () => {
+            const shortArrowQ = {
+                type: 'live_press',
+                targetKeys: ['Ctrl', 'Right'],
+                displayCombo: 'Ctrl + Right'
+            };
+            const res = validateAnswer(shortArrowQ, ['Ctrl', 'ArrowRight']);
+            assert.strictEqual(res.isCorrect, true);
         });
     });
 
