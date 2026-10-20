@@ -109,7 +109,7 @@
   </main>
 </template>
 
-<style>
+<style scoped>
 /* Hero section styling */
 .hero-section {
   padding: 60px 20px 60px 80px;
