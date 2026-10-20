@@ -66,7 +66,7 @@
   },
   {
     "id": "q-txt2-036",
-    "quiz_id": 29,
+    "quiz_id": 28,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -79,7 +79,7 @@
   },
   {
     "id": "q-txt2-037",
-    "quiz_id": 29,
+    "quiz_id": 28,
     "type": "fill_blank",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -92,7 +92,7 @@
   },
   {
     "id": "q-txt2-038",
-    "quiz_id": 29,
+    "quiz_id": 28,
     "type": "key_builder",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -105,7 +105,7 @@
   },
   {
     "id": "q-txt2-039",
-    "quiz_id": 29,
+    "quiz_id": 28,
     "type": "live_press",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -118,7 +118,7 @@
   },
   {
     "id": "q-txt2-040",
-    "quiz_id": 30,
+    "quiz_id": 29,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -131,7 +131,7 @@
   },
   {
     "id": "q-txt2-041",
-    "quiz_id": 30,
+    "quiz_id": 29,
     "type": "fill_blank",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -144,7 +144,7 @@
   },
   {
     "id": "q-txt2-042",
-    "quiz_id": 30,
+    "quiz_id": 28,
     "type": "key_builder",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -157,7 +157,7 @@
   },
   {
     "id": "q-txt2-043",
-    "quiz_id": 30,
+    "quiz_id": 28,
     "type": "live_press",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -170,7 +170,7 @@
   },
   {
     "id": "q-txt2-044",
-    "quiz_id": 30,
+    "quiz_id": 26,
     "type": "true_false",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -183,7 +183,7 @@
   },
   {
     "id": "q-txt2-045",
-    "quiz_id": 30,
+    "quiz_id": 26,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -196,7 +196,7 @@
   },
   {
     "id": "q-txt2-046",
-    "quiz_id": 30,
+    "quiz_id": 31,
     "type": "fill_blank",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -209,7 +209,7 @@
   },
   {
     "id": "q-txt2-047",
-    "quiz_id": 30,
+    "quiz_id": 26,
     "type": "key_builder",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -222,7 +222,7 @@
   },
   {
     "id": "q-txt2-048",
-    "quiz_id": 30,
+    "quiz_id": 26,
     "type": "live_press",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -235,7 +235,7 @@
   },
   {
     "id": "q-txt2-049",
-    "quiz_id": 31,
+    "quiz_id": 26,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -248,7 +248,7 @@
   },
   {
     "id": "q-txt2-050",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -261,7 +261,7 @@
   },
   {
     "id": "q-txt2-051",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -274,7 +274,7 @@
   },
   {
     "id": "q-txt2-052",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -287,7 +287,7 @@
   },
   {
     "id": "q-txt2-053",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "true_false",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -300,7 +300,7 @@
   },
   {
     "id": "q-txt2-054",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "single_choice",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -313,7 +313,7 @@
   },
   {
     "id": "q-txt2-055",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "fill_blank",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -326,7 +326,7 @@
   },
   {
     "id": "q-txt2-056",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "key_builder",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
@@ -339,7 +339,7 @@
   },
   {
     "id": "q-txt2-057",
-    "quiz_id": 31,
+    "quiz_id": 27,
     "type": "live_press",
     "category_id": 9,
     "category_name": "Text Editing & Formatting",
