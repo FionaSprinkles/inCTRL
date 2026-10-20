@@ -114,6 +114,18 @@ describe('backend/controllers/categoryController', () => {
             assert.strictEqual(res.body.error, 'Category name is required');
         });
 
+        it('returns 400 when name is not a valid non-empty string', async () => {
+            for (const invalidName of [123, {}, [], true, '   ']) {
+                const req = { body: { name: invalidName } };
+                const res = createMockResponse();
+
+                await categoryController.createCategory(req, res);
+                assert.strictEqual(res.statusCode, 400);
+                assert.strictEqual(res.body.success, false);
+                assert.strictEqual(res.body.error, 'Category name is required');
+            }
+        });
+
         it('returns 201 on successful category creation', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
                 cb(null, { insertId: 3 });
