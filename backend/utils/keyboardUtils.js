@@ -19,6 +19,10 @@ function normalizeShortcutString(input) {
         .replace(/\bescape\b/g, 'esc')
         .replace(/\bdelete\b/g, 'del')
         .replace(/\bprintscreen\b/g, 'prtscn')
+        .replace(/\barrowup\b/g, 'up arrow')
+        .replace(/\barrowdown\b/g, 'down arrow')
+        .replace(/\barrowleft\b/g, 'left arrow')
+        .replace(/\barrowright\b/g, 'right arrow')
         .replace(/\s*\+\s*/g, '+')
         .replace(/\s*-\s*/g, '+')
         .replace(/\s+/g, '+');

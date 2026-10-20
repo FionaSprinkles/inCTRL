@@ -5,6 +5,21 @@ const { checkShortcutMatch } = require('../utils/keyboardUtils');
  * @param {object|Array} answers - Raw answers provided by the client.
  * @returns {Record<string, any>} Normalized dictionary mapping question IDs to answers.
  */
+
+/**
+ * Normalizes an individual key token (e.g. mapping browser arrow keys to display labels).
+ * @param {any} k - Raw key token.
+ * @returns {string} Lowercase normalized key name.
+ */
+function normalizeKeyToken(k) {
+    const s = String(k).trim().toLowerCase();
+    if (s === 'arrowup' || s === 'up' || s === 'up arrow') return 'up arrow';
+    if (s === 'arrowdown' || s === 'down' || s === 'down arrow') return 'down arrow';
+    if (s === 'arrowleft' || s === 'left' || s === 'left arrow') return 'left arrow';
+    if (s === 'arrowright' || s === 'right' || s === 'right arrow') return 'right arrow';
+    return s;
+}
+
 function normalizeAnswers(answers) {
     if (!answers || typeof answers !== 'object') {
         return {};
@@ -97,14 +112,15 @@ function validateAnswer(question, userAnswer) {
 
         case 'key_builder': {
             const keys = Array.isArray(userAnswer) ? userAnswer : [];
-            const target = question.targetCombo || [];
+            const target = question.targetCombo || (question.payload && question.payload.targetCombo) || [];
+            const orderMatters = question.orderMatters ?? (question.payload && question.payload.orderMatters) ?? false;
 
             let isCorrect = false;
-            if (question.orderMatters) {
-                isCorrect = keys.length === target.length && keys.every((k, i) => String(k).toLowerCase() === String(target[i]).toLowerCase());
+            if (orderMatters) {
+                isCorrect = keys.length === target.length && keys.every((k, i) => normalizeKeyToken(k) === normalizeKeyToken(target[i]));
             } else {
-                const sortedUser = [...keys].map(k => String(k).toLowerCase()).sort();
-                const sortedTarget = [...target].map(k => String(k).toLowerCase()).sort();
+                const sortedUser = [...keys].map(normalizeKeyToken).sort();
+                const sortedTarget = [...target].map(normalizeKeyToken).sort();
                 isCorrect = sortedUser.length === sortedTarget.length && sortedUser.every((k, i) => k === sortedTarget[i]);
             }
 
@@ -183,10 +199,10 @@ function validateAnswer(question, userAnswer) {
 
         case 'live_press': {
             const pressed = Array.isArray(userAnswer) ? userAnswer : [];
-            const target = question.targetKeys || [];
+            const target = question.targetKeys || (question.payload && question.payload.targetKeys) || [];
 
-            const normPressed = pressed.map(k => String(k).toLowerCase()).sort();
-            const normTarget = target.map(k => String(k).toLowerCase()).sort();
+            const normPressed = pressed.map(normalizeKeyToken).sort();
+            const normTarget = target.map(normalizeKeyToken).sort();
 
             const isCorrect =
                 normPressed.length === normTarget.length &&

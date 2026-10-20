@@ -6,7 +6,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Minimizes all windows to show the desktop. Pressing it again restores all windows.?",
+    "prompt": "Which keyboard shortcut is used to: Minimizes all windows to show the desktop. Pressing it again restores all windows?",
     "key_combination": "Win + D",
     "hint": "Think about shortcuts starting with Win.",
     "explanation": "Win + D: Minimizes all windows to show the desktop. Pressing it again restores all windows. (Show Desktop).",
@@ -19,11 +19,11 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Instantly locks Windows session requiring PIN or password.?",
+    "prompt": "What keyboard shortcut is used to: Instantly locks Windows session requiring PIN or password?",
     "key_combination": "Win + L",
     "hint": "Combines keys: Win  + ?",
-    "explanation": "Pressing Win + L will instantly locks windows session requiring pin or password..",
-    "payload": {"placeholder":"e.g. Win + L","canonicalAnswer":"Win + L","acceptedAnswers":["Win + L","Win+L","win + l","win+l","Windows + L","windows+L"]}
+    "explanation": "Pressing Win + L will instantly lock windows session requiring pin or password.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Win + L","acceptedAnswers":["Win + L","Win+L","win + l","win+l","Windows + L","windows+L"]}
   },
   {
     "id": "q-nav-003",
@@ -32,7 +32,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Cut the selected item.:",
+    "prompt": "Assemble the keyboard shortcut to: Cut the selected item:",
     "key_combination": "Ctrl + X",
     "hint": "Requires 2 keys combined together.",
     "explanation": "The correct combination is: Ctrl + X.",
@@ -45,10 +45,10 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Intermediate",
-    "prompt": "Hands on keyboard! Press the shortcut to: Copy the selected item.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Copy the selected item:",
     "key_combination": "Ctrl + C or Ctrl + Insert",
     "hint": "Target: Ctrl + C or Ctrl + Insert",
-    "explanation": "Ctrl + C or Ctrl + Insert instantly triggers: Copy the selected item..",
+    "explanation": "Ctrl + C or Ctrl + Insert instantly triggers: Copy the selected item.",
     "payload": {"displayCombo":"Ctrl + C or Ctrl + Insert","targetKeys":["Ctrl","C"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","C","Ctrl","Esc","Shift","Win"]}
   },
   {
@@ -61,8 +61,8 @@
     "prompt": "True or False:",
     "key_combination": "Ctrl + V or Shift + Insert",
     "hint": "Check the action assigned to Ctrl + V or Shift + Insert.",
-    "explanation": "True! Ctrl + V or Shift + Insert does paste the selected item..",
-    "payload": {"statement":"Pressing \"Ctrl + V or Shift + Insert\" will paste the selected item..","correctAnswer":true}
+    "explanation": "True! Ctrl + V or Shift + Insert does paste the selected item.",
+    "payload": {"statement":"Pressing \"Ctrl + V or Shift + Insert\" will paste the selected item.","correctAnswer":true}
   },
   {
     "id": "q-nav-006",
@@ -71,7 +71,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Undo an action.?",
+    "prompt": "Which keyboard shortcut is used to: Undo an action?",
     "key_combination": "Ctrl + Z",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Z: Undo an action. (Undo an action).",
@@ -84,11 +84,11 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Close the active item, or exit the active app.?",
+    "prompt": "What keyboard shortcut is used to: Close the active item, or exit the active app?",
     "key_combination": "Alt + F4",
     "hint": "Combines keys: Alt  + ?",
-    "explanation": "Pressing Alt + F4 will close the active item, or exit the active app..",
-    "payload": {"placeholder":"e.g. Alt + F4","canonicalAnswer":"Alt + F4","acceptedAnswers":["Alt + F4","Alt+F4","alt + f4","alt+f4"]}
+    "explanation": "Pressing Alt + F4 will close the active item, or exit the active app.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Alt + F4","acceptedAnswers":["Alt + F4","Alt+F4","alt + f4","alt+f4"]}
   },
   {
     "id": "q-nav-008",
@@ -97,7 +97,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Cycle through screen elements in a window or on the desktop.:",
+    "prompt": "Assemble the keyboard shortcut to: Cycle through screen elements in a window or on the desktop:",
     "key_combination": "F6",
     "hint": "Requires 1 keys combined together.",
     "explanation": "The correct combination is: F6.",
@@ -110,7 +110,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Perform the command for that letter.?",
+    "prompt": "Which keyboard shortcut is used to: Perform the command for that letter?",
     "key_combination": "Alt + underlined letter",
     "hint": "Think about shortcuts starting with Alt.",
     "explanation": "Alt + underlined letter: Perform the command for that letter. (Perform the command for that letter).",
@@ -123,11 +123,11 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Open the shortcut menu for the active window.?",
+    "prompt": "What keyboard shortcut is used to: Open the shortcut menu for the active window?",
     "key_combination": "Alt + Space",
     "hint": "Combines keys: Alt  + ?",
-    "explanation": "Pressing Alt + Space will open the shortcut menu for the active window..",
-    "payload": {"placeholder":"e.g. Alt + Space","canonicalAnswer":"Alt + Space","acceptedAnswers":["Alt + Space","Alt+Space","alt + space","alt+space"]}
+    "explanation": "Pressing Alt + Space will open the shortcut menu for the active window.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Alt + Space","acceptedAnswers":["Alt + Space","Alt+Space","alt + space","alt+space"]}
   },
   {
     "id": "q-nav-011",
@@ -136,7 +136,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Close the active document (in apps that are full-screen and let you have multiple documents open at the same time).:",
+    "prompt": "Assemble the keyboard shortcut to: Close the active document (in apps that are full-screen and let you have multiple documents open at the same time):",
     "key_combination": "Ctrl + F4",
     "hint": "Requires 2 keys combined together.",
     "explanation": "The correct combination is: Ctrl + F4.",
@@ -149,10 +149,10 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Select all items in a document or window.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Select all items in a document or window:",
     "key_combination": "Ctrl + A",
     "hint": "Target: Ctrl + A",
-    "explanation": "Ctrl + A instantly triggers: Select all items in a document or window..",
+    "explanation": "Ctrl + A instantly triggers: Select all items in a document or window.",
     "payload": {"displayCombo":"Ctrl + A","targetKeys":["Ctrl","A"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["A","Alt","Ctrl","Esc","Shift","Win"]}
   },
   {
@@ -165,8 +165,8 @@
     "prompt": "True or False:",
     "key_combination": "Ctrl + R or F5",
     "hint": "Check the action assigned to Ctrl + R or F5.",
-    "explanation": "True! Ctrl + R or F5 does refresh the active window..",
-    "payload": {"statement":"Pressing \"Ctrl + R or F5\" will refresh the active window..","correctAnswer":true}
+    "explanation": "True! Ctrl + R or F5 does refresh the active window.",
+    "payload": {"statement":"Pressing \"Ctrl + R or F5\" will refresh the active window.","correctAnswer":true}
   },
   {
     "id": "q-nav-014",
@@ -175,7 +175,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used to: Redo an action.?",
+    "prompt": "Which keyboard shortcut is used to: Redo an action?",
     "key_combination": "Ctrl + Y",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Y: Redo an action. (Redo an action).",
@@ -188,11 +188,11 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Resize the Start menu when it's open.?",
+    "prompt": "What keyboard shortcut is used to: Resize the Start menu when it's open?",
     "key_combination": "Ctrl + Arrow keys",
     "hint": "Combines keys: Ctrl  + ?",
-    "explanation": "Pressing Ctrl + Arrow keys will resize the start menu when it's open..",
-    "payload": {"placeholder":"e.g. Ctrl + Arrow keys","canonicalAnswer":"Ctrl + Arrow keys","acceptedAnswers":["Ctrl + Arrow keys","Ctrl+Arrow keys","ctrl + arrow keys","ctrl+arrow keys","Control + Arrow keys","control+Arrow keys"]}
+    "explanation": "Pressing Ctrl + Arrow keys will resize the start menu when it's open.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Ctrl + Arrow keys","acceptedAnswers":["Ctrl + Arrow keys","Ctrl+Arrow keys","ctrl + arrow keys","ctrl+arrow keys","Control + Arrow keys","control+Arrow keys"]}
   },
   {
     "id": "q-nav-016",
@@ -201,7 +201,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Select a block of text.?",
+    "prompt": "Which keyboard shortcut is used to: Select a block of text?",
     "key_combination": "Ctrl + Shift with an arrow key",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Shift with an arrow key: Select a block of text. (Select a block of text).",
@@ -214,7 +214,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Open Start.?",
+    "prompt": "Which keyboard shortcut is used to: Open Start?",
     "key_combination": "Ctrl + Esc",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Esc: Open Start. (Open Start).",
@@ -227,11 +227,11 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Switch the keyboard layout when multiple keyboard layouts are available.?",
+    "prompt": "What keyboard shortcut is used to: Switch the keyboard layout when multiple keyboard layouts are available?",
     "key_combination": "Ctrl + Shift",
     "hint": "Combines keys: Ctrl  + ?",
-    "explanation": "Pressing Ctrl + Shift will switch the keyboard layout when multiple keyboard layouts are available..",
-    "payload": {"placeholder":"e.g. Ctrl + Shift","canonicalAnswer":"Ctrl + Shift","acceptedAnswers":["Ctrl + Shift","Ctrl+Shift","ctrl + shift","ctrl+shift","Control + Shift","control+Shift"]}
+    "explanation": "Pressing Ctrl + Shift will switch the keyboard layout when multiple keyboard layouts are available.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Ctrl + Shift","acceptedAnswers":["Ctrl + Shift","Ctrl+Shift","ctrl + shift","ctrl+shift","Control + Shift","control+Shift"]}
   },
   {
     "id": "q-nav-019",
@@ -240,7 +240,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Turn the Chinese input method editor (IME) on or off.:",
+    "prompt": "Assemble the keyboard shortcut to: Turn the Chinese input method editor (IME) on or off:",
     "key_combination": "Ctrl + Space",
     "hint": "Requires 2 keys combined together.",
     "explanation": "The correct combination is: Ctrl + Space.",
@@ -253,10 +253,10 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Intermediate",
-    "prompt": "Hands on keyboard! Press the shortcut to: Display the shortcut menu for the selected item.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Display the shortcut menu for the selected item:",
     "key_combination": "Shift + F10",
     "hint": "Target: Shift + F10",
-    "explanation": "Shift + F10 instantly triggers: Display the shortcut menu for the selected item..",
+    "explanation": "Shift + F10 instantly triggers: Display the shortcut menu for the selected item.",
     "payload": {"displayCombo":"Shift + F10","targetKeys":["Shift","F10"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","Esc","F10","Shift","Win"]}
   },
   {
@@ -269,8 +269,8 @@
     "prompt": "True or False:",
     "key_combination": "Shift with any arrow key",
     "hint": "Check the action assigned to Shift with any arrow key.",
-    "explanation": "True! Shift with any arrow key does select more than one item in a window or on the desktop, or select text in a document..",
-    "payload": {"statement":"Pressing \"Shift with any arrow key\" will select more than one item in a window or on the desktop, or select text in a document..","correctAnswer":true}
+    "explanation": "True! Shift with any arrow key does select more than one item in a window or on the desktop, or select text in a document.",
+    "payload": {"statement":"Pressing \"Shift with any arrow key\" will select more than one item in a window or on the desktop, or select text in a document.","correctAnswer":true}
   },
   {
     "id": "q-nav-022",
@@ -279,7 +279,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used to: Delete the selected item without moving it to the Recycle Bin first.?",
+    "prompt": "Which keyboard shortcut is used to: Delete the selected item without moving it to the Recycle Bin first?",
     "key_combination": "Shift + Del",
     "hint": "Think about shortcuts starting with Shift.",
     "explanation": "Shift + Del: Delete the selected item without moving it to the Recycle Bin first. (Delete the selected item without moving it to the Re...).",
@@ -292,11 +292,11 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Open the next menu to the right, or open a submenu.?",
+    "prompt": "What keyboard shortcut is used to: Open the next menu to the right, or open a submenu?",
     "key_combination": "Right Arrow",
     "hint": "Combines keys: Right Arrow",
-    "explanation": "Pressing Right Arrow will open the next menu to the right, or open a submenu..",
-    "payload": {"placeholder":"e.g. Right Arrow","canonicalAnswer":"Right Arrow","acceptedAnswers":["Right Arrow","right arrow"]}
+    "explanation": "Pressing Right Arrow will open the next menu to the right, or open a submenu.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Right Arrow","acceptedAnswers":["Right Arrow","right arrow"]}
   },
   {
     "id": "q-nav-024",
@@ -305,7 +305,7 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Open the next menu to the left, or close a submenu.:",
+    "prompt": "Assemble the keyboard shortcut to: Open the next menu to the left, or close a submenu:",
     "key_combination": "Left Arrow",
     "hint": "Requires 1 keys combined together.",
     "explanation": "The correct combination is: Left Arrow.",
@@ -318,10 +318,10 @@
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Stop or leave the current task.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Stop or leave the current task:",
     "key_combination": "Esc",
     "hint": "Target: Esc",
-    "explanation": "Esc instantly triggers: Stop or leave the current task..",
+    "explanation": "Esc instantly triggers: Stop or leave the current task.",
     "payload": {"displayCombo":"Esc","targetKeys":["Esc"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","Esc","Shift","Win"]}
   }
 ]

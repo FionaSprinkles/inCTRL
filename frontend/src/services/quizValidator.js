@@ -6,6 +6,21 @@ import { checkShortcutMatch } from '../utils/keyboardUtils.js'
  * @param {any} userAnswer - Answer provided by the user.
  * @returns {{ isCorrect: boolean, feedback: string, score: number, maxScore: number }} Evaluation result object.
  */
+
+/**
+ * Normalizes an individual key token (e.g. mapping browser arrow keys to display labels).
+ * @param {any} k - Raw key token.
+ * @returns {string} Lowercase normalized key name.
+ */
+function normalizeKeyToken(k) {
+  const s = String(k).trim().toLowerCase()
+  if (s === 'arrowup' || s === 'up' || s === 'up arrow') return 'up arrow'
+  if (s === 'arrowdown' || s === 'down' || s === 'down arrow') return 'down arrow'
+  if (s === 'arrowleft' || s === 'left' || s === 'left arrow') return 'left arrow'
+  if (s === 'arrowright' || s === 'right' || s === 'right arrow') return 'right arrow'
+  return s
+}
+
 export function validateAnswer(question, userAnswer) {
   if (!question || userAnswer === undefined || userAnswer === null) {
     return { isCorrect: false, feedback: 'No answer provided', score: 0, maxScore: 1 }
@@ -61,15 +76,16 @@ export function validateAnswer(question, userAnswer) {
 
     case 'key_builder': {
       const keys = Array.isArray(userAnswer) ? userAnswer : []
-      const target = question.targetCombo || []
+      const target = question.targetCombo || question.payload?.targetCombo || []
+      const orderMatters = question.orderMatters ?? question.payload?.orderMatters ?? false
 
       // If order matters or doesn't matter:
       let isCorrect = false
-      if (question.orderMatters) {
-        isCorrect = keys.length === target.length && keys.every((k, i) => k.toLowerCase() === target[i].toLowerCase())
+      if (orderMatters) {
+        isCorrect = keys.length === target.length && keys.every((k, i) => normalizeKeyToken(k) === normalizeKeyToken(target[i]))
       } else {
-        const sortedUser = [...keys].map(k => k.toLowerCase()).sort()
-        const sortedTarget = [...target].map(k => k.toLowerCase()).sort()
+        const sortedUser = [...keys].map(normalizeKeyToken).sort()
+        const sortedTarget = [...target].map(normalizeKeyToken).sort()
         isCorrect = sortedUser.length === sortedTarget.length && sortedUser.every((k, i) => k === sortedTarget[i])
       }
 
@@ -152,10 +168,10 @@ export function validateAnswer(question, userAnswer) {
     case 'live_press': {
       // userAnswer: array of pressed key names, e.g. ['Win', 'E']
       const pressed = Array.isArray(userAnswer) ? userAnswer : []
-      const target = question.targetKeys || []
+      const target = question.targetKeys || question.payload?.targetKeys || []
 
-      const normPressed = pressed.map(k => k.toLowerCase()).sort()
-      const normTarget = target.map(k => k.toLowerCase()).sort()
+      const normPressed = pressed.map(normalizeKeyToken).sort()
+      const normTarget = target.map(normalizeKeyToken).sort()
 
       const isCorrect =
         normPressed.length === normTarget.length &&

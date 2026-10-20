@@ -37,16 +37,17 @@ exports.getCategories = async (req, res) => {
 exports.getCategory = async (req, res) => {
     try {
 
-        const {identifier} = req.params;
+        const identifier = req.params.identifier ?? req.params.id;
+        const isNumeric = /^\d+$/.test(String(identifier));
         
-        const category = /^\d+$/.test(identifier) // This is a test to see if the string contains only numbers or letters. Will return true if string is numbers.
-        ? await categoryService.getCategoryById(identifier) //If ?true return id
-        : await categoryService.getCategoryBySlug(identifier);// else :false retturn slug
+        const category = isNumeric
+            ? await categoryService.getCategoryById(identifier)
+            : await categoryService.getCategoryBySlug(identifier);
 
         if (!category) {
             return res.status(404).json({
                 success: false,
-                error: `Category with ${identifier} not found`
+                error: `Category with ${isNumeric ? `id ${identifier}` : identifier} not found`
             });
         }
         res.json({
@@ -81,21 +82,25 @@ exports.createCategory = async (req, res) => {
 
         const slugRegex = /^[a-z]+(?:-[a-z]+)*$/;
 
-        if (!name) {
+        if (!name || typeof name !== 'string' || !name.trim()) {
             return res.status(400).json({
                 success: false,
                 error: 'Category name is required'
             });
         }
 
-        if (!slugRegex.test(slug)) {
-        return res.status(400).json({
-            success: false,
-            error: 'Slug must contain only lowercase letters (a-z) and single hyphens (-) between words'
-        });
-    }
+        const candidateSlug = (slug !== undefined && slug !== null && slug !== '')
+            ? (typeof slug === 'string' ? slug.trim() : String(slug))
+            : (name ? name.toLowerCase().trim().replace(/[^a-z]+/g, '-').replace(/^-+|-+$/g, '') : '');
 
-        const category = await categoryService.createCategory({ name, slug, description, icon });
+        if (!slugRegex.test(candidateSlug)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Slug must contain only lowercase letters (a-z) and single hyphens (-) between words'
+            });
+        }
+
+        const category = await categoryService.createCategory({ name, slug: candidateSlug, description, icon });
         res.status(201).json({
             success: true,
             message: 'Category created successfully',

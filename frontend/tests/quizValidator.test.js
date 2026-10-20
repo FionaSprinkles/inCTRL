@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
+import fs from 'node:fs'
 import { validateAnswer } from '../src/services/quizValidator.js'
 
 describe('frontend/src/services/quizValidator', () => {
@@ -149,6 +150,42 @@ describe('frontend/src/services/quizValidator', () => {
       const res = validateAnswer(qOrdered, 'Ctrl+Shift+Esc')
       assert.strictEqual(res.isCorrect, false)
     })
+
+    it('normalizes browser ArrowDown/ArrowUp/ArrowLeft/ArrowRight in key_builder', () => {
+      const arrowQ = {
+        type: 'key_builder',
+        targetCombo: ['Alt', 'Up Arrow'],
+        orderMatters: false
+      }
+      const res = validateAnswer(arrowQ, ['Alt', 'ArrowUp'])
+      assert.strictEqual(res.isCorrect, true)
+
+      const arrowOrdered = {
+        type: 'key_builder',
+        targetCombo: ['Shift', 'Down Arrow'],
+        orderMatters: true
+      }
+      const resOrdered = validateAnswer(arrowOrdered, ['Shift', 'ArrowDown'])
+      assert.strictEqual(resOrdered.isCorrect, true)
+    })
+
+    it('normalizes short arrow targets such as Left in key_builder (e.g. q-txt2-033)', () => {
+      const textEditingQuestions = JSON.parse(
+        fs.readFileSync(new URL('../../backend/data/quizQuestions/textEditingPart2.json', import.meta.url), 'utf8')
+      )
+      const qTxt2033 = textEditingQuestions.find(q => q.id === 'q-txt2-033')
+      assert.ok(qTxt2033, 'Question q-txt2-033 must exist in seeded data')
+
+      const res = validateAnswer(qTxt2033, ['Shift', 'Ctrl', 'ArrowLeft'])
+      assert.strictEqual(res.isCorrect, true)
+      assert.strictEqual(res.score, 1)
+
+      const resVirtual = validateAnswer(qTxt2033, ['Shift', 'Ctrl', 'Left'])
+      assert.strictEqual(resVirtual.isCorrect, true)
+
+      const resDisplay = validateAnswer(qTxt2033, ['Shift', 'Ctrl', 'Left Arrow'])
+      assert.strictEqual(resDisplay.isCorrect, true)
+    })
   })
 
   describe('matching', () => {
@@ -249,6 +286,27 @@ describe('frontend/src/services/quizValidator', () => {
 
       const resNonArr = validateAnswer(q, 'Win+E')
       assert.strictEqual(resNonArr.isCorrect, false)
+    })
+
+    it('normalizes browser ArrowDown/ArrowUp/ArrowLeft/ArrowRight in live_press', () => {
+      const arrowQ = {
+        type: 'live_press',
+        targetKeys: ['Shift', 'Down Arrow'],
+        displayCombo: 'Shift + Down Arrow'
+      }
+      const res = validateAnswer(arrowQ, ['Shift', 'ArrowDown'])
+      assert.strictEqual(res.isCorrect, true)
+      assert.ok(res.feedback.includes('Keyboard combo captured! (Shift + Down Arrow)'))
+    })
+
+    it('normalizes short arrow targets such as Right/Left/Up/Down in live_press', () => {
+      const shortArrowQ = {
+        type: 'live_press',
+        targetKeys: ['Ctrl', 'Right'],
+        displayCombo: 'Ctrl + Right'
+      }
+      const res = validateAnswer(shortArrowQ, ['Ctrl', 'ArrowRight'])
+      assert.strictEqual(res.isCorrect, true)
     })
   })
 

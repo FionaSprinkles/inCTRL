@@ -60,13 +60,14 @@ function getCategoryBySlug(slug) {
  */
 function createCategory({ name, slug, description = '', icon = 'keyboard' }) {
     return new Promise((resolve, reject) => {
+        const generatedSlug = slug || (name ? name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : '');
         const sql = 'INSERT INTO categories (name, slug, description, icon) VALUES (?, ?, ?, ?)';
-        db.query(sql, [name, slug, description, icon], (err, result) => {
+        db.query(sql, [name, generatedSlug, description, icon], (err, result) => {
             if (err) return reject(err);
             resolve({
                 id: result.insertId,
                 name,
-                slug,
+                slug: generatedSlug,
                 description,
                 icon
             });

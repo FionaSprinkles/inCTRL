@@ -6,7 +6,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Directly opens a new File Explorer window.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Directly opens a new File Explorer window?",
     "key_combination": "Win + E",
     "hint": "Think about shortcuts starting with Win.",
     "explanation": "Win + E: Directly opens a new File Explorer window. (File Explorer).",
@@ -19,11 +19,11 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Select the address bar.?",
+    "prompt": "What keyboard shortcut is used to: Select the address bar?",
     "key_combination": "Alt + D",
     "hint": "Combines keys: Alt  + ?",
-    "explanation": "Pressing Alt + D will select the address bar..",
-    "payload": {"placeholder":"e.g. Alt + D","canonicalAnswer":"Alt + D","acceptedAnswers":["Alt + D","Alt+D","alt + d","alt+d"]}
+    "explanation": "Pressing Alt + D will select the address bar.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Alt + D","acceptedAnswers":["Alt + D","Alt+D","alt + d","alt+d"]}
   },
   {
     "id": "q-exp1-003",
@@ -32,7 +32,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Display properties for the selected item.:",
+    "prompt": "Assemble the keyboard shortcut to: Display properties for the selected item:",
     "key_combination": "Alt + Enter",
     "hint": "Requires 2 keys combined together.",
     "explanation": "The correct combination is: Alt + Enter.",
@@ -45,11 +45,11 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Hands on keyboard! Press the shortcut to: Navigate to the previous folder.:",
-    "key_combination": "Alt + Left Arrow or Backspace",
-    "hint": "Target: Alt + Left Arrow or Backspace",
-    "explanation": "Alt + Left Arrow or Backspace instantly triggers: Navigate to the previous folder..",
-    "payload": {"displayCombo":"Alt + Left Arrow or Backspace","targetKeys":["Alt","Left Arrow"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","E","F2","Left Arrow","Win"]}
+    "prompt": "Hands on keyboard! Press the shortcut to: Navigate to the previous folder:",
+    "key_combination": "Alt + Left Arrow",
+    "hint": "Target: Alt + Left Arrow",
+    "explanation": "Alt + Left Arrow instantly triggers: Navigate to the previous folder. Backspace does the same.",
+    "payload": {"displayCombo":"Alt + Left Arrow","targetKeys":["Alt","Left Arrow"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","E","F2","Left Arrow","Win"]}
   },
   {
     "id": "q-exp1-005",
@@ -61,8 +61,8 @@
     "prompt": "True or False:",
     "key_combination": "Alt + mouse drag a file",
     "hint": "Check the File Explorer action assigned to Alt + mouse drag a file.",
-    "explanation": "True! Alt + mouse drag a file does when you drop the file, create a shortcut to the original file in that location..",
-    "payload": {"statement":"In File Explorer, pressing \"Alt + mouse drag a file\" will when you drop the file, create a shortcut to the original file in that location..","correctAnswer":true}
+    "explanation": "True! Alt + mouse drag a file does when you drop the file, create a shortcut to the original file in that location.",
+    "payload": {"statement":"In File Explorer, pressing \"Alt + mouse drag a file\" will when you drop the file, create a shortcut to the original file in that location.","correctAnswer":true}
   },
   {
     "id": "q-exp1-006",
@@ -71,7 +71,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Show or hide the preview pane.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Show or hide the preview pane?",
     "key_combination": "Alt + P",
     "hint": "Think about shortcuts starting with Alt.",
     "explanation": "Alt + P: Show or hide the preview pane. (Show or hide the preview pane).",
@@ -84,11 +84,11 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: View the next folder.?",
+    "prompt": "What keyboard shortcut is used to: View the next folder?",
     "key_combination": "Alt + Right Arrow",
     "hint": "Combines keys: Alt  + ?",
-    "explanation": "Pressing Alt + Right Arrow will view the next folder..",
-    "payload": {"placeholder":"e.g. Alt + Right Arrow","canonicalAnswer":"Alt + Right Arrow","acceptedAnswers":["Alt + Right Arrow","Alt+Right Arrow","alt + right arrow","alt+right arrow"]}
+    "explanation": "Pressing Alt + Right Arrow will view the next folder.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Alt + Right Arrow","acceptedAnswers":["Alt + Right Arrow","Alt+Right Arrow","alt + right arrow","alt+right arrow"]}
   },
   {
     "id": "q-exp1-008",
@@ -97,7 +97,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Show or hide the details pane.:",
+    "prompt": "Assemble the keyboard shortcut to: Show or hide the details pane:",
     "key_combination": "Alt + Shift + P",
     "hint": "Requires 3 keys combined together.",
     "explanation": "The correct combination is: Alt + Shift + P.",
@@ -110,10 +110,10 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Hands on keyboard! Press the shortcut to: Move up a level in the folder path.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Move up a level in the folder path:",
     "key_combination": "Alt + Up Arrow",
     "hint": "Target: Alt + Up Arrow",
-    "explanation": "Alt + Up Arrow instantly triggers: Move up a level in the folder path..",
+    "explanation": "Alt + Up Arrow instantly triggers: Move up a level in the folder path.",
     "payload": {"displayCombo":"Alt + Up Arrow","targetKeys":["Alt","Up Arrow"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","E","F2","Up Arrow","Win"]}
   },
   {
@@ -123,7 +123,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Select multiple individual items.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Select multiple individual items?",
     "key_combination": "Ctrl + Arrow key (to move to an item) + Space",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Arrow key (to move to an item) + Space: Select multiple individual items. (Select multiple individual items).",
@@ -136,11 +136,11 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Delete the selected item and move it to the Recycle Bin.?",
+    "prompt": "What keyboard shortcut is used to: Delete the selected item and move it to the Recycle Bin?",
     "key_combination": "Ctrl + D or Del",
     "hint": "Combines keys: Ctrl  + ?",
-    "explanation": "Pressing Ctrl + D will delete the selected item and move it to the recycle bin..",
-    "payload": {"placeholder":"e.g. Ctrl + D","canonicalAnswer":"Ctrl + D","acceptedAnswers":["Ctrl + D","Ctrl+D","ctrl + d","ctrl+d","Control + D","control+D"]}
+    "explanation": "Pressing Ctrl + D will delete the selected item and move it to the recycle bin.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Ctrl + D","acceptedAnswers":["Ctrl + D","Ctrl+D","ctrl + d","ctrl+d","Control + D","control+D","Del","del","Delete","delete"]}
   },
   {
     "id": "q-exp1-012",
@@ -149,7 +149,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Assemble the keyboard shortcut to: Select the search box.:",
+    "prompt": "Assemble the keyboard shortcut to: Select the search box:",
     "key_combination": "Ctrl + E or Ctrl + F",
     "hint": "Requires 2 keys combined together.",
     "explanation": "The correct combination is: Ctrl + E.",
@@ -162,10 +162,10 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Focus on the address bar.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Focus on the address bar:",
     "key_combination": "Ctrl + L",
     "hint": "Target: Ctrl + L",
-    "explanation": "Ctrl + L instantly triggers: Focus on the address bar..",
+    "explanation": "Ctrl + L instantly triggers: Focus on the address bar.",
     "payload": {"displayCombo":"Ctrl + L","targetKeys":["Ctrl","L"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","E","F2","L","Win"]}
   },
   {
@@ -178,8 +178,8 @@
     "prompt": "True or False:",
     "key_combination": "Ctrl + mouse drag a file",
     "hint": "Check the File Explorer action assigned to Ctrl + mouse drag a file.",
-    "explanation": "True! Ctrl + mouse drag a file does when you drop the file, create a copy in that location..",
-    "payload": {"statement":"In File Explorer, pressing \"Ctrl + mouse drag a file\" will when you drop the file, create a copy in that location..","correctAnswer":true}
+    "explanation": "True! Ctrl + mouse drag a file does when you drop the file, create a copy in that location.",
+    "payload": {"statement":"In File Explorer, pressing \"Ctrl + mouse drag a file\" will when you drop the file, create a copy in that location.","correctAnswer":true}
   },
   {
     "id": "q-exp1-015",
@@ -188,7 +188,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Change the size and appearance of file and folder icons.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Change the size and appearance of file and folder icons?",
     "key_combination": "Ctrl + mouse scroll wheel",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + mouse scroll wheel: Change the size and appearance of file and folder icons. (Change the size and appearance of file and folder icons).",
@@ -201,11 +201,11 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "What keyboard shortcut is used to: Open a new window.?",
+    "prompt": "What keyboard shortcut is used to: Open a new window?",
     "key_combination": "Ctrl + N",
     "hint": "Combines keys: Ctrl  + ?",
-    "explanation": "Pressing Ctrl + N will open a new window..",
-    "payload": {"placeholder":"e.g. Ctrl + N","canonicalAnswer":"Ctrl + N","acceptedAnswers":["Ctrl + N","Ctrl+N","ctrl + n","ctrl+n","Control + N","control+N"]}
+    "explanation": "Pressing Ctrl + N will open a new window.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Ctrl + N","acceptedAnswers":["Ctrl + N","Ctrl+N","ctrl + n","ctrl+n","Control + N","control+N"]}
   },
   {
     "id": "q-exp1-017",
@@ -214,7 +214,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Move to that tab number.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Move to that tab number?",
     "key_combination": "Ctrl + Number (1-9)",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Number (1-9): Move to that tab number. (Move to that tab number).",
@@ -227,7 +227,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Resize all columns to fit text. Note: This shortcut requires using a numeric keypad.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Resize all columns to fit text. Note: This shortcut requires using a numeric keypad?",
     "key_combination": "Ctrl + Plus ( + )",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Plus ( + ): Resize all columns to fit text. Note: This shortcut requires using a numeric keypad. (Resize all columns to fit text).",
@@ -240,7 +240,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Expands all folders from the tree in the navigation pane.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Expands all folders from the tree in the navigation pane?",
     "key_combination": "Ctrl + Shift + E",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Shift + E: Expands all folders from the tree in the navigation pane. (Expands all folders from the tree in the navigation...).",
@@ -253,11 +253,11 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Create a new folder.?",
+    "prompt": "What keyboard shortcut is used to: Create a new folder?",
     "key_combination": "Ctrl + Shift + N",
     "hint": "Combines keys: Ctrl  + ? + ?",
-    "explanation": "Pressing Ctrl + Shift + N will create a new folder..",
-    "payload": {"placeholder":"e.g. Ctrl + Shift + N","canonicalAnswer":"Ctrl + Shift + N","acceptedAnswers":["Ctrl + Shift + N","Ctrl+Shift+N","ctrl + shift + n","ctrl+shift+n","Control + Shift + N","control+Shift+N"]}
+    "explanation": "Pressing Ctrl + Shift + N will create a new folder.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Ctrl + Shift + N","acceptedAnswers":["Ctrl + Shift + N","Ctrl+Shift+N","ctrl + shift + n","ctrl+shift+n","Control + Shift + N","control+Shift+N"]}
   },
   {
     "id": "q-exp1-021",
@@ -266,7 +266,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Change the view style. For example, 2 is Large icons and 6 is Details.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Change the view style. For example, 2 is Large icons and 6 is Details?",
     "key_combination": "Ctrl + Shift + Number (1-9)",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Shift + Number (1-9): Change the view style. For example, 2 is Large icons and 6 is Details. (Change the view style).",
@@ -279,7 +279,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Move to the previous tab.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Move to the previous tab?",
     "key_combination": "Ctrl + Shift + Tab",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + Shift + Tab: Move to the previous tab. (Move to the previous tab).",
@@ -295,8 +295,8 @@
     "prompt": "True or False:",
     "key_combination": "Ctrl + T",
     "hint": "Check the File Explorer action assigned to Ctrl + T.",
-    "explanation": "True! Ctrl + T does open a new tab and switch to it..",
-    "payload": {"statement":"In File Explorer, pressing \"Ctrl + T\" will open a new tab and switch to it..","correctAnswer":true}
+    "explanation": "True! Ctrl + T does open a new tab and switch to it.",
+    "payload": {"statement":"In File Explorer, pressing \"Ctrl + T\" will open a new tab and switch to it.","correctAnswer":true}
   },
   {
     "id": "q-exp1-024",
@@ -305,7 +305,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Which keyboard shortcut is used in File Explorer to: Closes the active tab. Closes the window if there's only one tab open.?",
+    "prompt": "Which keyboard shortcut is used in File Explorer to: Closes the active tab. Closes the window if there's only one tab open?",
     "key_combination": "Ctrl + W",
     "hint": "Think about shortcuts starting with Ctrl.",
     "explanation": "Ctrl + W: Closes the active tab. Closes the window if there's only one tab open. (Closes the active tab).",
@@ -318,11 +318,11 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
-    "prompt": "What keyboard shortcut is used to: Move to the next tab.?",
+    "prompt": "What keyboard shortcut is used to: Move to the next tab?",
     "key_combination": "Ctrl + Tab",
     "hint": "Combines keys: Ctrl  + ?",
-    "explanation": "Pressing Ctrl + Tab will move to the next tab..",
-    "payload": {"placeholder":"e.g. Ctrl + Tab","canonicalAnswer":"Ctrl + Tab","acceptedAnswers":["Ctrl + Tab","Ctrl+Tab","ctrl + tab","ctrl+tab","Control + Tab","control+Tab"]}
+    "explanation": "Pressing Ctrl + Tab will move to the next tab.",
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Ctrl + Tab","acceptedAnswers":["Ctrl + Tab","Ctrl+Tab","ctrl + tab","ctrl+tab","Control + Tab","control+Tab"]}
   },
   {
     "id": "q-exp1-026",
@@ -331,7 +331,7 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Assemble the keyboard shortcut to: Scroll to the bottom of the active window.:",
+    "prompt": "Assemble the keyboard shortcut to: Scroll to the bottom of the active window:",
     "key_combination": "End",
     "hint": "Requires 1 keys combined together.",
     "explanation": "The correct combination is: End.",
@@ -344,10 +344,10 @@
     "category_id": 3,
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Beginner",
-    "prompt": "Hands on keyboard! Press the shortcut to: Rename the selected item.:",
+    "prompt": "Hands on keyboard! Press the shortcut to: Rename the selected item:",
     "key_combination": "F2",
     "hint": "Target: F2",
-    "explanation": "F2 instantly triggers: Rename the selected item..",
+    "explanation": "F2 instantly triggers: Rename the selected item.",
     "payload": {"displayCombo":"F2","targetKeys":["F2"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","E","F2","Win"]}
   }
 ]
