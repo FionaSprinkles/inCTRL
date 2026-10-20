@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { quizQuestions } from '../data/quizQuestions'
 import QuizHeader from '../components/quiz/QuizHeader.vue'
 import QuizCard from '../components/quiz/QuizCard.vue'
-import QuizSummary from '../components/quiz/QuizSummary.vue'
+import QuizResult from '../components/quiz/QuizResult.vue'
 import QuizInspector from '../components/quiz/QuizInspector.vue'
 
 // All available unique formats
@@ -12,11 +13,15 @@ const availableFormats = computed(() => {
   return Array.from(set)
 })
 
+const route = useRoute()
 const activeFilter = ref('all')
 const currentIndex = ref(0)
 const userAnswers = ref({})
 const evalResults = ref({})
 const isCompleted = ref(false)
+const startedAt = ref(Date.now())
+const elapsedSeconds = ref(0)
+const categoryName = ref('')
 
 // Filtered question set based on active format filter
 const filteredQuestions = computed(() => {
@@ -38,6 +43,40 @@ const totalScore = computed(() => {
 const answeredCount = computed(() => {
   return Object.keys(evalResults.value).length
 })
+
+const correctCount = computed(() => {
+  return filteredQuestions.value.filter((q) => evalResults.value[q.id]?.isCorrect).length
+})
+
+const maxScoreTotal = computed(() => {
+  return filteredQuestions.value.reduce((sum, q) => {
+    const max = evalResults.value[q.id]?.maxScore
+    return sum + (typeof max === 'number' ? max : 1)
+  }, 0)
+})
+
+const difficultyLabel = computed(() => {
+  const value = route.query.difficulty
+  return typeof value === 'string' ? value : ''
+})
+
+async function loadCategory() {
+  const id = route.query.categoryId
+  if (typeof id !== 'string' || !/^\d+$/.test(id)) {
+    categoryName.value = ''
+    return
+  }
+
+  try {
+    const res = await fetch(`/api/categories/${id}`)
+    const data = await res.json().catch(() => null)
+    categoryName.value = res.ok && data?.category?.name ? data.category.name : ''
+  } catch {
+    categoryName.value = ''
+  }
+}
+
+watch(() => route.query.categoryId, loadCategory, { immediate: true })
 
 /**
  * Updates active format filter and resets position.
@@ -79,11 +118,16 @@ function handleRetry({ questionId }) {
 /**
  * Advances to the next question or finishes the quiz if at the end.
  */
+function finishQuiz() {
+  elapsedSeconds.value = Math.max(0, Math.round((Date.now() - startedAt.value) / 1000))
+  isCompleted.value = true
+}
+
 function nextQuestion() {
   if (currentIndex.value < filteredQuestions.value.length - 1) {
     currentIndex.value++
   } else {
-    isCompleted.value = true
+    finishQuiz()
   }
 }
 
@@ -104,15 +148,8 @@ function restartQuiz() {
   evalResults.value = {}
   currentIndex.value = 0
   isCompleted.value = false
-}
-
-/**
- * Navigates to a specific question for review.
- * @param {number} index - Zero-based question index.
- */
-function reviewQuestion(index) {
-  currentIndex.value = index
-  isCompleted.value = false
+  startedAt.value = Date.now()
+  elapsedSeconds.value = 0
 }
 
 /**
@@ -128,6 +165,7 @@ function jumpToQuestion(idx) {
 <template>
   <div class="quiz-prototype-page">
     <QuizHeader
+      v-if="!isCompleted"
       :formats="availableFormats"
       :active-format-filter="activeFilter"
       :current-index="currentIndex"
@@ -182,12 +220,15 @@ function jumpToQuestion(idx) {
 
     <!-- Quiz Completed Summary View -->
     <main v-else-if="isCompleted" class="main-content">
-      <QuizSummary
-        :questions="filteredQuestions"
-        :answers="userAnswers"
-        :results="evalResults"
+      <QuizResult
+        :category="categoryName"
+        :difficulty="difficultyLabel"
+        :correct-count="correctCount"
+        :question-count="filteredQuestions.length"
+        :score="totalScore"
+        :max-score="maxScoreTotal"
+        :seconds="elapsedSeconds"
         @restart="restartQuiz"
-        @review-question="reviewQuestion"
       />
     </main>
   </div>
