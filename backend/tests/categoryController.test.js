@@ -128,6 +128,43 @@ describe('backend/controllers/categoryController', () => {
             assert.strictEqual(res.body.category.id, 3);
         });
 
+        it('auto-generates slug when slug is omitted in req.body', async () => {
+            let capturedParams;
+            mockDb.setQueryHandler((sql, params, cb) => {
+                capturedParams = params;
+                cb(null, { insertId: 4 });
+            });
+
+            const req = { body: { name: 'Dev Tools' } };
+            const res = createMockResponse();
+
+            await categoryController.createCategory(req, res);
+            assert.strictEqual(res.statusCode, 201);
+            assert.strictEqual(res.body.success, true);
+            assert.strictEqual(res.body.category.slug, 'dev-tools');
+            assert.strictEqual(capturedParams[1], 'dev-tools');
+        });
+
+        it('returns 400 when provided slug does not match slugRegex', async () => {
+            const req = { body: { name: 'Dev Tools', slug: 'dev_tools' } };
+            const res = createMockResponse();
+
+            await categoryController.createCategory(req, res);
+            assert.strictEqual(res.statusCode, 400);
+            assert.strictEqual(res.body.success, false);
+            assert.strictEqual(res.body.error, 'Slug must contain only lowercase letters (a-z) and single hyphens (-) between words');
+        });
+
+        it('returns 400 when slug is omitted and name cannot produce a valid slug', async () => {
+            const req = { body: { name: '12345' } };
+            const res = createMockResponse();
+
+            await categoryController.createCategory(req, res);
+            assert.strictEqual(res.statusCode, 400);
+            assert.strictEqual(res.body.success, false);
+            assert.strictEqual(res.body.error, 'Slug must contain only lowercase letters (a-z) and single hyphens (-) between words');
+        });
+
         it('returns 500 on database failure', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
                 cb(new Error('Insert error'));

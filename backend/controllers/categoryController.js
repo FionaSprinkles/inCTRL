@@ -89,14 +89,18 @@ exports.createCategory = async (req, res) => {
             });
         }
 
-        if (!slugRegex.test(slug)) {
-        return res.status(400).json({
-            success: false,
-            error: 'Slug must contain only lowercase letters (a-z) and single hyphens (-) between words'
-        });
-    }
+        const candidateSlug = (slug !== undefined && slug !== null && slug !== '')
+            ? (typeof slug === 'string' ? slug.trim() : String(slug))
+            : (name ? name.toLowerCase().trim().replace(/[^a-z]+/g, '-').replace(/^-+|-+$/g, '') : '');
 
-        const category = await categoryService.createCategory({ name, slug, description, icon });
+        if (!slugRegex.test(candidateSlug)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Slug must contain only lowercase letters (a-z) and single hyphens (-) between words'
+            });
+        }
+
+        const category = await categoryService.createCategory({ name, slug: candidateSlug, description, icon });
         res.status(201).json({
             success: true,
             message: 'Category created successfully',
