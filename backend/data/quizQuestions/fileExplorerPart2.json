@@ -335,7 +335,7 @@
     "key_combination": "Alt + Left Arrow",
     "hint": "Combines keys: Alt  + ?",
     "explanation": "Pressing Alt + Left Arrow will view the previous folder.",
-    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Alt + Left Arrow","acceptedAnswers":["Alt + Left Arrow","Alt+Left Arrow","alt + left arrow","alt+left arrow","Alternate + Left Arrow","alternate+Left Arrow"]}
+    "payload": {"placeholder":"Type your shortcut here","canonicalAnswer":"Alt + Left Arrow","acceptedAnswers":["Alt + Left Arrow","Alt+Left Arrow","alt + left arrow","alt+left arrow","Alternate + Left Arrow","alternate+Left Arrow","Backspace","backspace"]}
   },
   {
     "id": "q-exp2-054",
