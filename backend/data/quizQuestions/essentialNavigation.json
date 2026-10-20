@@ -105,7 +105,7 @@
   },
   {
     "id": "q-nav-009",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "single_choice",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -118,7 +118,7 @@
   },
   {
     "id": "q-nav-010",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "fill_blank",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -131,7 +131,7 @@
   },
   {
     "id": "q-nav-011",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "key_builder",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -144,7 +144,7 @@
   },
   {
     "id": "q-nav-012",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "live_press",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -157,7 +157,7 @@
   },
   {
     "id": "q-nav-013",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "true_false",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -170,7 +170,7 @@
   },
   {
     "id": "q-nav-014",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "single_choice",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -183,7 +183,7 @@
   },
   {
     "id": "q-nav-015",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "fill_blank",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -196,7 +196,7 @@
   },
   {
     "id": "q-nav-016",
-    "quiz_id": 2,
+    "quiz_id": 4,
     "type": "single_choice",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -209,7 +209,7 @@
   },
   {
     "id": "q-nav-017",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "single_choice",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -222,7 +222,7 @@
   },
   {
     "id": "q-nav-018",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "fill_blank",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -235,7 +235,7 @@
   },
   {
     "id": "q-nav-019",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "key_builder",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -248,7 +248,7 @@
   },
   {
     "id": "q-nav-020",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "live_press",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -261,7 +261,7 @@
   },
   {
     "id": "q-nav-021",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "true_false",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -274,7 +274,7 @@
   },
   {
     "id": "q-nav-022",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "single_choice",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -287,7 +287,7 @@
   },
   {
     "id": "q-nav-023",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "fill_blank",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -300,7 +300,7 @@
   },
   {
     "id": "q-nav-024",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "key_builder",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",
@@ -313,7 +313,7 @@
   },
   {
     "id": "q-nav-025",
-    "quiz_id": 3,
+    "quiz_id": 14,
     "type": "live_press",
     "category_id": 1,
     "category_name": "Essential Windows Navigation",

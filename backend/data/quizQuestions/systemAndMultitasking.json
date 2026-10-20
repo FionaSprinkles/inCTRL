@@ -1,7 +1,7 @@
 [
   {
     "id": "q-sys-001",
-    "quiz_id": 4,
+    "quiz_id": 2,
     "type": "single_choice",
     "category_id": 2,
     "category_name": "System & Troubleshooting",
@@ -14,7 +14,7 @@
   },
   {
     "id": "q-sys-002",
-    "quiz_id": 4,
+    "quiz_id": 2,
     "type": "fill_blank",
     "category_id": 2,
     "category_name": "System & Troubleshooting",
@@ -27,7 +27,7 @@
   },
   {
     "id": "q-sys-003",
-    "quiz_id": 4,
+    "quiz_id": 2,
     "type": "key_builder",
     "category_id": 2,
     "category_name": "System & Troubleshooting",
@@ -40,7 +40,7 @@
   },
   {
     "id": "q-sys-004",
-    "quiz_id": 4,
+    "quiz_id": 2,
     "type": "live_press",
     "category_id": 2,
     "category_name": "System & Troubleshooting",
@@ -53,7 +53,7 @@
   },
   {
     "id": "q-sys-005",
-    "quiz_id": 4,
+    "quiz_id": 2,
     "type": "true_false",
     "category_id": 2,
     "category_name": "System & Troubleshooting",
@@ -66,7 +66,7 @@
   },
   {
     "id": "q-sys-006",
-    "quiz_id": 4,
+    "quiz_id": 2,
     "type": "single_choice",
     "category_id": 2,
     "category_name": "System & Troubleshooting",
@@ -79,7 +79,7 @@
   },
   {
     "id": "q-sys-007",
-    "quiz_id": 4,
+    "quiz_id": 2,
     "type": "fill_blank",
     "category_id": 2,
     "category_name": "System & Troubleshooting",
@@ -170,7 +170,7 @@
   },
   {
     "id": "q-vdesk-001",
-    "quiz_id": 14,
+    "quiz_id": 3,
     "type": "single_choice",
     "category_id": 6,
     "category_name": "Virtual Desktops",
@@ -183,7 +183,7 @@
   },
   {
     "id": "q-vdesk-002",
-    "quiz_id": 14,
+    "quiz_id": 3,
     "type": "fill_blank",
     "category_id": 6,
     "category_name": "Virtual Desktops",
@@ -196,7 +196,7 @@
   },
   {
     "id": "q-vdesk-003",
-    "quiz_id": 14,
+    "quiz_id": 3,
     "type": "key_builder",
     "category_id": 6,
     "category_name": "Virtual Desktops",
@@ -209,7 +209,7 @@
   },
   {
     "id": "q-vdesk-004",
-    "quiz_id": 14,
+    "quiz_id": 3,
     "type": "live_press",
     "category_id": 6,
     "category_name": "Virtual Desktops",
@@ -222,7 +222,7 @@
   },
   {
     "id": "q-vdesk-005",
-    "quiz_id": 14,
+    "quiz_id": 3,
     "type": "true_false",
     "category_id": 6,
     "category_name": "Virtual Desktops",
@@ -235,7 +235,7 @@
   },
   {
     "id": "q-vdesk-006",
-    "quiz_id": 14,
+    "quiz_id": 3,
     "type": "single_choice",
     "category_id": 6,
     "category_name": "Virtual Desktops",
@@ -248,7 +248,7 @@
   },
   {
     "id": "q-vdesk-007",
-    "quiz_id": 14,
+    "quiz_id": 3,
     "type": "fill_blank",
     "category_id": 6,
     "category_name": "Virtual Desktops",
