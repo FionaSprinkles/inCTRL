@@ -46,10 +46,10 @@
     "category_name": "File Explorer & Windows Tools",
     "difficulty": "Intermediate",
     "prompt": "Hands on keyboard! Press the shortcut to: Navigate to the previous folder:",
-    "key_combination": "Alt + Left Arrow or Backspace",
-    "hint": "Target: Alt + Left Arrow or Backspace",
-    "explanation": "Alt + Left Arrow or Backspace instantly triggers: Navigate to the previous folder.",
-    "payload": {"displayCombo":"Alt + Left Arrow or Backspace","targetKeys":["Alt","Left Arrow"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","E","F2","Left Arrow","Win"]}
+    "key_combination": "Alt + Left Arrow",
+    "hint": "Target: Alt + Left Arrow",
+    "explanation": "Alt + Left Arrow instantly triggers: Navigate to the previous folder. Backspace does the same.",
+    "payload": {"displayCombo":"Alt + Left Arrow","targetKeys":["Alt","Left Arrow"],"description":"Press the keys on your keyboard, or click the virtual keys below:","virtualKeys":["Alt","Ctrl","E","F2","Left Arrow","Win"]}
   },
   {
     "id": "q-exp1-005",
