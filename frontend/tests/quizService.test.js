@@ -1,0 +1,99 @@
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert'
+import {
+  fetchQuizzes,
+  fetchCategories,
+  fetchQuizById,
+  submitQuizAttempt,
+  filterQuizzes
+} from '../src/services/quizService.js'
+
+describe('quizService - filterQuizzes', () => {
+  const sample = [
+    { id: 1, title: 'Nav Basics', categoryId: 1, difficulty: 'Beginner' },
+    { id: 2, title: 'Nav Advanced', categoryId: 1, difficulty: 'Advanced' },
+    { id: 3, title: 'Sys Diagnostics', categoryId: 2, difficulty: 'Intermediate' }
+  ]
+
+  it('handles invalid inputs and empty filters', () => {
+    assert.deepStrictEqual(filterQuizzes(null), [])
+    assert.deepStrictEqual(filterQuizzes('invalid'), [])
+    assert.deepStrictEqual(filterQuizzes(sample), sample)
+    assert.deepStrictEqual(filterQuizzes(sample, {}), sample)
+    assert.deepStrictEqual(filterQuizzes(sample, { categoryId: 'all', difficulty: 'all' }), sample)
+  })
+
+  it('filters by category, difficulty, or both', () => {
+    assert.strictEqual(filterQuizzes(sample, { categoryId: 1 }).length, 2)
+    assert.strictEqual(filterQuizzes(sample, { categoryId: '2' })[0].id, 3)
+    assert.strictEqual(filterQuizzes(sample, { difficulty: 'intermediate' }).length, 1)
+    assert.strictEqual(filterQuizzes(sample, { categoryId: 1, difficulty: 'Beginner' }).length, 1)
+  })
+
+  it('returns empty array when criteria do not match', () => {
+    assert.deepStrictEqual(filterQuizzes(sample, { categoryId: 99 }), [])
+    assert.deepStrictEqual(filterQuizzes(sample, { categoryId: 2, difficulty: 'Beginner' }), [])
+    assert.deepStrictEqual(filterQuizzes(sample, { difficulty: 'Expert' }), [])
+  })
+})
+
+describe('quizService - API fetch methods', () => {
+  const origFetch = globalThis.fetch
+  const origLocal = globalThis.localStorage
+
+  beforeEach(() => {
+    globalThis.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+  })
+  afterEach(() => {
+    globalThis.fetch = origFetch
+    globalThis.localStorage = origLocal
+  })
+
+  it('fetchQuizzes succeeds and handles errors', async () => {
+    globalThis.fetch = async () => ({ ok: true, json: async () => ({ quizzes: [{ id: 1 }] }) })
+    assert.strictEqual((await fetchQuizzes()).length, 1)
+
+    globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({ error: 'Fail' }) })
+    await assert.rejects(fetchQuizzes, /Fail/)
+
+    globalThis.fetch = async () => ({ ok: false, status: 502, json: async () => { throw new Error() } })
+    await assert.rejects(fetchQuizzes, /Failed to fetch quizzes \(502\)/)
+  })
+
+  it('fetchCategories succeeds and handles errors', async () => {
+    globalThis.fetch = async () => ({ ok: true, json: async () => ({ categories: [{ id: 1 }] }) })
+    assert.strictEqual((await fetchCategories()).length, 1)
+
+    globalThis.fetch = async () => ({ ok: false, status: 404, json: async () => { throw new Error() } })
+    await assert.rejects(fetchCategories, /Failed to fetch categories \(404\)/)
+  })
+
+  it('fetchQuizById succeeds and handles errors', async () => {
+    globalThis.fetch = async () => ({ ok: true, json: async () => ({ quiz: { id: 5 } }) })
+    assert.strictEqual((await fetchQuizById(5)).id, 5)
+
+    globalThis.fetch = async () => ({ ok: false, status: 404, json: async () => ({ error: 'Not found' }) })
+    await assert.rejects(() => fetchQuizById(99), /Not found/)
+  })
+
+  it('submitQuizAttempt handles token, guest, and errors', async () => {
+    globalThis.localStorage.getItem = () => 'jwt-token'
+    let authHeader
+    globalThis.fetch = async (url, opts) => {
+      authHeader = opts.headers.Authorization
+      return { ok: true, json: async () => ({ success: true }) }
+    }
+    await submitQuizAttempt({ quizId: 1, answers: {} })
+    assert.strictEqual(authHeader, 'Bearer jwt-token')
+
+    globalThis.localStorage.getItem = () => null
+    await submitQuizAttempt({ quizId: 1, answers: {} })
+    assert.strictEqual(authHeader, undefined)
+
+    globalThis.fetch = async () => ({ ok: false, status: 400, json: async () => ({ error: 'Bad' }) })
+    await assert.rejects(() => submitQuizAttempt({}), /Bad/)
+
+    globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => { throw new Error() } })
+    await assert.rejects(() => submitQuizAttempt({}), /Failed to submit quiz attempt \(500\)/)
+  })
+})
