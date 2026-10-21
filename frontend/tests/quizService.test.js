@@ -131,4 +131,29 @@ describe('quiz answer persistence and navigation flow', () => {
     currentIndex = 2
     assert.deepStrictEqual(userAnswers[questions[currentIndex].id], ['opt-a', 'opt-b'])
   })
+
+  it('does not treat untouched ordering default as answered until user interaction', () => {
+    const userAnswers = {}
+    let isOrderingTouched = false
+
+    const hasAnswer = (val, type) => {
+      if (val === null || val === undefined) return false
+      if (type === 'ordering') {
+        return isOrderingTouched && Array.isArray(val) && val.length > 0
+      }
+      return true
+    }
+
+    const defaultOrdering = ['s4', 's3', 's2', 's1']
+    // Initially untouched
+    assert.strictEqual(hasAnswer(defaultOrdering, 'ordering'), false)
+    assert.strictEqual(userAnswers['q-ord'], undefined)
+
+    // User moves a step in ordering
+    isOrderingTouched = true
+    userAnswers['q-ord'] = ['s1', 's2', 's3', 's4']
+
+    assert.strictEqual(hasAnswer(userAnswers['q-ord'], 'ordering'), true)
+    assert.deepStrictEqual(userAnswers['q-ord'], ['s1', 's2', 's3', 's4'])
+  })
 })

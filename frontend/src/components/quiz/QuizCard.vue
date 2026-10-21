@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import QuestionSingleChoice from './QuestionSingleChoice.vue'
 import QuestionMultipleChoice from './QuestionMultipleChoice.vue'
 import QuestionFillBlank from './QuestionFillBlank.vue'
@@ -39,6 +39,8 @@ const emit = defineEmits(['answered', 'update:answer', 'retry', 'next', 'previou
 const userAnswer = ref(null)
 const evaluationResult = ref(null)
 const showHint = ref(false)
+const isOrderingTouched = ref(false)
+let isInitializing = false
 
 // Map question.type to component
 const componentMap = {
@@ -74,17 +76,26 @@ const formatLabels = {
 watch(
   () => props.question.id,
   () => {
+    isInitializing = true
+    isOrderingTouched.value = props.savedAnswer !== null && props.savedAnswer !== undefined
     userAnswer.value = props.savedAnswer ?? getInitialAnswer(props.question)
     evaluationResult.value = props.savedResult || null
     showHint.value = false
+    nextTick(() => {
+      isInitializing = false
+    })
   },
   { immediate: true }
 )
 
-// Emit answer changes so parent keeps state in real time
+// Emit answer changes so parent keeps state in real time, excluding initializations
 watch(
   userAnswer,
   (newVal) => {
+    if (isInitializing) return
+    if (props.question.type === 'ordering' && !isOrderingTouched.value) {
+      isOrderingTouched.value = true
+    }
     if (newVal !== undefined) {
       emit('update:answer', {
         questionId: props.question.id,
@@ -110,6 +121,9 @@ function getInitialAnswer(q) {
 
 const hasAnswer = computed(() => {
   if (userAnswer.value === null || userAnswer.value === undefined) return false
+  if (props.question.type === 'ordering') {
+    return isOrderingTouched.value && Array.isArray(userAnswer.value) && userAnswer.value.length > 0
+  }
   if (typeof userAnswer.value === 'string') return userAnswer.value.trim().length > 0
   if (Array.isArray(userAnswer.value)) return userAnswer.value.length > 0
   if (typeof userAnswer.value === 'object') return Object.keys(userAnswer.value).length > 0
@@ -141,7 +155,7 @@ function handleNext() {
       userAnswer: userAnswer.value,
       result
     })
-  } else {
+  } else if (hasAnswer.value) {
     emit('update:answer', {
       questionId: props.question.id,
       userAnswer: userAnswer.value
@@ -155,6 +169,9 @@ function handleNext() {
  */
 function retryQuestion() {
   evaluationResult.value = null
+  if (props.question.type === 'ordering') {
+    isOrderingTouched.value = false
+  }
   userAnswer.value = getInitialAnswer(props.question)
   emit('retry', { questionId: props.question.id })
 }
