@@ -35,7 +35,7 @@ const filteredQuizzes = computed(() => {
 
 const currentQuestion = computed(() => quizQuestions.value[currentIndex.value] || null)
 const totalScore = computed(() => Object.values(evalResults.value).reduce((s, r) => s + (r?.score || 0), 0))
-const answeredCount = computed(() => Object.keys(evalResults.value).length)
+const answeredCount = computed(() => quizQuestions.value.filter(q => isQuestionAnswered(q.id)).length)
 
 async function loadData() {
   loading.value = true
@@ -114,7 +114,6 @@ function handleAnswerUpdate({ questionId, userAnswer }) {
 }
 
 function isQuestionAnswered(questionId) {
-  if (evalResults.value[questionId] !== undefined) return true
   const ans = userAnswers.value[questionId]
   if (ans === null || ans === undefined) return false
   if (typeof ans === 'string') return ans.trim().length > 0
@@ -272,8 +271,8 @@ onMounted(loadData)
             :class="{
               current: idx === currentIndex,
               answered: isQuestionAnswered(q.id),
-              correct: evalResults[q.id]?.isCorrect,
-              wrong: evalResults[q.id] && !evalResults[q.id].isCorrect
+              correct: isQuestionAnswered(q.id) && evalResults[q.id]?.isCorrect,
+              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect
             }"
             :title="`Question ${idx + 1}`"
             @click="currentIndex = idx"
@@ -286,7 +285,7 @@ onMounted(loadData)
           <QuizCard
             :question="currentQuestion"
             :saved-answer="userAnswers[currentQuestion.id]"
-            :saved-result="evalResults[currentQuestion.id]"
+            :saved-result="isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null"
             :question-number="currentIndex + 1"
             :total-questions="quizQuestions.length"
             @answered="handleAnswered"
