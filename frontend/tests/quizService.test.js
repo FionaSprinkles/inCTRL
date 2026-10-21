@@ -157,3 +157,133 @@ describe('quiz answer persistence and navigation flow', () => {
     assert.deepStrictEqual(userAnswers['q-ord'], ['s1', 's2', 's3', 's4'])
   })
 })
+
+
+describe('quiz question loading and error handling state machine', () => {
+  it('transitions through loading state and renders questions on success', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    let resolveFetch
+    const pendingFetch = new Promise((resolve) => {
+      resolveFetch = resolve
+    })
+    const promise = startQuizSimulation({ id: 1 }, () => pendingFetch)
+    assert.strictEqual(loadingQuestions, true)
+    assert.strictEqual(quizError, '')
+
+    resolveFetch({ questions: [{ id: 'q1', prompt: 'Question 1' }] })
+    await promise
+
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, '')
+    assert.strictEqual(quizQuestions.length, 1)
+  })
+
+  it('captures error text without crashing when API fetch rejects', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    await startQuizSimulation({ id: 99 }, async () => {
+      throw new Error('Failed to fetch quiz questions from backend (500).')
+    })
+
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, 'Failed to fetch quiz questions from backend (500).')
+    assert.deepStrictEqual(quizQuestions, [])
+  })
+
+  it('handles empty questions list without crashing and sets error message', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    await startQuizSimulation({ id: 2 }, async () => ({ questions: [] }))
+
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, 'No questions found for this quiz.')
+    assert.deepStrictEqual(quizQuestions, [])
+  })
+
+  it('allows retry after failure to reload questions successfully', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    // First attempt fails
+    await startQuizSimulation({ id: 5 }, async () => {
+      throw new Error('Network error')
+    })
+    assert.strictEqual(quizError, 'Network error')
+
+    // Retry attempt succeeds
+    await startQuizSimulation({ id: 5 }, async () => ({
+      questions: [{ id: 'q-5', prompt: 'Retry worked' }]
+    }))
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, '')
+    assert.strictEqual(quizQuestions.length, 1)
+  })
+})

@@ -1,10 +1,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchQuizzes, fetchCategories, fetchQuizById, filterQuizzes, submitQuizAttempt } from '@/services/quizService'
+import {
+  fetchQuizzes,
+  fetchCategories,
+  fetchQuizById,
+  filterQuizzes,
+  submitQuizAttempt,
+} from '@/services/quizService'
 import { validateAnswer } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
+import QuizLoading from '@/components/quiz/QuizLoading.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 
@@ -29,13 +37,17 @@ const isSubmitted = ref(false)
 const filteredQuizzes = computed(() => {
   return filterQuizzes(quizzes.value, {
     categoryId: selectedCategory.value,
-    difficulty: selectedDifficulty.value
+    difficulty: selectedDifficulty.value,
   })
 })
 
 const currentQuestion = computed(() => quizQuestions.value[currentIndex.value] || null)
-const totalScore = computed(() => Object.values(evalResults.value).reduce((s, r) => s + (r?.score || 0), 0))
-const answeredCount = computed(() => quizQuestions.value.filter(q => isQuestionAnswered(q.id)).length)
+const totalScore = computed(() =>
+  Object.values(evalResults.value).reduce((s, r) => s + (r?.score || 0), 0),
+)
+const answeredCount = computed(
+  () => quizQuestions.value.filter((q) => isQuestionAnswered(q.id)).length,
+)
 
 async function loadData() {
   loading.value = true
@@ -51,8 +63,12 @@ async function loadData() {
     if (qDiff) selectedDifficulty.value = qDiff
     const qQuizId = route.query.id || route.query.quizId
     if (qQuizId) {
-      const target = qData.find(q => String(q.id) === String(qQuizId))
-      if (target) startQuiz(target)
+      const target = qData.find((q) => String(q.id) === String(qQuizId))
+      if (target) {
+        startQuiz(target)
+      } else {
+        startQuiz({ id: qQuizId, title: `Quiz #${qQuizId}` })
+      }
     }
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
@@ -69,6 +85,10 @@ function resetFilters() {
 let quizRequestId = 0
 
 async function startQuiz(quiz) {
+  if (!quiz || !quiz.id) {
+    quizError.value = 'Invalid quiz selected.'
+    return
+  }
   const requestId = ++quizRequestId
   activeQuiz.value = quiz
   loadingQuestions.value = true
@@ -84,6 +104,9 @@ async function startQuiz(quiz) {
     const data = await fetchQuizById(quiz.id)
     if (requestId !== quizRequestId) return
     if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+    if (data.title && activeQuiz.value && !activeQuiz.value.title) {
+      activeQuiz.value.title = data.title
+    }
     quizQuestions.value = data.questions
   } catch (err) {
     if (requestId !== quizRequestId) return
@@ -133,7 +156,7 @@ async function nextQuestion() {
     currentIndex.value++
   } else if (!isCompleted.value) {
     isCompleted.value = true
-    quizQuestions.value.forEach(q => {
+    quizQuestions.value.forEach((q) => {
       if (!evalResults.value[q.id]) {
         evalResults.value[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
       }
@@ -144,7 +167,7 @@ async function nextQuestion() {
         await submitQuizAttempt({
           quizId: activeQuiz.value?.id,
           answers: userAnswers.value,
-          formatFilter: 'all'
+          formatFilter: 'all',
         })
       } catch (err) {
         quizError.value = err.message || 'Could not submit quiz attempt.'
@@ -212,7 +235,9 @@ onMounted(loadData)
         </button>
       </section>
 
-      <div v-if="loading" class="status-box"><p>Loading quizzes from backend...</p></div>
+      <div v-if="loading" class="status-box">
+        <LoadingSpinner size="md" text="Loading quizzes from backend..." />
+      </div>
 
       <div v-else-if="error" class="status-box error-box" role="alert">
         <p>{{ error }}</p>
@@ -229,7 +254,9 @@ onMounted(loadData)
         <article v-for="quiz in filteredQuizzes" :key="quiz.id" class="quiz-card">
           <div class="quiz-tags">
             <span class="badge category-badge">{{ quiz.categoryName || 'General' }}</span>
-            <span class="badge diff-badge" :class="quiz.difficulty?.toLowerCase()">{{ quiz.difficulty }}</span>
+            <span class="badge diff-badge" :class="quiz.difficulty?.toLowerCase()">{{
+              quiz.difficulty
+            }}</span>
           </div>
           <h2 class="quiz-title">{{ quiz.title }}</h2>
           <p class="quiz-description">{{ quiz.description }}</p>
@@ -247,14 +274,22 @@ onMounted(loadData)
         <button type="button" class="btn-back" @click="exitQuiz">← Back to Quizzes</button>
         <div class="runner-info">
           <h2>{{ activeQuiz.title }}</h2>
-          <span class="score-display">Score: <strong>{{ totalScore }}</strong> / {{ answeredCount }}</span>
+          <span class="score-display"
+            >Score: <strong>{{ totalScore }}</strong> / {{ answeredCount }}</span
+          >
         </div>
       </div>
 
-      <div v-if="loadingQuestions" class="status-box"><p>Fetching quiz questions from backend...</p></div>
+      <QuizLoading
+        v-if="loadingQuestions"
+        :title="activeQuiz?.title"
+        message="Fetching quiz questions from backend..."
+      />
 
       <div v-else-if="quizError && !isCompleted" class="status-box error-box" role="alert">
-        <p>{{ quizError }}</p>
+        <div class="error-icon" aria-hidden="true">⚠️</div>
+
+        <p class="error-message">{{ quizError }}</p>
         <div class="error-actions">
           <button type="button" class="btn-retry" @click="startQuiz(activeQuiz)">Retry</button>
           <button type="button" class="btn-back" @click="exitQuiz">Back to Quizzes</button>
@@ -272,7 +307,7 @@ onMounted(loadData)
               current: idx === currentIndex,
               answered: isQuestionAnswered(q.id),
               correct: isQuestionAnswered(q.id) && evalResults[q.id]?.isCorrect,
-              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect
+              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect,
             }"
             :title="`Question ${idx + 1}`"
             @click="currentIndex = idx"
@@ -285,7 +320,9 @@ onMounted(loadData)
           <QuizCard
             :question="currentQuestion"
             :saved-answer="userAnswers[currentQuestion.id]"
-            :saved-result="isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null"
+            :saved-result="
+              isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null
+            "
             :question-number="currentIndex + 1"
             :total-questions="quizQuestions.length"
             @answered="handleAnswered"
@@ -299,7 +336,9 @@ onMounted(loadData)
 
       <div v-else-if="isCompleted" class="summary-wrapper">
         <div v-if="quizError" class="status-box error-box summary-error" role="alert">
-          <p>{{ quizError }}</p>
+          <div class="error-icon" aria-hidden="true">⚠️</div>
+
+          <p class="error-message">{{ quizError }}</p>
         </div>
         <QuizSummary
           :questions="quizQuestions"
@@ -309,7 +348,9 @@ onMounted(loadData)
           @review-question="reviewQuestion"
         />
         <div class="summary-exit-bar">
-          <button type="button" class="btn-secondary" @click="exitQuiz">← Choose Another Quiz</button>
+          <button type="button" class="btn-secondary" @click="exitQuiz">
+            ← Choose Another Quiz
+          </button>
         </div>
       </div>
     </div>
@@ -362,7 +403,11 @@ onMounted(loadData)
   font-size: 0.95rem;
   outline: none;
 }
-.btn-reset, .btn-clear, .btn-back, .btn-secondary, .btn-retry {
+.btn-reset,
+.btn-clear,
+.btn-back,
+.btn-secondary,
+.btn-retry {
   padding: 0.5rem 0.9rem;
   border-radius: 8px;
   cursor: pointer;
@@ -370,7 +415,8 @@ onMounted(loadData)
   color: var(--color-text-main, #e6d5b8);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
-.btn-reset, .btn-clear {
+.btn-reset,
+.btn-clear {
   color: #85b4be;
   border-color: #85b4be;
   align-self: flex-end;
@@ -401,6 +447,15 @@ onMounted(loadData)
 .error-box {
   border-color: #ef4444;
   color: #fca5a5;
+}
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.error-message {
+  font-size: 1rem;
+  color: #fca5a5;
+  margin-bottom: 1rem;
 }
 .summary-error {
   margin-bottom: 1.5rem;
