@@ -1,7 +1,7 @@
 <template>
   <main class="personal-home">
     <header class="welcome">
-      <h1>Welcome back, {{ firstName }}!</h1>
+      <h1>Welcome back, {{ userName }}!</h1>
     </header>
 
     <section class="continue">

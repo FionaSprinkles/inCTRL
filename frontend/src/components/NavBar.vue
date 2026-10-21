@@ -82,10 +82,10 @@
       </div>
     </template>
 
-    <!-- Logged in: shows the user's first name and a log out button -->
+    <!-- Logged in: shows the user's username and a log out button -->
     <template v-else>
       <div class="nav-right">
-        <div class="user">{{ firstName }}</div>
+        <div class="user">{{ userName }}</div>
 
         <button class="nav-link" @click="handleLogout">Log out</button>
       </div>
@@ -109,7 +109,7 @@ import { login } from '@/services/authService'
 const router = useRouter()
 const isBrowseOpen = ref(false) // Is the browse dropdown open?
 const { showLogin, openLogin, closeLogin } = useLoginModal() // Shared login modal state
-const { isLoggedIn, firstName, setUser, logout } = useAuth()
+const { isLoggedIn, userName, setUser, logout } = useAuth()
 
 // Runs when the modal emits "login"
 async function handleLogin(credentials) {
