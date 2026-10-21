@@ -14,6 +14,7 @@ const filteredShortcuts = computed(() => {
 
   return shortcuts.value.filter((shortcut) => {
     return (
+      (shortcut.title || '').toLowerCase().includes(query) ||
       (shortcut.keyCombo || '').toLowerCase().includes(query) ||
       (shortcut.description || '').toLowerCase().includes(query) ||
       (shortcut.categoryName || '').toLowerCase().includes(query) ||
