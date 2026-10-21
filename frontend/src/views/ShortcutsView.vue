@@ -1,10 +1,27 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import Pagination from '@/components/Pagination.vue'
 
 const shortcuts = ref([])
 const loading = ref(true)
 const error = ref('')
+const q = ref('')
+
+// Filter shortcuts based on the search query
+const filteredShortcuts = computed(() => {
+  const query = q.value.toLowerCase().trim()
+  if (!query) return shortcuts.value
+
+  return shortcuts.value.filter((shortcut) => {
+    return (
+      (shortcut.title || '').toLowerCase().includes(query) ||
+      (shortcut.keyCombo || '').toLowerCase().includes(query) ||
+      (shortcut.description || '').toLowerCase().includes(query) ||
+      (shortcut.categoryName || 'Uncategorized').toLowerCase().includes(query) ||
+      (shortcut.difficulty || '').toLowerCase().includes(query)
+    )
+  })
+})
 
 async function fetchShortcuts() {
   loading.value = true
@@ -30,13 +47,23 @@ onMounted(fetchShortcuts)
 
 <template>
   <main class="shortcuts-page">
-    <h1>Shortcuts</h1>
+    <div class="page-header">
+      <h1>Shortcuts</h1>
+      <input
+        v-model="q"
+        type="text"
+        placeholder="Search.."
+        aria-label="Search shortcuts"
+        class="search-input"
+      />
+    </div>
 
     <p v-if="error" role="alert">{{ error }}</p>
     <p v-else-if="loading">Loading shortcuts...</p>
     <p v-else-if="shortcuts.length === 0">No shortcuts to show.</p>
+    <p v-else-if="filteredShortcuts.length === 0">No results.</p>
 
-    <Pagination v-else :items="shortcuts" :page-size="10">
+    <Pagination v-else :items="filteredShortcuts" :page-size="10">
       <template #default="{ items }">
         <div class="table-wrap">
           <table>
@@ -50,7 +77,9 @@ onMounted(fetchShortcuts)
             </thead>
             <tbody>
               <tr v-for="shortcut in items" :key="shortcut.id">
-                <td><kbd>{{ shortcut.keyCombo }}</kbd></td>
+                <td>
+                  <kbd>{{ shortcut.keyCombo }}</kbd>
+                </td>
                 <td>{{ shortcut.description }}</td>
                 <td>{{ shortcut.categoryName || 'Uncategorized' }}</td>
                 <td>{{ shortcut.difficulty }}</td>
@@ -114,5 +143,36 @@ kbd {
   border-radius: 6px;
   padding: 0.15rem 0.45rem;
   white-space: nowrap;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Search bar design */
+.search-input {
+  padding: 0.6rem 1rem;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  color: var(--color-text-main);
+  outline: none;
+  width: 250px;
+  transition: border-color 0.2s;
+  backdrop-filter: blur(16px) saturate(160%);
+}
+
+/* Search bar text */
+.search-input::placeholder {
+  color: var(--color-text-main);
+}
+
+/* Search bar border */
+.search-input:focus {
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
 </style>
