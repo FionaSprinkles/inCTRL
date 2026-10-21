@@ -1,7 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchQuizzes, fetchCategories, fetchQuizById, filterQuizzes, submitQuizAttempt } from '@/services/quizService'
+import {
+  fetchQuizzes,
+  fetchCategories,
+  fetchQuizById,
+  filterQuizzes,
+  submitQuizAttempt,
+} from '@/services/quizService'
 import { validateAnswer } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
@@ -29,13 +35,17 @@ const isSubmitted = ref(false)
 const filteredQuizzes = computed(() => {
   return filterQuizzes(quizzes.value, {
     categoryId: selectedCategory.value,
-    difficulty: selectedDifficulty.value
+    difficulty: selectedDifficulty.value,
   })
 })
 
 const currentQuestion = computed(() => quizQuestions.value[currentIndex.value] || null)
-const totalScore = computed(() => Object.values(evalResults.value).reduce((s, r) => s + (r?.score || 0), 0))
-const answeredCount = computed(() => quizQuestions.value.filter(q => isQuestionAnswered(q.id)).length)
+const totalScore = computed(() =>
+  Object.values(evalResults.value).reduce((s, r) => s + (r?.score || 0), 0),
+)
+const answeredCount = computed(
+  () => quizQuestions.value.filter((q) => isQuestionAnswered(q.id)).length,
+)
 
 async function loadData() {
   loading.value = true
@@ -51,7 +61,7 @@ async function loadData() {
     if (qDiff) selectedDifficulty.value = qDiff
     const qQuizId = route.query.id || route.query.quizId
     if (qQuizId) {
-      const target = qData.find(q => String(q.id) === String(qQuizId))
+      const target = qData.find((q) => String(q.id) === String(qQuizId))
       if (target) startQuiz(target)
     }
   } catch (err) {
@@ -133,7 +143,7 @@ async function nextQuestion() {
     currentIndex.value++
   } else if (!isCompleted.value) {
     isCompleted.value = true
-    quizQuestions.value.forEach(q => {
+    quizQuestions.value.forEach((q) => {
       if (!evalResults.value[q.id]) {
         evalResults.value[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
       }
@@ -144,7 +154,7 @@ async function nextQuestion() {
         await submitQuizAttempt({
           quizId: activeQuiz.value?.id,
           answers: userAnswers.value,
-          formatFilter: 'all'
+          formatFilter: 'all',
         })
       } catch (err) {
         quizError.value = err.message || 'Could not submit quiz attempt.'
@@ -229,7 +239,9 @@ onMounted(loadData)
         <article v-for="quiz in filteredQuizzes" :key="quiz.id" class="quiz-card">
           <div class="quiz-tags">
             <span class="badge category-badge">{{ quiz.categoryName || 'General' }}</span>
-            <span class="badge diff-badge" :class="quiz.difficulty?.toLowerCase()">{{ quiz.difficulty }}</span>
+            <span class="badge diff-badge" :class="quiz.difficulty?.toLowerCase()">{{
+              quiz.difficulty
+            }}</span>
           </div>
           <h2 class="quiz-title">{{ quiz.title }}</h2>
           <p class="quiz-description">{{ quiz.description }}</p>
@@ -247,11 +259,15 @@ onMounted(loadData)
         <button type="button" class="btn-back" @click="exitQuiz">← Back to Quizzes</button>
         <div class="runner-info">
           <h2>{{ activeQuiz.title }}</h2>
-          <span class="score-display">Score: <strong>{{ totalScore }}</strong> / {{ answeredCount }}</span>
+          <span class="score-display"
+            >Score: <strong>{{ totalScore }}</strong> / {{ answeredCount }}</span
+          >
         </div>
       </div>
 
-      <div v-if="loadingQuestions" class="status-box"><p>Fetching quiz questions from backend...</p></div>
+      <div v-if="loadingQuestions" class="status-box">
+        <p>Fetching quiz questions from backend...</p>
+      </div>
 
       <div v-else-if="quizError && !isCompleted" class="status-box error-box" role="alert">
         <p>{{ quizError }}</p>
@@ -272,7 +288,7 @@ onMounted(loadData)
               current: idx === currentIndex,
               answered: isQuestionAnswered(q.id),
               correct: isQuestionAnswered(q.id) && evalResults[q.id]?.isCorrect,
-              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect
+              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect,
             }"
             :title="`Question ${idx + 1}`"
             @click="currentIndex = idx"
@@ -285,7 +301,9 @@ onMounted(loadData)
           <QuizCard
             :question="currentQuestion"
             :saved-answer="userAnswers[currentQuestion.id]"
-            :saved-result="isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null"
+            :saved-result="
+              isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null
+            "
             :question-number="currentIndex + 1"
             :total-questions="quizQuestions.length"
             @answered="handleAnswered"
@@ -309,7 +327,9 @@ onMounted(loadData)
           @review-question="reviewQuestion"
         />
         <div class="summary-exit-bar">
-          <button type="button" class="btn-secondary" @click="exitQuiz">← Choose Another Quiz</button>
+          <button type="button" class="btn-secondary" @click="exitQuiz">
+            ← Choose Another Quiz
+          </button>
         </div>
       </div>
     </div>
@@ -327,7 +347,7 @@ onMounted(loadData)
   text-align: center;
 }
 .subtitle {
-  color: var(--color-text-muted, #85b4be);
+  color: var(--color-text-main);
   margin-top: -0.5rem;
 }
 .filters-bar {
@@ -356,13 +376,18 @@ onMounted(loadData)
 .filter-select {
   padding: 0.6rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(20, 30, 40, 0.7);
+  border: var(--color-text-muted);
+  background: var(--color-dark-teal);
   color: #fff;
   font-size: 0.95rem;
   outline: none;
+  font-family: var(--font-body);
 }
-.btn-reset, .btn-clear, .btn-back, .btn-secondary, .btn-retry {
+.btn-reset,
+.btn-clear,
+.btn-back,
+.btn-secondary,
+.btn-retry {
   padding: 0.5rem 0.9rem;
   border-radius: 8px;
   cursor: pointer;
@@ -370,7 +395,8 @@ onMounted(loadData)
   color: var(--color-text-main, #e6d5b8);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
-.btn-reset, .btn-clear {
+.btn-reset,
+.btn-clear {
   color: #85b4be;
   border-color: #85b4be;
   align-self: flex-end;
@@ -472,7 +498,7 @@ onMounted(loadData)
 }
 .question-count {
   font-size: 0.85rem;
-  color: var(--color-text-muted, #85b4be);
+  color: var(--color-text-main);
 }
 .btn-start {
   padding: 0.5rem 1rem;
