@@ -104,7 +104,7 @@ async function startQuiz(quiz) {
     const data = await fetchQuizById(quiz.id)
     if (requestId !== quizRequestId) return
     if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
-    if (data.title && activeQuiz.value && !activeQuiz.value.title) {
+    if (data.title && activeQuiz.value) {
       activeQuiz.value.title = data.title
     }
     quizQuestions.value = data.questions
