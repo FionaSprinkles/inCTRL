@@ -106,6 +106,13 @@ function handleAnswered({ questionId, userAnswer, result }) {
   }
 }
 
+function handleAnswerUpdate({ questionId, userAnswer }) {
+  userAnswers.value = {
+    ...userAnswers.value,
+    [questionId]: userAnswer
+  }
+}
+
 /**
  * Clears evaluation result when retrying a question.
  * @param {object} payload - Retry event payload.
@@ -205,6 +212,7 @@ function jumpToQuestion(idx) {
         :question-number="currentIndex + 1"
         :total-questions="filteredQuestions.length"
         @answered="handleAnswered"
+        @update:answer="handleAnswerUpdate"
         @retry="handleRetry"
         @next="nextQuestion"
         @previous="previousQuestion"

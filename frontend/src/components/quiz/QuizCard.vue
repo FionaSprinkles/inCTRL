@@ -34,7 +34,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['answered', 'retry', 'next', 'previous'])
+const emit = defineEmits(['answered', 'update:answer', 'retry', 'next', 'previous'])
 
 const userAnswer = ref(null)
 const evaluationResult = ref(null)
@@ -81,6 +81,20 @@ watch(
   { immediate: true }
 )
 
+// Emit answer changes so parent keeps state in real time
+watch(
+  userAnswer,
+  (newVal) => {
+    if (newVal !== undefined) {
+      emit('update:answer', {
+        questionId: props.question.id,
+        userAnswer: newVal
+      })
+    }
+  },
+  { deep: true }
+)
+
 /**
  * Computes default initial empty answer for question according to its format type.
  * @param {object} q - Question definition object.
@@ -113,6 +127,27 @@ function checkAnswer() {
     userAnswer: userAnswer.value,
     result
   })
+}
+
+/**
+ * Advances to the next question, saving and validating answer if not yet checked.
+ */
+function handleNext() {
+  if (!evaluationResult.value && hasAnswer.value) {
+    const result = validateAnswer(props.question, userAnswer.value)
+    evaluationResult.value = result
+    emit('answered', {
+      questionId: props.question.id,
+      userAnswer: userAnswer.value,
+      result
+    })
+  } else {
+    emit('update:answer', {
+      questionId: props.question.id,
+      userAnswer: userAnswer.value
+    })
+  }
+  emit('next')
 }
 
 /**
@@ -217,7 +252,7 @@ function retryQuestion() {
         <button
           v-if="!evaluationResult"
           type="button"
-          class="btn btn-primary"
+          class="btn btn-outline"
           :disabled="!hasAnswer"
           @click="checkAnswer"
         >
@@ -225,10 +260,10 @@ function retryQuestion() {
         </button>
 
         <button
-          v-else
           type="button"
           class="btn btn-primary"
-          @click="$emit('next')"
+          :disabled="!evaluationResult && !hasAnswer"
+          @click="handleNext"
         >
           {{ questionNumber < totalQuestions ? 'Next Question →' : 'See Results' }}
         </button>

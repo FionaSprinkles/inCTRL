@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchQuizzes, fetchCategories, fetchQuizById, filterQuizzes, submitQuizAttempt } from '@/services/quizService'
+import { validateAnswer } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 
@@ -108,6 +109,20 @@ function handleAnswered({ questionId, userAnswer, result }) {
   evalResults.value = { ...evalResults.value, [questionId]: result }
 }
 
+function handleAnswerUpdate({ questionId, userAnswer }) {
+  userAnswers.value = { ...userAnswers.value, [questionId]: userAnswer }
+}
+
+function isQuestionAnswered(questionId) {
+  if (evalResults.value[questionId] !== undefined) return true
+  const ans = userAnswers.value[questionId]
+  if (ans === null || ans === undefined) return false
+  if (typeof ans === 'string') return ans.trim().length > 0
+  if (Array.isArray(ans)) return ans.length > 0
+  if (typeof ans === 'object') return Object.keys(ans).length > 0
+  return true
+}
+
 function handleRetry({ questionId }) {
   const next = { ...evalResults.value }
   delete next[questionId]
@@ -119,6 +134,11 @@ async function nextQuestion() {
     currentIndex.value++
   } else if (!isCompleted.value) {
     isCompleted.value = true
+    quizQuestions.value.forEach(q => {
+      if (!evalResults.value[q.id]) {
+        evalResults.value[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
+      }
+    })
     if (!isSubmitted.value) {
       isSubmitted.value = true
       try {
@@ -251,7 +271,7 @@ onMounted(loadData)
             class="dot-btn"
             :class="{
               current: idx === currentIndex,
-              answered: evalResults[q.id] !== undefined,
+              answered: isQuestionAnswered(q.id),
               correct: evalResults[q.id]?.isCorrect,
               wrong: evalResults[q.id] && !evalResults[q.id].isCorrect
             }"
@@ -270,6 +290,7 @@ onMounted(loadData)
             :question-number="currentIndex + 1"
             :total-questions="quizQuestions.length"
             @answered="handleAnswered"
+            @update:answer="handleAnswerUpdate"
             @retry="handleRetry"
             @next="nextQuestion"
             @previous="previousQuestion"
@@ -509,6 +530,11 @@ onMounted(loadData)
   border-color: #3b82f6;
   background: #3b82f6;
   color: #fff;
+}
+.dot-btn.answered:not(.correct):not(.wrong) {
+  border-color: #60a5fa;
+  background: rgba(59, 130, 246, 0.25);
+  color: #bfdbfe;
 }
 .dot-btn.correct {
   border-color: #10b981;
