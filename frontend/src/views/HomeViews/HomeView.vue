@@ -1,23 +1,22 @@
-/** This file can be removed if we start using authentication/navigation guards. 
-Then the router could do this navigation instead. **/
+/** This file can be removed if we start using authentication/navigation guards. Then the router
+could do this navigation instead. **/
 
 <template>
-    <!-- ===== LOGGED OUT ===== -->
+  <!-- ===== LOGGED OUT ===== -->
 
-    <!-- This is the homepage if a user is not logged in -->
-    <PublicHomeView v-if="!isLoggedIn" />
+  <!-- This is the homepage if a user is not logged in -->
+  <PublicHomeView v-if="!isLoggedIn" />
 
-    <!-- ===== LOGGED IN ===== -->
+  <!-- ===== LOGGED IN ===== -->
 
-    <!-- This is the homepage if a user is logged in -->
-    <PersonalHomeView v-else />
-
+  <!-- This is the homepage if a user is logged in -->
+  <PersonalHomeView v-else />
 </template>
 
 <script setup>
 import PublicHomeView from './PublicHomeView.vue'
 import PersonalHomeView from './PersonalHomeView.vue'
+import { useAuth } from '@/composables/useAuth'
 
-//This is for testing. Will change later
-const isLoggedIn = false
+const { isLoggedIn } = useAuth()
 </script>

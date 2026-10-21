@@ -7,8 +7,11 @@
     --bg-gradient: linear-gradient(135deg, #0f4c5c 0%, #1d7874 40%, #679b9b 75%, #d0e1d4 100%);
 
     --color-text-heading: #FDFBF7;
-    --color-text-main: #E6D5B8;
+    --color-text-main: #F2E5D0;
     --color-text-muted: #85b4be;
+    --color-text-white: #FFFFFF;
+    --color-text-black: #151515;
+    --color-dark-teal: #125662;
 
     --color-button: #E3DDC4;
     --color-button-text: #422F23;

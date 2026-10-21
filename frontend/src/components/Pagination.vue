@@ -42,7 +42,11 @@ function setPage(next) {
       {{ previousLabel }}
     </button>
     <span>{{ state.page }} / {{ state.pageCount }}</span>
-    <button type="button" :disabled="state.page >= state.pageCount" @click="setPage(state.page + 1)">
+    <button
+      type="button"
+      :disabled="state.page >= state.pageCount"
+      @click="setPage(state.page + 1)"
+    >
       {{ nextLabel }}
     </button>
   </nav>
@@ -58,7 +62,7 @@ function setPage(next) {
 }
 
 .pager button:disabled {
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
   cursor: default;
 }
 
@@ -67,4 +71,5 @@ function setPage(next) {
   color: var(--color-text-main);
   letter-spacing: 1px;
 }
+
 </style>
