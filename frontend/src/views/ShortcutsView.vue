@@ -95,6 +95,7 @@ onMounted(fetchShortcuts)
 <style scoped>
 .shortcuts-page {
   max-width: 960px;
+  width: 100%;
   margin: 0 auto;
   padding: 2rem 1.5rem 3rem;
 }
