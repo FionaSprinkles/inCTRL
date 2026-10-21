@@ -97,3 +97,63 @@ describe('quizService - API fetch methods', () => {
     await assert.rejects(() => submitQuizAttempt({}), /Failed to submit quiz attempt \(500\)/)
   })
 })
+
+describe('quiz answer persistence and navigation flow', () => {
+  it('preserves answered values when navigating forward and returning to previous questions', () => {
+    const userAnswers = {}
+    const questions = [
+      { id: 'q-1', prompt: 'Question 1', type: 'single_choice' },
+      { id: 'q-2', prompt: 'Question 2', type: 'fill_blank' },
+      { id: 'q-3', prompt: 'Question 3', type: 'multiple_choice' }
+    ]
+
+    // User answers question 1 and advances
+    userAnswers['q-1'] = 'opt-1'
+    let currentIndex = 0
+    currentIndex++ // now on question 2
+
+    // User answers question 2 and advances
+    userAnswers['q-2'] = 'Win + L'
+    currentIndex++ // now on question 3
+
+    // User answers question 3
+    userAnswers['q-3'] = ['opt-a', 'opt-b']
+
+    // User returns to question 2
+    currentIndex--
+    assert.strictEqual(userAnswers[questions[currentIndex].id], 'Win + L')
+
+    // User returns to question 1
+    currentIndex--
+    assert.strictEqual(userAnswers[questions[currentIndex].id], 'opt-1')
+
+    // User returns to question 3
+    currentIndex = 2
+    assert.deepStrictEqual(userAnswers[questions[currentIndex].id], ['opt-a', 'opt-b'])
+  })
+
+  it('does not treat untouched ordering default as answered until user interaction', () => {
+    const userAnswers = {}
+    let isOrderingTouched = false
+
+    const hasAnswer = (val, type) => {
+      if (val === null || val === undefined) return false
+      if (type === 'ordering') {
+        return isOrderingTouched && Array.isArray(val) && val.length > 0
+      }
+      return true
+    }
+
+    const defaultOrdering = ['s4', 's3', 's2', 's1']
+    // Initially untouched
+    assert.strictEqual(hasAnswer(defaultOrdering, 'ordering'), false)
+    assert.strictEqual(userAnswers['q-ord'], undefined)
+
+    // User moves a step in ordering
+    isOrderingTouched = true
+    userAnswers['q-ord'] = ['s1', 's2', 's3', 's4']
+
+    assert.strictEqual(hasAnswer(userAnswers['q-ord'], 'ordering'), true)
+    assert.deepStrictEqual(userAnswers['q-ord'], ['s1', 's2', 's3', 's4'])
+  })
+})

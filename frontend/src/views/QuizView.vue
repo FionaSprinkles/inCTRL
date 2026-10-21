@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchQuizzes, fetchCategories, fetchQuizById, filterQuizzes, submitQuizAttempt } from '@/services/quizService'
+import { validateAnswer } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 
@@ -34,7 +35,7 @@ const filteredQuizzes = computed(() => {
 
 const currentQuestion = computed(() => quizQuestions.value[currentIndex.value] || null)
 const totalScore = computed(() => Object.values(evalResults.value).reduce((s, r) => s + (r?.score || 0), 0))
-const answeredCount = computed(() => Object.keys(evalResults.value).length)
+const answeredCount = computed(() => quizQuestions.value.filter(q => isQuestionAnswered(q.id)).length)
 
 async function loadData() {
   loading.value = true
@@ -108,6 +109,19 @@ function handleAnswered({ questionId, userAnswer, result }) {
   evalResults.value = { ...evalResults.value, [questionId]: result }
 }
 
+function handleAnswerUpdate({ questionId, userAnswer }) {
+  userAnswers.value = { ...userAnswers.value, [questionId]: userAnswer }
+}
+
+function isQuestionAnswered(questionId) {
+  const ans = userAnswers.value[questionId]
+  if (ans === null || ans === undefined) return false
+  if (typeof ans === 'string') return ans.trim().length > 0
+  if (Array.isArray(ans)) return ans.length > 0
+  if (typeof ans === 'object') return Object.keys(ans).length > 0
+  return true
+}
+
 function handleRetry({ questionId }) {
   const next = { ...evalResults.value }
   delete next[questionId]
@@ -119,6 +133,11 @@ async function nextQuestion() {
     currentIndex.value++
   } else if (!isCompleted.value) {
     isCompleted.value = true
+    quizQuestions.value.forEach(q => {
+      if (!evalResults.value[q.id]) {
+        evalResults.value[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
+      }
+    })
     if (!isSubmitted.value) {
       isSubmitted.value = true
       try {
@@ -251,9 +270,9 @@ onMounted(loadData)
             class="dot-btn"
             :class="{
               current: idx === currentIndex,
-              answered: evalResults[q.id] !== undefined,
-              correct: evalResults[q.id]?.isCorrect,
-              wrong: evalResults[q.id] && !evalResults[q.id].isCorrect
+              answered: isQuestionAnswered(q.id),
+              correct: isQuestionAnswered(q.id) && evalResults[q.id]?.isCorrect,
+              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect
             }"
             :title="`Question ${idx + 1}`"
             @click="currentIndex = idx"
@@ -266,10 +285,11 @@ onMounted(loadData)
           <QuizCard
             :question="currentQuestion"
             :saved-answer="userAnswers[currentQuestion.id]"
-            :saved-result="evalResults[currentQuestion.id]"
+            :saved-result="isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null"
             :question-number="currentIndex + 1"
             :total-questions="quizQuestions.length"
             @answered="handleAnswered"
+            @update:answer="handleAnswerUpdate"
             @retry="handleRetry"
             @next="nextQuestion"
             @previous="previousQuestion"
@@ -509,6 +529,11 @@ onMounted(loadData)
   border-color: #3b82f6;
   background: #3b82f6;
   color: #fff;
+}
+.dot-btn.answered:not(.correct):not(.wrong) {
+  border-color: #60a5fa;
+  background: rgba(59, 130, 246, 0.25);
+  color: #bfdbfe;
 }
 .dot-btn.correct {
   border-color: #10b981;
