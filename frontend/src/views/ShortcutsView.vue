@@ -49,7 +49,13 @@ onMounted(fetchShortcuts)
   <main class="shortcuts-page">
     <div class="page-header">
       <h1>Shortcuts</h1>
-      <input v-model="q" type="text" placeholder="Search.." class="search-input" />
+      <input
+        v-model="q"
+        type="text"
+        placeholder="Search.."
+        aria-label="Search shortcuts"
+        class="search-input"
+      />
     </div>
 
     <p v-if="error" role="alert">{{ error }}</p>
