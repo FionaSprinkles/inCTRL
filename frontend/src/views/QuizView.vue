@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchQuizzes, fetchCategories, fetchQuizById, filterQuizzes } from '@/services/quizService'
+import { fetchQuizzes, fetchCategories, fetchQuizById, filterQuizzes, submitQuizAttempt } from '@/services/quizService'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 
@@ -23,6 +23,7 @@ const currentIndex = ref(0)
 const userAnswers = ref({})
 const evalResults = ref({})
 const isCompleted = ref(false)
+const isSubmitted = ref(false)
 
 const filteredQuizzes = computed(() => {
   return filterQuizzes(quizzes.value, {
@@ -64,31 +65,42 @@ function resetFilters() {
   selectedDifficulty.value = 'all'
 }
 
+let quizRequestId = 0
+
 async function startQuiz(quiz) {
+  const requestId = ++quizRequestId
   activeQuiz.value = quiz
   loadingQuestions.value = true
   quizError.value = ''
+  quizQuestions.value = []
   currentIndex.value = 0
   userAnswers.value = {}
   evalResults.value = {}
   isCompleted.value = false
+  isSubmitted.value = false
 
   try {
     const data = await fetchQuizById(quiz.id)
+    if (requestId !== quizRequestId) return
     if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
     quizQuestions.value = data.questions
   } catch (err) {
+    if (requestId !== quizRequestId) return
     quizError.value = err.message || 'Could not load quiz questions.'
   } finally {
-    loadingQuestions.value = false
+    if (requestId === quizRequestId) {
+      loadingQuestions.value = false
+    }
   }
 }
 
 function exitQuiz() {
+  quizRequestId++
   activeQuiz.value = null
   quizQuestions.value = []
   quizError.value = ''
   isCompleted.value = false
+  isSubmitted.value = false
 }
 
 function handleAnswered({ questionId, userAnswer, result }) {
@@ -102,9 +114,24 @@ function handleRetry({ questionId }) {
   evalResults.value = next
 }
 
-function nextQuestion() {
-  if (currentIndex.value < quizQuestions.value.length - 1) currentIndex.value++
-  else isCompleted.value = true
+async function nextQuestion() {
+  if (currentIndex.value < quizQuestions.value.length - 1) {
+    currentIndex.value++
+  } else if (!isCompleted.value) {
+    isCompleted.value = true
+    if (!isSubmitted.value) {
+      isSubmitted.value = true
+      try {
+        await submitQuizAttempt({
+          quizId: activeQuiz.value?.id,
+          answers: userAnswers.value,
+          formatFilter: 'all'
+        })
+      } catch (err) {
+        quizError.value = err.message || 'Could not submit quiz attempt.'
+      }
+    }
+  }
 }
 
 function previousQuestion() {
@@ -116,6 +143,8 @@ function restartQuiz() {
   evalResults.value = {}
   currentIndex.value = 0
   isCompleted.value = false
+  isSubmitted.value = false
+  quizError.value = ''
 }
 
 function reviewQuestion(index) {
@@ -205,7 +234,7 @@ onMounted(loadData)
 
       <div v-if="loadingQuestions" class="status-box"><p>Fetching quiz questions from backend...</p></div>
 
-      <div v-else-if="quizError" class="status-box error-box" role="alert">
+      <div v-else-if="quizError && !isCompleted" class="status-box error-box" role="alert">
         <p>{{ quizError }}</p>
         <div class="error-actions">
           <button type="button" class="btn-retry" @click="startQuiz(activeQuiz)">Retry</button>
@@ -249,6 +278,9 @@ onMounted(loadData)
       </template>
 
       <div v-else-if="isCompleted" class="summary-wrapper">
+        <div v-if="quizError" class="status-box error-box summary-error" role="alert">
+          <p>{{ quizError }}</p>
+        </div>
         <QuizSummary
           :questions="quizQuestions"
           :answers="userAnswers"
@@ -349,6 +381,10 @@ onMounted(loadData)
 .error-box {
   border-color: #ef4444;
   color: #fca5a5;
+}
+.summary-error {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
 }
 .quiz-grid {
   display: grid;
