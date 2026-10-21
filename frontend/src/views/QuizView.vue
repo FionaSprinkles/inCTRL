@@ -369,9 +369,9 @@ onMounted(loadData)
   min-width: 180px;
 }
 .filter-group label {
-  font-size: 0.85rem;
   font-weight: 500;
-  color: var(--color-text-main, #e6d5b8);
+  color: var(--color-text-main);
+  font-family: var(--font-display);
 }
 .filter-select {
   padding: 0.6rem 0.85rem;
