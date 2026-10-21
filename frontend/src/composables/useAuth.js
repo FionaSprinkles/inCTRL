@@ -8,10 +8,7 @@ const user = ref(getToken() ? getStoredUser() : null)
 export function useAuth() {
   const isLoggedIn = computed(() => user.value !== null)
 
-  // Falls back to username for accounts without a first name
-  const firstName = computed(
-    () => user.value?.firstName || user.value?.displayName || user.value?.username || '',
-  )
+  const username = computed(() => user.value?.username || '')
 
   function setUser(newUser) {
     user.value = newUser
@@ -22,5 +19,5 @@ export function useAuth() {
     user.value = null
   }
 
-  return { user, isLoggedIn, firstName, setUser, logout }
+  return { user, isLoggedIn, username , setUser, logout }
 }

@@ -1,7 +1,7 @@
 <template>
   <main class="personal-home">
     <header class="welcome">
-      <h1>Welcome back, {{ userName }}!</h1>
+      <h1>Welcome back, {{ username }}!</h1>
     </header>
 
     <section class="continue">
@@ -26,7 +26,7 @@
 import { RouterLink } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
-const { firstName } = useAuth()
+const { username } = useAuth()
 </script>
 
 <style scoped>
