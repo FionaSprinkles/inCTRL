@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   fetchQuizzes,
@@ -33,6 +33,36 @@ const userAnswers = ref({})
 const evalResults = ref({})
 const isCompleted = ref(false)
 const isSubmitted = ref(false)
+
+const elapsedSeconds = ref(0)
+const startedAt = ref(null)
+let timerInterval = null
+const isReviewMode = ref(false)
+
+function startTimer() {
+  stopTimer()
+  startedAt.value = Date.now()
+  elapsedSeconds.value = 0
+  timerInterval = setInterval(() => {
+    if (startedAt.value) {
+      elapsedSeconds.value = Math.floor((Date.now() - startedAt.value) / 1000)
+    }
+  }, 1000)
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+
+const formattedTimer = computed(() => {
+  const total = elapsedSeconds.value
+  const mins = Math.floor(total / 60)
+  const secs = total % 60
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+})
 
 const filteredQuizzes = computed(() => {
   return filterQuizzes(quizzes.value, {
@@ -99,6 +129,9 @@ async function startQuiz(quiz) {
   evalResults.value = {}
   isCompleted.value = false
   isSubmitted.value = false
+  isReviewMode.value = false
+  stopTimer()
+  elapsedSeconds.value = 0
 
   try {
     const data = await fetchQuizById(quiz.id)
@@ -108,6 +141,7 @@ async function startQuiz(quiz) {
       activeQuiz.value.title = data.title
     }
     quizQuestions.value = data.questions
+    startTimer()
   } catch (err) {
     if (requestId !== quizRequestId) return
     quizError.value = err.message || 'Could not load quiz questions.'
@@ -120,6 +154,9 @@ async function startQuiz(quiz) {
 
 function exitQuiz() {
   quizRequestId++
+  stopTimer()
+  isReviewMode.value = false
+  elapsedSeconds.value = 0
   activeQuiz.value = null
   quizQuestions.value = []
   quizError.value = ''
@@ -151,27 +188,41 @@ function handleRetry({ questionId }) {
   evalResults.value = next
 }
 
-async function nextQuestion() {
+function nextQuestion() {
   if (currentIndex.value < quizQuestions.value.length - 1) {
     currentIndex.value++
+  } else if (isReviewMode.value) {
+    returnToSummary()
   } else if (!isCompleted.value) {
-    isCompleted.value = true
-    quizQuestions.value.forEach((q) => {
-      if (!evalResults.value[q.id]) {
-        evalResults.value[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
-      }
-    })
-    if (!isSubmitted.value) {
-      isSubmitted.value = true
-      try {
-        await submitQuizAttempt({
-          quizId: activeQuiz.value?.id,
-          answers: userAnswers.value,
-          formatFilter: 'all',
-        })
-      } catch (err) {
-        quizError.value = err.message || 'Could not submit quiz attempt.'
-      }
+    finishQuiz()
+  }
+}
+
+async function finishQuiz() {
+  stopTimer()
+  if (startedAt.value) {
+    elapsedSeconds.value = Math.max(0, Math.floor((Date.now() - startedAt.value) / 1000))
+  }
+  isCompleted.value = true
+  isReviewMode.value = false
+
+  const results = {}
+  quizQuestions.value.forEach((q) => {
+    results[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
+  })
+  evalResults.value = results
+
+  if (!isSubmitted.value) {
+    isSubmitted.value = true
+    try {
+      await submitQuizAttempt({
+        quizId: activeQuiz.value?.id,
+        answers: userAnswers.value,
+        formatFilter: 'all',
+        timeSpentSeconds: elapsedSeconds.value,
+      })
+    } catch (err) {
+      quizError.value = err.message || 'Could not submit quiz attempt.'
     }
   }
 }
@@ -186,15 +237,24 @@ function restartQuiz() {
   currentIndex.value = 0
   isCompleted.value = false
   isSubmitted.value = false
+  isReviewMode.value = false
   quizError.value = ''
+  startTimer()
 }
 
 function reviewQuestion(index) {
   currentIndex.value = index
+  isReviewMode.value = true
   isCompleted.value = false
 }
 
+function returnToSummary() {
+  isReviewMode.value = false
+  isCompleted.value = true
+}
+
 onMounted(loadData)
+onUnmounted(stopTimer)
 </script>
 
 <template>
@@ -271,12 +331,32 @@ onMounted(loadData)
     <!-- View 2: Active Quiz Runner -->
     <div v-else class="quiz-runner-view">
       <div class="runner-header">
-        <button type="button" class="btn-back" @click="exitQuiz">← Back to Quizzes</button>
+        <button
+          v-if="isReviewMode"
+          type="button"
+          class="btn-back"
+          @click="returnToSummary"
+        >
+          ← Back to Summary
+        </button>
+        <button
+          v-else
+          type="button"
+          class="btn-back"
+          @click="exitQuiz"
+        >
+          ← Back to Quizzes
+        </button>
         <div class="runner-info">
           <h2>{{ activeQuiz.title }}</h2>
-          <span class="score-display"
-            >Score: <strong>{{ totalScore }}</strong> / {{ answeredCount }}</span
-          >
+          <div class="runner-stats">
+            <span class="timer-display" title="Quiz Timer">
+              ⏱️ <strong>{{ formattedTimer }}</strong>
+            </span>
+            <span class="progress-display">
+              Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -306,8 +386,8 @@ onMounted(loadData)
             :class="{
               current: idx === currentIndex,
               answered: isQuestionAnswered(q.id),
-              correct: isQuestionAnswered(q.id) && evalResults[q.id]?.isCorrect,
-              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect,
+              correct: isReviewMode && evalResults[q.id]?.isCorrect,
+              wrong: isReviewMode && evalResults[q.id] && !evalResults[q.id].isCorrect,
             }"
             :title="`Question ${idx + 1}`"
             @click="currentIndex = idx"
@@ -320,9 +400,7 @@ onMounted(loadData)
           <QuizCard
             :question="currentQuestion"
             :saved-answer="userAnswers[currentQuestion.id]"
-            :saved-result="
-              isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null
-            "
+            :saved-result="isReviewMode ? evalResults[currentQuestion.id] : null"
             :question-number="currentIndex + 1"
             :total-questions="quizQuestions.length"
             @answered="handleAnswered"
@@ -344,6 +422,7 @@ onMounted(loadData)
           :questions="quizQuestions"
           :answers="userAnswers"
           :results="evalResults"
+          :time-spent-seconds="elapsedSeconds"
           @restart="restartQuiz"
           @review-question="reviewQuestion"
         />
@@ -557,6 +636,28 @@ onMounted(loadData)
   font-size: 1.2rem;
   margin: 0;
   letter-spacing: 1px;
+}
+.runner-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+.timer-display {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fef08a;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.progress-display {
+  font-size: 0.9rem;
+  color: #c7e6ee;
 }
 .score-display {
   font-size: 0.9rem;
