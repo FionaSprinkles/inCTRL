@@ -9,7 +9,6 @@ import QuestionOrdering from './QuestionOrdering.vue'
 import QuestionTrueFalse from './QuestionTrueFalse.vue'
 import QuestionLivePress from './QuestionLivePress.vue'
 import QuestionOddOneOut from './QuestionOddOneOut.vue'
-import { validateAnswer } from '../../services/quizValidator'
 
 const props = defineProps({
   question: {
@@ -131,49 +130,16 @@ const hasAnswer = computed(() => {
 })
 
 /**
- * Validates the current question answer and emits answered event with evaluation result.
- */
-function checkAnswer() {
-  const result = validateAnswer(props.question, userAnswer.value)
-  evaluationResult.value = result
-  emit('answered', {
-    questionId: props.question.id,
-    userAnswer: userAnswer.value,
-    result
-  })
-}
-
-/**
- * Advances to the next question, saving and validating answer if not yet checked.
+ * Advances to the next question, saving the current answer if present.
  */
 function handleNext() {
-  if (!evaluationResult.value && hasAnswer.value) {
-    const result = validateAnswer(props.question, userAnswer.value)
-    evaluationResult.value = result
-    emit('answered', {
-      questionId: props.question.id,
-      userAnswer: userAnswer.value,
-      result
-    })
-  } else if (hasAnswer.value) {
+  if (hasAnswer.value) {
     emit('update:answer', {
       questionId: props.question.id,
       userAnswer: userAnswer.value
     })
   }
   emit('next')
-}
-
-/**
- * Resets local answer and evaluation state and emits retry event.
- */
-function retryQuestion() {
-  evaluationResult.value = null
-  if (props.question.type === 'ordering') {
-    isOrderingTouched.value = false
-  }
-  userAnswer.value = getInitialAnswer(props.question)
-  emit('retry', { questionId: props.question.id })
 }
 </script>
 
@@ -257,25 +223,6 @@ function retryQuestion() {
       </div>
 
       <div class="right-actions">
-        <button
-          v-if="evaluationResult && !evaluationResult.isCorrect"
-          type="button"
-          class="btn btn-outline"
-          @click="retryQuestion"
-        >
-          Try Again
-        </button>
-
-        <button
-          v-if="!evaluationResult"
-          type="button"
-          class="btn btn-outline"
-          :disabled="!hasAnswer"
-          @click="checkAnswer"
-        >
-          Check Answer
-        </button>
-
         <button
           type="button"
           class="btn btn-primary"
