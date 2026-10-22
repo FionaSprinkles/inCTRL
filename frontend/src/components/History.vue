@@ -9,7 +9,12 @@
 This component should also:
 - be a compact widget that is shown on users personal page.
 - be its own page that shows more info than the compact widget.
+
+
+in quizRoutes.js ->
+router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 */
+
 
 
 <template>
@@ -24,6 +29,7 @@ This component should also:
           <tr>
             <th>Date</th>
             <th>Category</th>
+            <th>Quiz name</th>
             <th>Difficulty</th>
             <th>Score</th>
             <th>Max Score</th>
@@ -32,10 +38,12 @@ This component should also:
           </tr>
           </thead>
           <tbody>
-          <tr>
+          <tr v-for="attempt in history" :key="attempt.id">
             <!-- The data goeeess heereee-->
-            <td>Date</td>
+             <!--Fetch data from quiz_attempts-->
+            <td>{{ attempt.completedAt }}</td>
             <td>Category</td>
+            <td>Quiz name</td> <!--Should there be a button somewhere to redo quiz? -->
             <td>Difficulty</td>
             <td>Score</td>
             <td>Max Score</td>
@@ -57,6 +65,33 @@ This component should also:
 
   </section>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useAuth } from '@/composables/useAuth'
+
+
+const history = ref([])
+const { user } = useAuth()
+
+async function fetchHistory() {
+  try {
+    const response = await fetch(`/api/quiz/attempts/user/${user.value.id}`)
+
+    if (!response.ok) {
+      throw new Error('Could not fetch history')
+    }
+
+    const data = await response.json()
+    history.value = data.attempts || []
+  } catch (error) {
+    console.error('Error fetching history:', error)
+  }
+}
+
+onMounted(() => {
+  fetchHistory()
+})
+</script>
 
 <style scoped>
 
