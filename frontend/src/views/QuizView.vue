@@ -499,7 +499,7 @@ onUnmounted(stopTimer)
 
 .subtitle {
   font-family: var(--font-body);
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
   font-size: 17px;
   letter-spacing: 0.5px;
   margin-top: 0;
@@ -530,20 +530,20 @@ onUnmounted(stopTimer)
 .filter-group label {
   font-family: var(--font-display);
   font-size: 16px;
-  font-weight: 450;
+  font-weight: 500;
   letter-spacing: 1px;
   color: var(--color-text-main);
 }
 
 .filter-select {
-  font-family: var(--font-body);
-  padding: 0.65rem 0.9rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--color-text-heading);
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-text-muted);
+  background: var(--color-dark-teal);
+  color: #fff;
   font-size: 0.95rem;
   outline: none;
+  font-family: var(--font-body);
 }
 
 .filter-select option {
@@ -738,7 +738,7 @@ onUnmounted(stopTimer)
 .question-count {
   font-family: var(--font-body);
   font-size: 0.85rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
 }
 
 .btn-start {
