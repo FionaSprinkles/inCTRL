@@ -201,6 +201,16 @@ function nextQuestion() {
   }
 }
 
+function getFinalAnswers() {
+  const finalAnswers = {}
+  quizQuestions.value.forEach((q) => {
+    finalAnswers[q.id] = isQuestionAnswered(q.id)
+      ? userAnswers.value[q.id]
+      : null
+  })
+  return finalAnswers
+}
+
 async function finishQuiz() {
   stopTimer()
   if (startedAt.value) {
@@ -209,10 +219,7 @@ async function finishQuiz() {
   isCompleted.value = true
   isReviewMode.value = false
 
-  const finalAnswers = {}
-  quizQuestions.value.forEach((q) => {
-    finalAnswers[q.id] = userAnswers.value[q.id] ?? null
-  })
+  const finalAnswers = getFinalAnswers()
 
   const results = {}
   quizQuestions.value.forEach((q) => {
@@ -239,10 +246,7 @@ async function finishQuiz() {
 async function retrySubmit() {
   if (isSubmitted.value) return
   submitError.value = ''
-  const finalAnswers = {}
-  quizQuestions.value.forEach((q) => {
-    finalAnswers[q.id] = userAnswers.value[q.id] ?? null
-  })
+  const finalAnswers = getFinalAnswers()
   try {
     await submitQuizAttempt({
       quizId: activeQuiz.value?.id,

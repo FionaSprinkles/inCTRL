@@ -258,6 +258,51 @@ describe('quiz answer persistence and navigation flow', () => {
     assert.strictEqual(submittedAttempt.answers['q-2'], 'opt-a')
     assert.strictEqual(submittedAttempt.answers['q-3'], null)
   })
+
+  it('normalizes cleared answers ("", [], {}) to null before validation and submission', async () => {
+    const questions = [
+      { id: 'q-empty-str', type: 'fill_blank', prompt: 'Type something', acceptedAnswers: ['ctrl+c'], canonicalAnswer: 'Ctrl + C' },
+      { id: 'q-empty-arr', type: 'multiple_choice', prompt: 'Choose items', options: [{ id: 'a', text: 'A', isCorrect: true }], correctAnswers: ['a'] },
+      { id: 'q-empty-obj', type: 'matching', prompt: 'Match pairs', pairs: [{ left: 'A', right: '1' }] },
+      { id: 'q-valid', type: 'fill_blank', prompt: 'Valid', acceptedAnswers: ['win+e'], canonicalAnswer: 'Win + E' },
+    ]
+
+    const userAnswers = {
+      'q-empty-str': '   ',
+      'q-empty-arr': [],
+      'q-empty-obj': {},
+      'q-valid': 'win+e',
+    }
+
+    const isQuestionAnswered = (questionId) => {
+      const ans = userAnswers[questionId]
+      if (ans === null || ans === undefined) return false
+      if (typeof ans === 'string') return ans.trim().length > 0
+      if (Array.isArray(ans)) return ans.length > 0
+      if (typeof ans === 'object') return Object.keys(ans).length > 0
+      return true
+    }
+
+    const finalAnswers = {}
+    questions.forEach((q) => {
+      finalAnswers[q.id] = isQuestionAnswered(q.id) ? userAnswers[q.id] : null
+    })
+
+    assert.strictEqual(finalAnswers['q-empty-str'], null)
+    assert.strictEqual(finalAnswers['q-empty-arr'], null)
+    assert.strictEqual(finalAnswers['q-empty-obj'], null)
+    assert.strictEqual(finalAnswers['q-valid'], 'win+e')
+
+    const evalResults = {}
+    questions.forEach((q) => {
+      evalResults[q.id] = validateAnswer(q, finalAnswers[q.id])
+    })
+
+    assert.strictEqual(evalResults['q-empty-str'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-empty-arr'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-empty-obj'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-valid'].isCorrect, true)
+  })
 })
 
 
