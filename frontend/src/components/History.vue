@@ -93,4 +93,20 @@ onMounted(() => {
 
 <style scoped>
 
+.history {
+  margin: 0 auto;
+  text-align: center;
+}
+table {
+  padding: 3rem;
+}
+
+th{
+  padding: 2rem;
+}
+
+td{
+  padding: 1rem;
+}
+
 </style>
