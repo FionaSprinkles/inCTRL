@@ -32,7 +32,6 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
             <th>Quiz name</th>
             <th>Difficulty</th>
             <th>Score</th>
-            <th>Max Score</th>
             <th>Time</th>
 
           </tr>
@@ -41,13 +40,12 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
           <tr v-for="attempt in history" :key="attempt.id">
             <!-- The data goeeess heereee-->
              <!--Fetch data from quiz_attempts-->
-            <td>{{ attempt.completedAt }}</td>
+            <td>{{ new Date( attempt.completedAt).toLocaleDateString() }}</td>
             <td>Category</td>
-            <td>Quiz name</td> <!--Should there be a button somewhere to redo quiz? -->
+            <td>{{ attempt.quizname }}</td> <!--Should there be a button somewhere to redo quiz? -->
             <td>Difficulty</td>
-            <td>Score</td>
-            <td>Max Score</td>
-            <td>Time</td>
+            <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
+            <td>{{ attempt.timeSpentSeconds }}</td>
             
           </tr>
           </tbody>
