@@ -11,6 +11,8 @@ import {
 import { validateAnswer } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
+import QuizLoading from '@/components/quiz/QuizLoading.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 
@@ -62,7 +64,11 @@ async function loadData() {
     const qQuizId = route.query.id || route.query.quizId
     if (qQuizId) {
       const target = qData.find((q) => String(q.id) === String(qQuizId))
-      if (target) startQuiz(target)
+      if (target) {
+        startQuiz(target)
+      } else {
+        startQuiz({ id: qQuizId, title: `Quiz #${qQuizId}` })
+      }
     }
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
@@ -79,6 +85,10 @@ function resetFilters() {
 let quizRequestId = 0
 
 async function startQuiz(quiz) {
+  if (!quiz || !quiz.id) {
+    quizError.value = 'Invalid quiz selected.'
+    return
+  }
   const requestId = ++quizRequestId
   activeQuiz.value = quiz
   loadingQuestions.value = true
@@ -94,6 +104,9 @@ async function startQuiz(quiz) {
     const data = await fetchQuizById(quiz.id)
     if (requestId !== quizRequestId) return
     if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+    if (data.title && activeQuiz.value) {
+      activeQuiz.value.title = data.title
+    }
     quizQuestions.value = data.questions
   } catch (err) {
     if (requestId !== quizRequestId) return
@@ -222,7 +235,9 @@ onMounted(loadData)
         </button>
       </section>
 
-      <div v-if="loading" class="status-box"><p>Loading quizzes from backend...</p></div>
+      <div v-if="loading" class="status-box">
+        <LoadingSpinner size="md" text="Loading quizzes from backend..." />
+      </div>
 
       <div v-else-if="error" class="status-box error-box" role="alert">
         <p>{{ error }}</p>
@@ -265,12 +280,16 @@ onMounted(loadData)
         </div>
       </div>
 
-      <div v-if="loadingQuestions" class="status-box">
-        <p>Fetching quiz questions from backend...</p>
-      </div>
+      <QuizLoading
+        v-if="loadingQuestions"
+        :title="activeQuiz?.title"
+        message="Fetching quiz questions from backend..."
+      />
 
       <div v-else-if="quizError && !isCompleted" class="status-box error-box" role="alert">
-        <p>{{ quizError }}</p>
+        <div class="error-icon" aria-hidden="true">⚠️</div>
+
+        <p class="error-message">{{ quizError }}</p>
         <div class="error-actions">
           <button type="button" class="btn-retry" @click="startQuiz(activeQuiz)">Retry</button>
           <button type="button" class="btn-back" @click="exitQuiz">Back to Quizzes</button>
@@ -317,7 +336,9 @@ onMounted(loadData)
 
       <div v-else-if="isCompleted" class="summary-wrapper">
         <div v-if="quizError" class="status-box error-box summary-error" role="alert">
-          <p>{{ quizError }}</p>
+          <div class="error-icon" aria-hidden="true">⚠️</div>
+
+          <p class="error-message">{{ quizError }}</p>
         </div>
         <QuizSummary
           :questions="quizQuestions"
@@ -427,6 +448,15 @@ onMounted(loadData)
 .error-box {
   border-color: #ef4444;
   color: #fca5a5;
+}
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.error-message {
+  font-size: 1rem;
+  color: #fca5a5;
+  margin-bottom: 1rem;
 }
 .summary-error {
   margin-bottom: 1.5rem;
