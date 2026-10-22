@@ -368,7 +368,7 @@ onMounted(loadData)
   text-align: center;
 }
 .subtitle {
-  color: var(--color-text-muted, #85b4be);
+  color: var(--color-text-main);
   margin-top: -0.5rem;
 }
 .filters-bar {
@@ -390,18 +390,19 @@ onMounted(loadData)
   min-width: 180px;
 }
 .filter-group label {
-  font-size: 0.85rem;
   font-weight: 500;
-  color: var(--color-text-main, #e6d5b8);
+  color: var(--color-text-main);
+  font-family: var(--font-display);
 }
 .filter-select {
   padding: 0.6rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(20, 30, 40, 0.7);
+  border: var(--color-text-muted);
+  background: var(--color-dark-teal);
   color: #fff;
   font-size: 0.95rem;
   outline: none;
+  font-family: var(--font-body);
 }
 .btn-reset,
 .btn-clear,
@@ -527,7 +528,7 @@ onMounted(loadData)
 }
 .question-count {
   font-size: 0.85rem;
-  color: var(--color-text-muted, #85b4be);
+  color: var(--color-text-main);
 }
 .btn-start {
   padding: 0.5rem 1rem;
