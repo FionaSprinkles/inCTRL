@@ -64,10 +64,18 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
             </tr>
           </tfoot>
         </table>
+        </section>
 
         <!-- Message for empty history users-->
+        <section class="noHistory" v-if="history.length === 0">
+        <p>
+          You haven't completed any quizzes yet.
+        </p>
+        <button>
+        <RouterLink to="/categories">Choose your first quiz here!</RouterLink></button>
+        </section>
 
-  </section>
+  
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -89,7 +97,10 @@ async function fetchHistory() {
     history.value = data.attempts || []
   } catch (error) {
     console.error('Error fetching history:', error)
+    errorMessage.value = 'Could not load your history. Please try again.'
   }
+
+
 }
 
 onMounted(() => {
@@ -125,6 +136,26 @@ th{
 
 td{
   padding: 1rem;
+}
+
+.noHistory{
+  margin: 0 auto;
+  text-align: center;
+}
+
+/*The code for the button is from the "all categories page. Should this be i global.css instead?*/ 
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button {
+  background: #1d4ed8;
 }
 
 </style>
