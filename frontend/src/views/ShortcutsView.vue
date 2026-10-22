@@ -82,8 +82,7 @@ const filteredShortcuts = computed(() => {
           sId === target ||
           sSlug === target ||
           sName === target ||
-          sName.includes(target) ||
-          target.includes(sName)
+          (sName && (sName.includes(target) || target.includes(sName)))
         )
       })
 
@@ -115,7 +114,6 @@ async function fetchShortcuts() {
   }
 }
 
-onMounted(fetchShortcuts)
 </script>
 
 <template>
