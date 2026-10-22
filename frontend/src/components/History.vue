@@ -54,6 +54,10 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
               <th>Total time</th>
               <th>Total score</th>
             </tr>
+            <tr>
+              <td></td>
+              <td>{{ getTotalScore() }}</td>
+            </tr>
           </tfoot>
         </table>
 
@@ -87,6 +91,18 @@ async function fetchHistory() {
 onMounted(() => {
   fetchHistory()
 })
+
+//Total score function
+function getTotalScore() {
+  let totalScore = 0
+
+  for (const attempt of history.value) {
+    totalScore = totalScore + attempt.score
+  }
+
+  return totalScore
+}
+
 </script>
 
 <style scoped>
