@@ -1,9 +1,29 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import fs from 'node:fs'
-import { validateAnswer } from '../src/services/quizValidator.js'
+import { validateAnswer, isAnswerProvided } from '../src/services/quizValidator.js'
 
 describe('frontend/src/services/quizValidator', () => {
+  describe('isAnswerProvided', () => {
+    it('returns false for null, undefined, empty/whitespace strings, empty arrays, and empty objects', () => {
+      assert.strictEqual(isAnswerProvided(null), false)
+      assert.strictEqual(isAnswerProvided(undefined), false)
+      assert.strictEqual(isAnswerProvided(''), false)
+      assert.strictEqual(isAnswerProvided('   '), false)
+      assert.strictEqual(isAnswerProvided([]), false)
+      assert.strictEqual(isAnswerProvided({}), false)
+    })
+
+    it('returns true for non-empty answers of various types', () => {
+      assert.strictEqual(isAnswerProvided('ctrl+c'), true)
+      assert.strictEqual(isAnswerProvided(['ctrl', 'c']), true)
+      assert.strictEqual(isAnswerProvided({ left: 'right' }), true)
+      assert.strictEqual(isAnswerProvided(true), true)
+      assert.strictEqual(isAnswerProvided(false), true)
+      assert.strictEqual(isAnswerProvided(0), true)
+    })
+  })
+
   describe('base guards', () => {
     it('returns error when question or userAnswer is missing', () => {
       assert.deepStrictEqual(validateAnswer(null, 'ans'), {

@@ -1,32 +1,45 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   formats: {
     type: Array,
-    required: true
+    required: true,
   },
   activeFormatFilter: {
     type: String,
-    default: 'all'
+    default: 'all',
   },
   currentIndex: {
     type: Number,
-    default: 0
+    default: 0,
   },
   totalCount: {
     type: Number,
-    default: 1
+    default: 1,
   },
   score: {
     type: Number,
-    default: 0
+    default: 0,
   },
   answeredCount: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
+  timeSpentSeconds: {
+    type: Number,
+    default: 0,
+  },
 })
 
-const emit = defineEmits(['filter-changed', 'restart'])
+defineEmits(['filter-changed', 'restart'])
+
+const formattedTimer = computed(() => {
+  const total = props.timeSpentSeconds || 0
+  const mins = Math.floor(total / 60)
+  const secs = total % 60
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+})
 
 const formatNames = {
   all: 'All Formats (Full Quiz)',
@@ -38,7 +51,7 @@ const formatNames = {
   ordering: 'Step Sequence',
   true_false: 'True or False',
   live_press: 'Live Key Press',
-  odd_one_out: 'Spot Imposter'
+  odd_one_out: 'Spot Imposter',
 }
 </script>
 
@@ -51,8 +64,11 @@ const formatNames = {
       </div>
 
       <div class="stats-box">
-        <span class="stat-pill score-pill">
-          Score: <strong>{{ score }}</strong> / {{ answeredCount }}
+        <span class="stat-pill timer-pill" title="Elapsed Time">
+          ⏱️ <strong>{{ formattedTimer }}</strong>
+        </span>
+        <span class="stat-pill progress-pill">
+          Answered: <strong>{{ answeredCount }}</strong> / {{ totalCount }}
         </span>
         <button type="button" class="restart-btn" title="Reset this quiz" @click="$emit('restart')">
           🔄 Reset
@@ -150,6 +166,12 @@ const formatNames = {
   border-radius: 20px;
   font-size: 0.9rem;
   color: #1e40af;
+}
+
+.timer-pill {
+  background: #fefce8;
+  border-color: #fde047;
+  color: #854d0e;
 }
 
 .restart-btn {
