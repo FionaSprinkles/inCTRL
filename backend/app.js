@@ -7,9 +7,12 @@ const quizRoutes = require('./routes/quizRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const shortcutRoutes = require('./routes/shortcutRoutes');
 const userRoutes = require('./routes/userRoutes');
+const seedDatabase = require('./scripts/seedDatabase');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+
 
 // Middleware
 app.use(cors());
@@ -50,14 +53,24 @@ app.use((req, res) => {
 });
 
 // Start Server
-if (require.main === module) {
-    app.listen(port, () => {
-        console.log(`🚀 inCTRL Backend Server running at http://localhost:${port}`);
-        console.log(`👉 API Health check: http://localhost:${port}/api/health`);
-        console.log(`👉 Quiz Questions: http://localhost:${port}/api/questions`);
-        console.log(`👉 Shortcuts: http://localhost:${port}/api/shortcuts`);
-        console.log(`👉 Users: http://localhost:${port}/api/users`);
-    });
-}
 
-module.exports = app;
+async function startServer() {
+    await seedDatabase.seedDatabase();// run database seed before start
+
+
+        app.listen(port, () => {
+            console.log(`🚀 inCTRL Backend Server running at http://localhost:${port}`);
+            console.log(`👉 API Health check: http://localhost:${port}/api/health`);
+            console.log(`👉 Quiz Questions: http://localhost:${port}/api/questions`);
+            console.log(`👉 Shortcuts: http://localhost:${port}/api/shortcuts`);
+            console.log(`👉 Users: http://localhost:${port}/api/users`);
+        });
+    }
+    
+    if (require.main === module) {
+        
+        startServer();
+    }
+    
+
+module.exports = app;

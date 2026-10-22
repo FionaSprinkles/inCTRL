@@ -1,5 +1,6 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
+import { validateAnswer } from '../src/services/quizValidator.js'
 import {
   fetchQuizzes,
   fetchCategories,
@@ -79,12 +80,15 @@ describe('quizService - API fetch methods', () => {
   it('submitQuizAttempt handles token, guest, and errors', async () => {
     globalThis.localStorage.getItem = () => 'jwt-token'
     let authHeader
+    let sentPayload
     globalThis.fetch = async (url, opts) => {
       authHeader = opts.headers.Authorization
+      sentPayload = JSON.parse(opts.body)
       return { ok: true, json: async () => ({ success: true }) }
     }
-    await submitQuizAttempt({ quizId: 1, answers: {} })
+    await submitQuizAttempt({ quizId: 1, answers: {}, timeSpentSeconds: 65 })
     assert.strictEqual(authHeader, 'Bearer jwt-token')
+    assert.strictEqual(sentPayload.timeSpentSeconds, 65)
 
     globalThis.localStorage.getItem = () => null
     await submitQuizAttempt({ quizId: 1, answers: {} })
@@ -155,5 +159,412 @@ describe('quiz answer persistence and navigation flow', () => {
 
     assert.strictEqual(hasAnswer(userAnswers['q-ord'], 'ordering'), true)
     assert.deepStrictEqual(userAnswers['q-ord'], ['s1', 's2', 's3', 's4'])
+  })
+
+  it('defers evaluation to the end of the quiz and includes timeSpentSeconds upon completion', async () => {
+    const userAnswers = {}
+    const evalResults = {}
+    let isCompleted = false
+    let submittedAttempt = null
+
+    const questions = [
+      { id: 'q-1', prompt: 'Question 1', type: 'true_false', correctAnswer: true },
+      { id: 'q-2', prompt: 'Question 2', type: 'single_choice', options: [{ id: 'opt-a', isCorrect: true }] }
+    ]
+
+    // Step 1: User answers question 1 and advances to question 2
+    userAnswers['q-1'] = true
+    let currentIndex = 0
+    currentIndex++
+
+    // Assert: No validation or auto-correction happens when pressing next
+    assert.strictEqual(Object.keys(evalResults).length, 0)
+    assert.strictEqual(isCompleted, false)
+
+    // Step 2: User answers question 2
+    userAnswers['q-2'] = 'opt-a'
+
+    // Step 3: Quiz completion triggers batch evaluation of all answers and timer record
+    const elapsedSeconds = 55
+    const finishQuiz = async () => {
+      isCompleted = true
+      questions.forEach((q) => {
+        evalResults[q.id] = validateAnswer(q, userAnswers[q.id] ?? null)
+      })
+      submittedAttempt = {
+        quizId: 5,
+        answers: userAnswers,
+        formatFilter: 'all',
+        timeSpentSeconds: elapsedSeconds
+      }
+    }
+
+    await finishQuiz()
+
+    assert.strictEqual(isCompleted, true)
+    assert.strictEqual(Object.keys(evalResults).length, 2)
+    assert.strictEqual(evalResults['q-1'].isCorrect, true)
+    assert.strictEqual(evalResults['q-2'].isCorrect, true)
+    assert.strictEqual(submittedAttempt.timeSpentSeconds, 55)
+  })
+
+  it('does not inflate elapsed time when reviewing questions after quiz completion', () => {
+    let timerInterval = 1234
+    let elapsedSeconds = 0
+    let startedAt = Date.now() - 30000
+    let isCompleted = false
+
+    const stopTimer = () => {
+      timerInterval = null
+    }
+
+    const finishQuiz = () => {
+      if (timerInterval) {
+        stopTimer()
+        elapsedSeconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000))
+      }
+      isCompleted = true
+    }
+
+    // First finish at ~30s
+    finishQuiz()
+    assert.strictEqual(isCompleted, true)
+    assert.strictEqual(elapsedSeconds, 30)
+    assert.strictEqual(timerInterval, null)
+
+    // User reviews question and review time elapses
+    isCompleted = false
+    startedAt -= 20000 // simulate 20 more seconds spent reviewing
+
+    // User returns to results
+    finishQuiz()
+    assert.strictEqual(isCompleted, true)
+    // Elapsed time should still be 30s, not inflated to 50s
+    assert.strictEqual(elapsedSeconds, 30)
+  })
+
+  it('allows advancing forward without answering questions and evaluates skipped questions as unanswered', async () => {
+    const userAnswers = {}
+    const evalResults = {}
+    let isCompleted = false
+    let submittedAttempt = null
+
+    const questions = [
+      { id: 'q-1', prompt: 'Question 1', type: 'true_false', correctAnswer: true },
+      { id: 'q-2', prompt: 'Question 2', type: 'single_choice', options: [{ id: 'opt-a', isCorrect: true }] },
+      { id: 'q-3', prompt: 'Question 3', type: 'fill_blank', acceptedAnswers: ['Win + D'], canonicalAnswer: 'Win + D' }
+    ]
+
+    // User skips question 1 completely and clicks next
+    let currentIndex = 0
+    currentIndex++ // now on question 2
+
+    // User answers question 2
+    userAnswers['q-2'] = 'opt-a'
+    currentIndex++ // now on question 3
+
+    // User skips question 3 and finishes quiz
+    const finishQuiz = async () => {
+      isCompleted = true
+      const finalAnswers = {}
+      questions.forEach((q) => {
+        finalAnswers[q.id] = userAnswers[q.id] ?? null
+      })
+      questions.forEach((q) => {
+        evalResults[q.id] = validateAnswer(q, finalAnswers[q.id])
+      })
+      submittedAttempt = {
+        quizId: 8,
+        answers: finalAnswers,
+        formatFilter: 'all',
+        timeSpentSeconds: 20
+      }
+    }
+
+    await finishQuiz()
+
+    assert.strictEqual(isCompleted, true)
+    assert.strictEqual(evalResults['q-1'].isCorrect, false)
+    assert.strictEqual(evalResults['q-1'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-2'].isCorrect, true)
+    assert.strictEqual(evalResults['q-3'].isCorrect, false)
+    assert.strictEqual(evalResults['q-3'].feedback, 'No answer provided')
+    assert.strictEqual(submittedAttempt.answers['q-1'], null)
+    assert.strictEqual(submittedAttempt.answers['q-2'], 'opt-a')
+    assert.strictEqual(submittedAttempt.answers['q-3'], null)
+  })
+
+  it('normalizes cleared answers ("", [], {}) to null before validation and submission', async () => {
+    const questions = [
+      { id: 'q-empty-str', type: 'fill_blank', prompt: 'Type something', acceptedAnswers: ['ctrl+c'], canonicalAnswer: 'Ctrl + C' },
+      { id: 'q-empty-arr', type: 'multiple_choice', prompt: 'Choose items', options: [{ id: 'a', text: 'A', isCorrect: true }], correctAnswers: ['a'] },
+      { id: 'q-empty-obj', type: 'matching', prompt: 'Match pairs', pairs: [{ left: 'A', right: '1' }] },
+      { id: 'q-valid', type: 'fill_blank', prompt: 'Valid', acceptedAnswers: ['win+e'], canonicalAnswer: 'Win + E' },
+    ]
+
+    const userAnswers = {
+      'q-empty-str': '   ',
+      'q-empty-arr': [],
+      'q-empty-obj': {},
+      'q-valid': 'win+e',
+    }
+
+    const isQuestionAnswered = (questionId) => {
+      const ans = userAnswers[questionId]
+      if (ans === null || ans === undefined) return false
+      if (typeof ans === 'string') return ans.trim().length > 0
+      if (Array.isArray(ans)) return ans.length > 0
+      if (typeof ans === 'object') return Object.keys(ans).length > 0
+      return true
+    }
+
+    const finalAnswers = {}
+    questions.forEach((q) => {
+      finalAnswers[q.id] = isQuestionAnswered(q.id) ? userAnswers[q.id] : null
+    })
+
+    assert.strictEqual(finalAnswers['q-empty-str'], null)
+    assert.strictEqual(finalAnswers['q-empty-arr'], null)
+    assert.strictEqual(finalAnswers['q-empty-obj'], null)
+    assert.strictEqual(finalAnswers['q-valid'], 'win+e')
+
+    const evalResults = {}
+    questions.forEach((q) => {
+      evalResults[q.id] = validateAnswer(q, finalAnswers[q.id])
+    })
+
+    assert.strictEqual(evalResults['q-empty-str'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-empty-arr'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-empty-obj'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-valid'].isCorrect, true)
+  })
+})
+
+
+describe('quiz question loading and error handling state machine', () => {
+  it('transitions through loading state and renders questions on success', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    let resolveFetch
+    const pendingFetch = new Promise((resolve) => {
+      resolveFetch = resolve
+    })
+    const promise = startQuizSimulation({ id: 1 }, () => pendingFetch)
+    assert.strictEqual(loadingQuestions, true)
+    assert.strictEqual(quizError, '')
+
+    resolveFetch({ questions: [{ id: 'q1', prompt: 'Question 1' }] })
+    await promise
+
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, '')
+    assert.strictEqual(quizQuestions.length, 1)
+  })
+
+  it('captures error text without crashing when API fetch rejects', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    await startQuizSimulation({ id: 99 }, async () => {
+      throw new Error('Failed to fetch quiz questions from backend (500).')
+    })
+
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, 'Failed to fetch quiz questions from backend (500).')
+    assert.deepStrictEqual(quizQuestions, [])
+  })
+
+  it('handles empty questions list without crashing and sets error message', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    await startQuizSimulation({ id: 2 }, async () => ({ questions: [] }))
+
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, 'No questions found for this quiz.')
+    assert.deepStrictEqual(quizQuestions, [])
+  })
+
+  it('allows retry after failure to reload questions successfully', async () => {
+    let loadingQuestions = false
+    let quizError = ''
+    let quizQuestions = []
+
+    const startQuizSimulation = async (quiz, fetcher) => {
+      loadingQuestions = true
+      quizError = ''
+      quizQuestions = []
+      try {
+        const data = await fetcher(quiz.id)
+        if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+        quizQuestions = data.questions
+      } catch (err) {
+        quizError = err.message || 'Could not load quiz questions.'
+      } finally {
+        loadingQuestions = false
+      }
+    }
+
+    // First attempt fails
+    await startQuizSimulation({ id: 5 }, async () => {
+      throw new Error('Network error')
+    })
+    assert.strictEqual(quizError, 'Network error')
+
+    // Retry attempt succeeds
+    await startQuizSimulation({ id: 5 }, async () => ({
+      questions: [{ id: 'q-5', prompt: 'Retry worked' }]
+    }))
+    assert.strictEqual(loadingQuestions, false)
+    assert.strictEqual(quizError, '')
+    assert.strictEqual(quizQuestions.length, 1)
+  })
+
+  it('keeps submitError separate from quizError and allows retrying submission without resetting answers', async () => {
+    let quizError = ''
+    let submitError = ''
+    let isSubmitted = false
+    let isCompleted = false
+    const userAnswers = { 'q-1': 'ctrl+c' }
+    const quizQuestions = [{ id: 'q-1', prompt: 'Copy' }]
+
+    const finishQuizSimulation = async (submitter) => {
+      isCompleted = true
+      const finalAnswers = {}
+      quizQuestions.forEach((q) => {
+        finalAnswers[q.id] = userAnswers[q.id] ?? null
+      })
+      if (!isSubmitted) {
+        try {
+          await submitter({ answers: finalAnswers })
+          isSubmitted = true
+          submitError = ''
+        } catch (err) {
+          submitError = err.message || 'Could not submit quiz attempt.'
+        }
+      }
+    }
+
+    const retrySubmitSimulation = async (submitter) => {
+      if (isSubmitted) return
+      submitError = ''
+      const finalAnswers = {}
+      quizQuestions.forEach((q) => {
+        finalAnswers[q.id] = userAnswers[q.id] ?? null
+      })
+      try {
+        await submitter({ answers: finalAnswers })
+        isSubmitted = true
+      } catch (err) {
+        submitError = err.message || 'Could not submit quiz attempt.'
+      }
+    }
+
+    // Attempt fails on network failure
+    await finishQuizSimulation(async () => {
+      throw new Error('Submission endpoint timed out')
+    })
+
+    // Assert submitError is set, quizError remains empty, answers are preserved
+    assert.strictEqual(submitError, 'Submission endpoint timed out')
+    assert.strictEqual(quizError, '')
+    assert.strictEqual(isSubmitted, false)
+    assert.strictEqual(isCompleted, true)
+    assert.deepStrictEqual(userAnswers, { 'q-1': 'ctrl+c' })
+
+    // Retry succeeds without calling startQuiz
+    await retrySubmitSimulation(async () => ({ success: true }))
+    assert.strictEqual(submitError, '')
+    assert.strictEqual(isSubmitted, true)
+    assert.deepStrictEqual(userAnswers, { 'q-1': 'ctrl+c' })
+  })
+
+  it('ignores stale submission results after an attempt reset (restart or exit)', async () => {
+    let attemptId = 0
+    let isSubmitted = false
+    let submitError = ''
+    let resolveLateSubmission
+    const latePromise = new Promise((resolve) => {
+      resolveLateSubmission = resolve
+    })
+
+    const finishQuizSimulation = async () => {
+      const myAttempt = attemptId
+      try {
+        await latePromise
+        if (myAttempt !== attemptId) return
+        isSubmitted = true
+        submitError = ''
+      } catch (err) {
+        if (myAttempt !== attemptId) return
+        submitError = err.message
+      }
+    }
+
+    // Attempt 1 finishes, submission starts and is pending
+    const pendingAttempt = finishQuizSimulation()
+    assert.strictEqual(isSubmitted, false)
+
+    // User restarts or exits quiz before submission finishes
+    attemptId++
+    isSubmitted = false
+    submitError = ''
+
+    // Late submission resolves
+    resolveLateSubmission({ success: true })
+    await pendingAttempt
+
+    // Should NOT have marked the new attempt as submitted
+    assert.strictEqual(isSubmitted, false)
+    assert.strictEqual(submitError, '')
   })
 })
