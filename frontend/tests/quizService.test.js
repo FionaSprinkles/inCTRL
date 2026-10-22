@@ -527,4 +527,44 @@ describe('quiz question loading and error handling state machine', () => {
     assert.strictEqual(isSubmitted, true)
     assert.deepStrictEqual(userAnswers, { 'q-1': 'ctrl+c' })
   })
+
+  it('ignores stale submission results after an attempt reset (restart or exit)', async () => {
+    let attemptId = 0
+    let isSubmitted = false
+    let submitError = ''
+    let resolveLateSubmission
+    const latePromise = new Promise((resolve) => {
+      resolveLateSubmission = resolve
+    })
+
+    const finishQuizSimulation = async () => {
+      const myAttempt = attemptId
+      try {
+        await latePromise
+        if (myAttempt !== attemptId) return
+        isSubmitted = true
+        submitError = ''
+      } catch (err) {
+        if (myAttempt !== attemptId) return
+        submitError = err.message
+      }
+    }
+
+    // Attempt 1 finishes, submission starts and is pending
+    const pendingAttempt = finishQuizSimulation()
+    assert.strictEqual(isSubmitted, false)
+
+    // User restarts or exits quiz before submission finishes
+    attemptId++
+    isSubmitted = false
+    submitError = ''
+
+    // Late submission resolves
+    resolveLateSubmission({ success: true })
+    await pendingAttempt
+
+    // Should NOT have marked the new attempt as submitted
+    assert.strictEqual(isSubmitted, false)
+    assert.strictEqual(submitError, '')
+  })
 })

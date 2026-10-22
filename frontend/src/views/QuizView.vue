@@ -114,12 +114,14 @@ function resetFilters() {
 }
 
 let quizRequestId = 0
+let attemptId = 0
 
 async function startQuiz(quiz) {
   if (!quiz || !quiz.id) {
     quizError.value = 'Invalid quiz selected.'
     return
   }
+  attemptId++
   const requestId = ++quizRequestId
   activeQuiz.value = quiz
   loadingQuestions.value = true
@@ -155,6 +157,7 @@ async function startQuiz(quiz) {
 }
 
 function exitQuiz() {
+  attemptId++
   quizRequestId++
   stopTimer()
   isReviewMode.value = false
@@ -207,6 +210,7 @@ function getFinalAnswers() {
 }
 
 async function finishQuiz() {
+  const myAttempt = attemptId
   stopTimer()
   if (startedAt.value) {
     elapsedSeconds.value = Math.max(0, Math.floor((Date.now() - startedAt.value) / 1000))
@@ -230,9 +234,11 @@ async function finishQuiz() {
         formatFilter: 'all',
         timeSpentSeconds: elapsedSeconds.value,
       })
+      if (myAttempt !== attemptId) return
       isSubmitted.value = true
       submitError.value = ''
     } catch (err) {
+      if (myAttempt !== attemptId) return
       submitError.value = err.message || 'Could not submit quiz attempt.'
     }
   }
@@ -240,6 +246,7 @@ async function finishQuiz() {
 
 async function retrySubmit() {
   if (isSubmitted.value) return
+  const myAttempt = attemptId
   submitError.value = ''
   const finalAnswers = getFinalAnswers()
   try {
@@ -249,8 +256,10 @@ async function retrySubmit() {
       formatFilter: 'all',
       timeSpentSeconds: elapsedSeconds.value,
     })
+    if (myAttempt !== attemptId) return
     isSubmitted.value = true
   } catch (err) {
+    if (myAttempt !== attemptId) return
     submitError.value = err.message || 'Could not submit quiz attempt.'
   }
 }
@@ -260,6 +269,7 @@ function previousQuestion() {
 }
 
 function restartQuiz() {
+  attemptId++
   userAnswers.value = {}
   evalResults.value = {}
   currentIndex.value = 0
