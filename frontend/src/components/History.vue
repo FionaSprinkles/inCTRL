@@ -14,6 +14,50 @@ This component should also:
 
 <template>
   <section class="history">
-        <h2>History</h2>
+        <h1>History</h1>
+        <h2>Your history</h2>
+
+        <!-- History table-->
+
+        <table>
+          <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Difficulty</th>
+            <th>Score</th>
+            <th>Max Score</th>
+            <th>Time</th>
+
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <!-- The data goeeess heereee-->
+            <td>Date</td>
+            <td>Category</td>
+            <td>Difficulty</td>
+            <td>Score</td>
+            <td>Max Score</td>
+            <td>Time</td>
+            
+          </tr>
+          </tbody>
+
+          <!-- Lil summary maybe-->
+          <tfoot>
+            <tr>
+              <th>Total time</th>
+              <th>Total score</th>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Message for empty history users-->
+
   </section>
 </template>
+
+<style scoped>
+
+</style>
