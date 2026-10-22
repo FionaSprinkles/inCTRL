@@ -1,5 +1,6 @@
 import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
+import { validateAnswer } from '../src/services/quizValidator.js'
 import {
   fetchQuizzes,
   fetchCategories,
@@ -79,12 +80,15 @@ describe('quizService - API fetch methods', () => {
   it('submitQuizAttempt handles token, guest, and errors', async () => {
     globalThis.localStorage.getItem = () => 'jwt-token'
     let authHeader
+    let sentPayload
     globalThis.fetch = async (url, opts) => {
       authHeader = opts.headers.Authorization
+      sentPayload = JSON.parse(opts.body)
       return { ok: true, json: async () => ({ success: true }) }
     }
-    await submitQuizAttempt({ quizId: 1, answers: {} })
+    await submitQuizAttempt({ quizId: 1, answers: {}, timeSpentSeconds: 65 })
     assert.strictEqual(authHeader, 'Bearer jwt-token')
+    assert.strictEqual(sentPayload.timeSpentSeconds, 65)
 
     globalThis.localStorage.getItem = () => null
     await submitQuizAttempt({ quizId: 1, answers: {} })
@@ -155,6 +159,53 @@ describe('quiz answer persistence and navigation flow', () => {
 
     assert.strictEqual(hasAnswer(userAnswers['q-ord'], 'ordering'), true)
     assert.deepStrictEqual(userAnswers['q-ord'], ['s1', 's2', 's3', 's4'])
+  })
+
+  it('defers evaluation to the end of the quiz and includes timeSpentSeconds upon completion', async () => {
+    const userAnswers = {}
+    const evalResults = {}
+    let isCompleted = false
+    let submittedAttempt = null
+
+    const questions = [
+      { id: 'q-1', prompt: 'Question 1', type: 'true_false', correctAnswer: true },
+      { id: 'q-2', prompt: 'Question 2', type: 'single_choice', options: [{ id: 'opt-a', isCorrect: true }] }
+    ]
+
+    // Step 1: User answers question 1 and advances to question 2
+    userAnswers['q-1'] = true
+    let currentIndex = 0
+    currentIndex++
+
+    // Assert: No validation or auto-correction happens when pressing next
+    assert.strictEqual(Object.keys(evalResults).length, 0)
+    assert.strictEqual(isCompleted, false)
+
+    // Step 2: User answers question 2
+    userAnswers['q-2'] = 'opt-a'
+
+    // Step 3: Quiz completion triggers batch evaluation of all answers and timer record
+    const elapsedSeconds = 55
+    const finishQuiz = async () => {
+      isCompleted = true
+      questions.forEach((q) => {
+        evalResults[q.id] = validateAnswer(q, userAnswers[q.id] ?? null)
+      })
+      submittedAttempt = {
+        quizId: 5,
+        answers: userAnswers,
+        formatFilter: 'all',
+        timeSpentSeconds: elapsedSeconds
+      }
+    }
+
+    await finishQuiz()
+
+    assert.strictEqual(isCompleted, true)
+    assert.strictEqual(Object.keys(evalResults).length, 2)
+    assert.strictEqual(evalResults['q-1'].isCorrect, true)
+    assert.strictEqual(evalResults['q-2'].isCorrect, true)
+    assert.strictEqual(submittedAttempt.timeSpentSeconds, 55)
   })
 })
 
