@@ -12,9 +12,7 @@
       <div class="footer-col">
         <h3>Courses by Category</h3>
         <div class="courses-links">
-          <RouterLink to="/categories/essential-navigation"
-            >Essential Windows Navigation</RouterLink
-          >
+          <RouterLink to="/categories/essential-navigation">Essential Windows Navigation</RouterLink>
           <RouterLink to="/categories/system-troubleshooting">System & Troubleshooting</RouterLink>
           <RouterLink to="/categories/file-explorer">File Explorer & Windows Tools</RouterLink>
           <RouterLink to="/categories/multitasking">Multitasking & Window Management</RouterLink>
