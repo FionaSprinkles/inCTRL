@@ -388,4 +388,63 @@ describe('quiz question loading and error handling state machine', () => {
     assert.strictEqual(quizError, '')
     assert.strictEqual(quizQuestions.length, 1)
   })
+
+  it('keeps submitError separate from quizError and allows retrying submission without resetting answers', async () => {
+    let quizError = ''
+    let submitError = ''
+    let isSubmitted = false
+    let isCompleted = false
+    const userAnswers = { 'q-1': 'ctrl+c' }
+    const quizQuestions = [{ id: 'q-1', prompt: 'Copy' }]
+
+    const finishQuizSimulation = async (submitter) => {
+      isCompleted = true
+      const finalAnswers = {}
+      quizQuestions.forEach((q) => {
+        finalAnswers[q.id] = userAnswers[q.id] ?? null
+      })
+      if (!isSubmitted) {
+        try {
+          await submitter({ answers: finalAnswers })
+          isSubmitted = true
+          submitError = ''
+        } catch (err) {
+          submitError = err.message || 'Could not submit quiz attempt.'
+        }
+      }
+    }
+
+    const retrySubmitSimulation = async (submitter) => {
+      if (isSubmitted) return
+      submitError = ''
+      const finalAnswers = {}
+      quizQuestions.forEach((q) => {
+        finalAnswers[q.id] = userAnswers[q.id] ?? null
+      })
+      try {
+        await submitter({ answers: finalAnswers })
+        isSubmitted = true
+      } catch (err) {
+        submitError = err.message || 'Could not submit quiz attempt.'
+      }
+    }
+
+    // Attempt fails on network failure
+    await finishQuizSimulation(async () => {
+      throw new Error('Submission endpoint timed out')
+    })
+
+    // Assert submitError is set, quizError remains empty, answers are preserved
+    assert.strictEqual(submitError, 'Submission endpoint timed out')
+    assert.strictEqual(quizError, '')
+    assert.strictEqual(isSubmitted, false)
+    assert.strictEqual(isCompleted, true)
+    assert.deepStrictEqual(userAnswers, { 'q-1': 'ctrl+c' })
+
+    // Retry succeeds without calling startQuiz
+    await retrySubmitSimulation(async () => ({ success: true }))
+    assert.strictEqual(submitError, '')
+    assert.strictEqual(isSubmitted, true)
+    assert.deepStrictEqual(userAnswers, { 'q-1': 'ctrl+c' })
+  })
 })

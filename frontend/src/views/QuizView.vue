@@ -28,6 +28,7 @@ const activeQuiz = ref(null)
 const quizQuestions = ref([])
 const loadingQuestions = ref(false)
 const quizError = ref('')
+const submitError = ref('')
 const currentIndex = ref(0)
 const userAnswers = ref({})
 const evalResults = ref({})
@@ -123,6 +124,7 @@ async function startQuiz(quiz) {
   activeQuiz.value = quiz
   loadingQuestions.value = true
   quizError.value = ''
+  submitError.value = ''
   quizQuestions.value = []
   currentIndex.value = 0
   userAnswers.value = {}
@@ -160,6 +162,7 @@ function exitQuiz() {
   activeQuiz.value = null
   quizQuestions.value = []
   quizError.value = ''
+  submitError.value = ''
   isCompleted.value = false
   isSubmitted.value = false
 }
@@ -218,7 +221,6 @@ async function finishQuiz() {
   evalResults.value = results
 
   if (!isSubmitted.value) {
-    isSubmitted.value = true
     try {
       await submitQuizAttempt({
         quizId: activeQuiz.value?.id,
@@ -226,9 +228,31 @@ async function finishQuiz() {
         formatFilter: 'all',
         timeSpentSeconds: elapsedSeconds.value,
       })
+      isSubmitted.value = true
+      submitError.value = ''
     } catch (err) {
-      quizError.value = err.message || 'Could not submit quiz attempt.'
+      submitError.value = err.message || 'Could not submit quiz attempt.'
     }
+  }
+}
+
+async function retrySubmit() {
+  if (isSubmitted.value) return
+  submitError.value = ''
+  const finalAnswers = {}
+  quizQuestions.value.forEach((q) => {
+    finalAnswers[q.id] = userAnswers.value[q.id] ?? null
+  })
+  try {
+    await submitQuizAttempt({
+      quizId: activeQuiz.value?.id,
+      answers: finalAnswers,
+      formatFilter: 'all',
+      timeSpentSeconds: elapsedSeconds.value,
+    })
+    isSubmitted.value = true
+  } catch (err) {
+    submitError.value = err.message || 'Could not submit quiz attempt.'
   }
 }
 
@@ -244,6 +268,7 @@ function restartQuiz() {
   isSubmitted.value = false
   isReviewMode.value = false
   quizError.value = ''
+  submitError.value = ''
   startTimer()
 }
 
@@ -335,54 +360,43 @@ onUnmounted(stopTimer)
 
     <!-- View 2: Active Quiz Runner -->
     <div v-else class="quiz-runner-view">
-      <div class="runner-header">
-        <button
-          v-if="isReviewMode"
-          type="button"
-          class="btn-back"
-          @click="returnToSummary"
-        >
-          ← Back to Summary
-        </button>
-        <button
-          v-else
-          type="button"
-          class="btn-back"
-          @click="exitQuiz"
-        >
-          ← Back to Quizzes
-        </button>
-        <div class="runner-info">
-          <h2>{{ activeQuiz.title }}</h2>
-          <div class="runner-stats">
-            <span class="timer-display" title="Quiz Timer">
-              ⏱️ <strong>{{ formattedTimer }}</strong>
-            </span>
-            <span class="progress-display">
-              Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
-            </span>
+      <header v-if="!isCompleted || isReviewMode" class="runner-bar">
+        <div class="runner-header-top">
+          <button
+            v-if="isReviewMode"
+            type="button"
+            class="btn-back"
+            @click="returnToSummary"
+          >
+            ← Back to Summary
+          </button>
+          <button
+            v-else
+            type="button"
+            class="btn-back"
+            @click="exitQuiz"
+          >
+            ← Back to Quizzes
+          </button>
+          <div class="runner-info">
+            <h2>{{ activeQuiz.title }}</h2>
+            <div class="runner-stats">
+              <span class="timer-display" title="Quiz Timer">
+                ⏱️ <strong>{{ formattedTimer }}</strong>
+              </span>
+              <span class="progress-display">
+                Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <QuizLoading
-        v-if="loadingQuestions"
-        :title="activeQuiz?.title"
-        message="Fetching quiz questions from backend..."
-      />
-
-      <div v-else-if="quizError && !isCompleted" class="status-box error-box" role="alert">
-        <div class="error-icon" aria-hidden="true">⚠️</div>
-
-        <p class="error-message">{{ quizError }}</p>
-        <div class="error-actions">
-          <button type="button" class="btn-retry" @click="startQuiz(activeQuiz)">Retry</button>
-          <button type="button" class="btn-back" @click="exitQuiz">Back to Quizzes</button>
-        </div>
-      </div>
-
-      <template v-else-if="!isCompleted && currentQuestion">
-        <div v-if="quizQuestions.length > 1" class="question-dots">
+        <!-- Question jump numbers tied directly into the top bar -->
+        <nav
+          v-if="quizQuestions.length > 1"
+          class="question-dots-nav"
+          aria-label="Question navigation"
+        >
           <button
             v-for="(q, idx) in quizQuestions"
             :key="q.id"
@@ -399,8 +413,26 @@ onUnmounted(stopTimer)
           >
             {{ idx + 1 }}
           </button>
-        </div>
+        </nav>
+      </header>
 
+      <QuizLoading
+        v-if="loadingQuestions"
+        :title="activeQuiz?.title"
+        message="Fetching quiz questions from backend..."
+      />
+
+      <div v-else-if="quizError && !isCompleted && !isReviewMode" class="status-box error-box" role="alert">
+        <div class="error-icon" aria-hidden="true">⚠️</div>
+
+        <p class="error-message">{{ quizError }}</p>
+        <div class="error-actions">
+          <button type="button" class="btn-retry" @click="startQuiz(activeQuiz)">Retry</button>
+          <button type="button" class="btn-back" @click="exitQuiz">Back to Quizzes</button>
+        </div>
+      </div>
+
+      <template v-else-if="(!isCompleted || isReviewMode) && currentQuestion">
         <main class="question-container">
           <QuizCard
             :question="currentQuestion"
@@ -418,10 +450,13 @@ onUnmounted(stopTimer)
       </template>
 
       <div v-else-if="isCompleted" class="summary-wrapper">
-        <div v-if="quizError" class="status-box error-box summary-error" role="alert">
+        <div v-if="submitError" class="status-box error-box summary-error" role="alert">
           <div class="error-icon" aria-hidden="true">⚠️</div>
 
-          <p class="error-message">{{ quizError }}</p>
+          <p class="error-message">{{ submitError }}</p>
+          <div class="error-actions">
+            <button type="button" class="btn-retry" @click="retrySubmit">Retry Submission</button>
+          </div>
         </div>
         <QuizSummary
           :questions="quizQuestions"
@@ -446,162 +481,253 @@ onUnmounted(stopTimer)
   max-width: 960px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
+  font-family: var(--font-body);
 }
+
 .quiz-page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
-.subtitle {
-  color: var(--color-text-muted, #85b4be);
-  margin-top: -0.5rem;
+
+.quiz-page-header h1 {
+  font-family: var(--font-heading);
+  font-size: 38px;
+  font-weight: 370;
+  color: var(--color-text-heading);
+  margin-top: 10px;
+  margin-bottom: 8px;
 }
+
+.subtitle {
+  font-family: var(--font-body);
+  color: var(--color-text-muted);
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  margin-top: 0;
+}
+
 .filters-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 1rem;
+  gap: 1.25rem;
   margin-bottom: 2rem;
-  padding: 1rem 1.25rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  padding: 1.1rem 1.4rem;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
 }
+
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
   flex: 1;
   min-width: 180px;
 }
+
 .filter-group label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-main, #e6d5b8);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 450;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
 }
+
 .filter-select {
-  padding: 0.6rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(20, 30, 40, 0.7);
-  color: #fff;
+  font-family: var(--font-body);
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-heading);
   font-size: 0.95rem;
   outline: none;
 }
-.btn-reset,
-.btn-clear,
-.btn-back,
-.btn-secondary,
-.btn-retry {
-  padding: 0.5rem 0.9rem;
-  border-radius: 8px;
+
+.filter-select option {
+  background: #125662;
+  color: var(--color-text-heading);
+}
+
+.btn-reset {
+  font-family: var(--font-display);
+  color: var(--color-text-muted);
+  font-size: 16px;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
   cursor: pointer;
-  background: transparent;
-  color: var(--color-text-main, #e6d5b8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
 }
-.btn-reset,
-.btn-clear {
-  color: #85b4be;
-  border-color: #85b4be;
-  align-self: flex-end;
+
+.btn-reset:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.4);
 }
-.btn-retry {
-  background: #ef4444;
-  color: #fff;
-  border: none;
-}
+
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  margin: 1.5rem 0;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  margin-bottom: 2rem;
 }
-.no-quizzes-message {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-heading, #fdfbf7);
+
+.empty-box .no-quizzes-message {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--color-text-heading);
   margin-bottom: 0.5rem;
 }
+
 .empty-hint {
-  color: var(--color-text-muted, #85b4be);
+  font-family: var(--font-body);
+  color: var(--color-text-muted);
   margin-bottom: 1.25rem;
 }
+
+.btn-clear {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-clear:hover {
+  background: var(--color-button-hover);
+}
+
 .error-box {
   border-color: #ef4444;
   color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
 }
+
 .error-icon {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
+
 .error-message {
+  font-family: var(--font-body);
   font-size: 1rem;
-  color: #fca5a5;
+  color: #fecaca;
   margin-bottom: 1rem;
 }
+
+.btn-retry {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
+  cursor: pointer;
+}
+
 .summary-error {
   margin-bottom: 1.5rem;
   padding: 1rem 1.25rem;
 }
+
 .quiz-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
 }
+
 .quiz-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.25rem;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(8px);
+  padding: 1.35rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.15s ease, border-color 0.15s ease;
 }
+
+.quiz-card:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+}
+
 .quiz-tags {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
   flex-wrap: wrap;
 }
+
 .badge {
+  font-family: var(--font-display);
   font-size: 0.75rem;
   padding: 0.2rem 0.55rem;
   border-radius: 6px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
+
 .category-badge {
   background: rgba(133, 180, 190, 0.25);
   color: #c7e6ee;
+  border: 1px solid rgba(133, 180, 190, 0.4);
 }
+
 .diff-badge.beginner {
   background: rgba(16, 185, 129, 0.25);
   color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.4);
 }
+
 .diff-badge.intermediate {
   background: rgba(245, 158, 11, 0.25);
   color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.4);
 }
+
 .diff-badge.advanced {
   background: rgba(239, 68, 68, 0.25);
   color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.4);
 }
+
 .quiz-title {
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
   font-weight: 600;
   margin: 0 0 0.5rem;
-  color: var(--color-text-heading, #fdfbf7);
-  letter-spacing: normal;
-  text-transform: none;
+  color: var(--color-text-heading);
+  letter-spacing: 1px;
 }
+
 .quiz-description {
-  font-size: 0.9rem;
-  color: var(--color-text-main, #e6d5b8);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
   margin-bottom: 1.25rem;
   flex-grow: 1;
 }
+
 .quiz-footer {
   display: flex;
   align-items: center;
@@ -609,108 +735,209 @@ onUnmounted(stopTimer)
   padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
+
 .question-count {
+  font-family: var(--font-body);
   font-size: 0.85rem;
-  color: var(--color-text-muted, #85b4be);
+  color: var(--color-text-muted);
 }
+
 .btn-start {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: var(--color-button, #e3ddc4);
-  color: var(--color-button-text, #422f23);
-  font-weight: 600;
-  border: none;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  font-weight: 500;
+  border: 1px solid var(--color-button-border);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.runner-header {
+
+.btn-start:hover {
+  background: var(--color-button-hover);
+}
+
+/* Unified top runner bar: back button, title, timer, progress + numbers tied together */
+.runner-bar {
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.runner-header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-wrap: wrap;
 }
+
 .runner-info {
   display: flex;
   align-items: baseline;
   gap: 1rem;
   flex-wrap: wrap;
 }
+
 .runner-info h2 {
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--color-text-heading);
   margin: 0;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
+
 .runner-stats {
   display: flex;
   align-items: center;
   gap: 0.85rem;
   flex-wrap: wrap;
 }
+
 .timer-display {
+  font-family: var(--font-body);
   font-size: 0.95rem;
-  font-weight: 600;
-  color: #fef08a;
-  background: rgba(234, 179, 8, 0.15);
-  border: 1px solid rgba(234, 179, 8, 0.35);
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
+  font-weight: 500;
+  color: var(--color-button);
+  background: rgba(227, 221, 196, 0.15);
+  border: 1px solid rgba(227, 221, 196, 0.35);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
 }
-.progress-display {
-  font-size: 0.9rem;
-  color: #c7e6ee;
-}
-.score-display {
-  font-size: 0.9rem;
-  color: #c7e6ee;
-}
-.question-dots {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 1.25rem;
-  overflow-x: auto;
-  padding: 4px 0;
-}
-.dot-btn {
-  min-width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-text-main, #e6d5b8);
-  font-size: 0.8rem;
+
+.timer-display strong {
   font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+.progress-display {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+
+.progress-display strong {
+  color: var(--color-text-heading);
+}
+
+.btn-back {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.45rem 1rem;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Navigation dots row tied to the top bar */
+.question-dots-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dot-btn {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-text-main);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.dot-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 .dot-btn.current {
-  border-color: #3b82f6;
-  background: #3b82f6;
-  color: #fff;
+  border-color: var(--color-button-border);
+  background: var(--color-button);
+  color: var(--color-button-text);
+  font-weight: 600;
 }
-.dot-btn.answered:not(.correct):not(.wrong) {
-  border-color: #60a5fa;
-  background: rgba(59, 130, 246, 0.25);
-  color: #bfdbfe;
+
+.dot-btn.answered:not(.current):not(.correct):not(.wrong) {
+  border-color: rgba(227, 221, 196, 0.4);
+  background: rgba(227, 221, 196, 0.18);
+  color: var(--color-text-heading);
 }
+
 .dot-btn.correct {
   border-color: #10b981;
-  background: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.35);
   color: #a7f3d0;
 }
+
 .dot-btn.wrong {
   border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.35);
+  color: #fecaca;
 }
+
+.question-container {
+  width: 100%;
+}
+
 .summary-exit-bar {
-  margin-top: 1.25rem;
+  margin-top: 1.5rem;
   display: flex;
   justify-content: center;
 }
+
+.summary-exit-bar .btn-secondary {
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 1px;
+  padding: 0.65rem 1.4rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summary-exit-bar .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 .error-actions {
   display: flex;
   gap: 0.75rem;
