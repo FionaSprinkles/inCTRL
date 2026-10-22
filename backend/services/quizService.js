@@ -540,14 +540,27 @@ function getLeaderboard(limit = 10) {
 
 /**
  * Retrieves all quiz attempts for a specific user ID.
+ * Makes join with "quizzes" to fetch quiz name to frontend
+ * 
  * @param {number|string} userId - Target user ID.
  * @returns {Promise<Array<object>>} Resolves with list of attempts.
  */
 function getUserAttempts(userId) {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT id, format_filter AS formatFilter, score, max_score AS maxScore, total_answered AS totalAnswered, time_spent_seconds AS timeSpentSeconds, completed_at AS completedAt
-            FROM quiz_attempts 
+            SELECT 
+            qa.id, 
+            qa.format_filter AS formatFilter,
+            qa.score,
+            qa.max_score AS maxScore,
+            qa.total_answered AS totalAnswered,
+            qa.time_spent_seconds AS timeSpentSeconds,
+            qa.completed_at AS completedAt,
+            q.title AS quizname
+            
+
+            FROM quiz_attempts AS qa 
+            LEFT JOIN quizzes q ON qa.quiz_id = q.id  -- Join quizzes to retrieve the quiz title.
             WHERE user_id = ?
             ORDER BY completed_at DESC
         `;
