@@ -556,7 +556,8 @@ function getUserAttempts(userId) {
             qa.total_answered AS totalAnswered,
             qa.time_spent_seconds AS timeSpentSeconds,
             qa.completed_at AS completedAt,
-            q.title AS quizname
+            q.title AS quizname,
+            q.difficulty
             
 
             FROM quiz_attempts AS qa 

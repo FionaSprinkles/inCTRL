@@ -28,7 +28,6 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
           <thead>
           <tr>
             <th>Date</th>
-            <th>Category</th>
             <th>Quiz name</th>
             <th>Difficulty</th>
             <th>Score</th>
@@ -41,9 +40,8 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
             <!-- The data goeeess heereee-->
              <!--Fetch data from quiz_attempts-->
             <td>{{ new Date( attempt.completedAt).toLocaleDateString() }}</td>
-            <td>Category</td>
             <td>{{ attempt.quizname }}</td> <!--Should there be a button somewhere to redo quiz? -->
-            <td>Difficulty</td>
+            <td>{{attempt.difficulty}}</td>
             <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
             <td>{{ attempt.timeSpentSeconds }}</td>
             
