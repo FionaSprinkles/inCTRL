@@ -51,12 +51,16 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
           <!-- Lil summary maybe-->
           <tfoot>
             <tr>
-              <th>Total time</th>
+              <th colspan= "3"></th>
               <th>Total score</th>
+              <th>Total time</th>
+              
             </tr>
             <tr>
-              <td></td>
+              <td colspan= "3"></td>
               <td>{{ getTotalScore() }}</td>
+              <td></td>
+              
             </tr>
           </tfoot>
         </table>
