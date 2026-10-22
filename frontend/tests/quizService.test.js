@@ -208,6 +208,41 @@ describe('quiz answer persistence and navigation flow', () => {
     assert.strictEqual(submittedAttempt.timeSpentSeconds, 55)
   })
 
+  it('does not inflate elapsed time when reviewing questions after quiz completion', () => {
+    let timerInterval = 1234
+    let elapsedSeconds = 0
+    let startedAt = Date.now() - 30000
+    let isCompleted = false
+
+    const stopTimer = () => {
+      timerInterval = null
+    }
+
+    const finishQuiz = () => {
+      if (timerInterval) {
+        stopTimer()
+        elapsedSeconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000))
+      }
+      isCompleted = true
+    }
+
+    // First finish at ~30s
+    finishQuiz()
+    assert.strictEqual(isCompleted, true)
+    assert.strictEqual(elapsedSeconds, 30)
+    assert.strictEqual(timerInterval, null)
+
+    // User reviews question and review time elapses
+    isCompleted = false
+    startedAt -= 20000 // simulate 20 more seconds spent reviewing
+
+    // User returns to results
+    finishQuiz()
+    assert.strictEqual(isCompleted, true)
+    // Elapsed time should still be 30s, not inflated to 50s
+    assert.strictEqual(elapsedSeconds, 30)
+  })
+
   it('allows advancing forward without answering questions and evaluates skipped questions as unanswered', async () => {
     const userAnswers = {}
     const evalResults = {}

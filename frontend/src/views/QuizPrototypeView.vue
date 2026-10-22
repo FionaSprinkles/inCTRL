@@ -149,8 +149,10 @@ function handleRetry({ questionId }) {
  * Advances to the next question or finishes the quiz if at the end.
  */
 function finishQuiz() {
-  stopTimer()
-  elapsedSeconds.value = Math.max(0, Math.round((Date.now() - startedAt.value) / 1000))
+  if (timerInterval) {
+    stopTimer()
+    elapsedSeconds.value = Math.max(0, Math.round((Date.now() - startedAt.value) / 1000))
+  }
   const results = {}
   filteredQuestions.value.forEach((q) => {
     results[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
