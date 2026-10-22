@@ -2,7 +2,7 @@
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { quizQuestions } from '../data/quizQuestions'
-import { validateAnswer } from '../services/quizValidator'
+import { validateAnswer, isAnswerProvided } from '../services/quizValidator'
 import QuizHeader from '../components/quiz/QuizHeader.vue'
 import QuizCard from '../components/quiz/QuizCard.vue'
 import QuizResult from '../components/quiz/QuizResult.vue'
@@ -62,8 +62,12 @@ const totalScore = computed(() => {
   return Object.values(evalResults.value).reduce((sum, res) => sum + (res ? res.score : 0), 0)
 })
 
+function isQuestionAnswered(questionId) {
+  return isAnswerProvided(userAnswers.value[questionId])
+}
+
 const answeredCount = computed(() => {
-  return Object.keys(userAnswers.value).length
+  return filteredQuestions.value.filter((q) => isQuestionAnswered(q.id)).length
 })
 
 const correctCount = computed(() => {
@@ -155,7 +159,9 @@ function finishQuiz() {
   }
   const results = {}
   filteredQuestions.value.forEach((q) => {
-    results[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
+    const raw = userAnswers.value[q.id]
+    const normalized = isAnswerProvided(raw) ? raw : null
+    results[q.id] = validateAnswer(q, normalized)
   })
   evalResults.value = results
   isCompleted.value = true
@@ -223,7 +229,7 @@ function jumpToQuestion(idx) {
         class="nav-dot"
         :class="{
           current: idx === currentIndex,
-          answered: userAnswers[q.id] !== undefined,
+          answered: isQuestionAnswered(q.id),
         }"
         :title="`Jump to Question ${idx + 1}`"
         @click="jumpToQuestion(idx)"

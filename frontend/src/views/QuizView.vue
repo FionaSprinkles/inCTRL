@@ -8,7 +8,7 @@ import {
   filterQuizzes,
   submitQuizAttempt,
 } from '@/services/quizService'
-import { validateAnswer } from '@/services/quizValidator'
+import { validateAnswer, isAnswerProvided } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 import QuizLoading from '@/components/quiz/QuizLoading.vue'
@@ -177,12 +177,7 @@ function handleAnswerUpdate({ questionId, userAnswer }) {
 }
 
 function isQuestionAnswered(questionId) {
-  const ans = userAnswers.value[questionId]
-  if (ans === null || ans === undefined) return false
-  if (typeof ans === 'string') return ans.trim().length > 0
-  if (Array.isArray(ans)) return ans.length > 0
-  if (typeof ans === 'object') return Object.keys(ans).length > 0
-  return true
+  return isAnswerProvided(userAnswers.value[questionId])
 }
 
 function handleRetry({ questionId }) {
