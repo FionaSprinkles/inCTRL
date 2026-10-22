@@ -206,9 +206,14 @@ async function finishQuiz() {
   isCompleted.value = true
   isReviewMode.value = false
 
+  const finalAnswers = {}
+  quizQuestions.value.forEach((q) => {
+    finalAnswers[q.id] = userAnswers.value[q.id] ?? null
+  })
+
   const results = {}
   quizQuestions.value.forEach((q) => {
-    results[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
+    results[q.id] = validateAnswer(q, finalAnswers[q.id])
   })
   evalResults.value = results
 
@@ -217,7 +222,7 @@ async function finishQuiz() {
     try {
       await submitQuizAttempt({
         quizId: activeQuiz.value?.id,
-        answers: userAnswers.value,
+        answers: finalAnswers,
         formatFilter: 'all',
         timeSpentSeconds: elapsedSeconds.value,
       })

@@ -207,6 +207,57 @@ describe('quiz answer persistence and navigation flow', () => {
     assert.strictEqual(evalResults['q-2'].isCorrect, true)
     assert.strictEqual(submittedAttempt.timeSpentSeconds, 55)
   })
+
+  it('allows advancing forward without answering questions and evaluates skipped questions as unanswered', async () => {
+    const userAnswers = {}
+    const evalResults = {}
+    let isCompleted = false
+    let submittedAttempt = null
+
+    const questions = [
+      { id: 'q-1', prompt: 'Question 1', type: 'true_false', correctAnswer: true },
+      { id: 'q-2', prompt: 'Question 2', type: 'single_choice', options: [{ id: 'opt-a', isCorrect: true }] },
+      { id: 'q-3', prompt: 'Question 3', type: 'fill_blank', acceptedAnswers: ['Win + D'], canonicalAnswer: 'Win + D' }
+    ]
+
+    // User skips question 1 completely and clicks next
+    let currentIndex = 0
+    currentIndex++ // now on question 2
+
+    // User answers question 2
+    userAnswers['q-2'] = 'opt-a'
+    currentIndex++ // now on question 3
+
+    // User skips question 3 and finishes quiz
+    const finishQuiz = async () => {
+      isCompleted = true
+      const finalAnswers = {}
+      questions.forEach((q) => {
+        finalAnswers[q.id] = userAnswers[q.id] ?? null
+      })
+      questions.forEach((q) => {
+        evalResults[q.id] = validateAnswer(q, finalAnswers[q.id])
+      })
+      submittedAttempt = {
+        quizId: 8,
+        answers: finalAnswers,
+        formatFilter: 'all',
+        timeSpentSeconds: 20
+      }
+    }
+
+    await finishQuiz()
+
+    assert.strictEqual(isCompleted, true)
+    assert.strictEqual(evalResults['q-1'].isCorrect, false)
+    assert.strictEqual(evalResults['q-1'].feedback, 'No answer provided')
+    assert.strictEqual(evalResults['q-2'].isCorrect, true)
+    assert.strictEqual(evalResults['q-3'].isCorrect, false)
+    assert.strictEqual(evalResults['q-3'].feedback, 'No answer provided')
+    assert.strictEqual(submittedAttempt.answers['q-1'], null)
+    assert.strictEqual(submittedAttempt.answers['q-2'], 'opt-a')
+    assert.strictEqual(submittedAttempt.answers['q-3'], null)
+  })
 })
 
 

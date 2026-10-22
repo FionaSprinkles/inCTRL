@@ -226,7 +226,6 @@ function handleNext() {
         <button
           type="button"
           class="btn btn-primary"
-          :disabled="!evaluationResult && !hasAnswer"
           @click="handleNext"
         >
           {{ questionNumber < totalQuestions ? 'Next Question →' : 'See Results' }}
