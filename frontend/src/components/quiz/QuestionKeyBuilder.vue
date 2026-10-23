@@ -218,6 +218,10 @@ function clearAll() {
   color: var(--color-button-text);
 }
 
+.key-token.slotted:hover:not(:disabled) {
+  background: var(--color-button-hover);
+}
+
 .remove-x {
   font-size: 1rem;
   color: #991b1b;
