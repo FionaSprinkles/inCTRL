@@ -237,18 +237,21 @@ function handleNext() {
 
 <style scoped>
 .quiz-card {
-  background: rgba(255, 255, 255, 0.09);
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(18, 86, 98, 0.52);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
-  padding: 26px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 18px;
   color: var(--color-text-main);
   font-family: var(--font-body);
-  transition: all 0.2s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  transition: border-color 0.2s ease;
 }
 
 .card-meta {
@@ -268,91 +271,95 @@ function handleNext() {
 
 .badge {
   font-family: var(--font-display);
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
 .format-badge {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   color: var(--color-text-heading);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .category-badge {
-  background: rgba(133, 180, 190, 0.25);
-  color: #c7e6ee;
-  border: 1px solid rgba(133, 180, 190, 0.4);
+  background: rgba(133, 180, 190, 0.28);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(133, 180, 190, 0.45);
 }
 
 .difficulty-badge.beginner {
-  background: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.28);
   color: #a7f3d0;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.45);
 }
 
 .difficulty-badge.intermediate {
-  background: rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.28);
   color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.45);
 }
 
 .difficulty-badge.advanced {
-  background: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.28);
   color: #fecaca;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.45);
 }
 
 .progress-pill {
   font-family: var(--font-body);
-  font-size: 0.88rem;
-  color: var(--color-text-muted);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 4px 12px;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  color: var(--color-text-heading);
+  background: rgba(15, 76, 92, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 4px 14px;
   border-radius: 20px;
 }
 
 .question-prompt {
   font-family: var(--font-heading);
-  font-size: 1.55rem;
+  font-size: 1.65rem;
   font-weight: 400;
   line-height: 1.35;
+  letter-spacing: 0.3px;
+  text-transform: none;
   color: var(--color-text-heading);
   margin: 6px 0;
 }
 
 .hint-container {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
 }
 
 .hint-toggle-btn {
   font-family: var(--font-display);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  padding: 6px 14px;
   border-radius: 8px;
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   letter-spacing: 0.5px;
   transition: all 0.2s;
 }
 
 .hint-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .hint-content {
-  background: rgba(245, 158, 11, 0.15);
-  border-left: 3px solid #f59e0b;
-  padding: 8px 14px;
-  border-radius: 6px;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-left: 4px solid #fbbf24;
+  padding: 10px 16px;
+  border-radius: 8px;
   color: var(--color-text-heading);
   font-family: var(--font-body);
   font-size: 0.95rem;
@@ -364,11 +371,11 @@ function handleNext() {
 }
 
 .interactive-area {
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .feedback-box {
-  padding: 16px;
+  padding: 16px 18px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -382,15 +389,15 @@ function handleNext() {
 }
 
 .box-success {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.22);
   border: 1.5px solid #10b981;
-  color: #a7f3d0;
+  color: #d1fae5;
 }
 
 .box-danger {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.22);
   border: 1.5px solid #ef4444;
-  color: #fecaca;
+  color: #fee2e2;
 }
 
 .feedback-header {
@@ -407,9 +414,14 @@ function handleNext() {
   font-family: var(--font-body);
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--color-text-main);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-text-heading);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: 8px;
+}
+
+.explanation-body p {
+  margin: 4px 0 0;
+  color: var(--color-text-main);
 }
 
 .card-actions {
@@ -418,7 +430,7 @@ function handleNext() {
   align-items: center;
   gap: 12px;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .right-actions {
@@ -439,7 +451,7 @@ function handleNext() {
   font-family: var(--font-display);
   font-size: 18px;
   letter-spacing: 1px;
-  font-weight: 500;
+  font-weight: 600;
   padding: 10px 24px;
   border-radius: 12px;
   background: var(--color-button);
@@ -449,99 +461,24 @@ function handleNext() {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.3);
 }
 
 .btn-secondary {
   font-family: var(--font-display);
   font-size: 16px;
   letter-spacing: 1px;
-  font-weight: 450;
+  font-weight: 500;
   padding: 9px 20px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--color-text-main);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.2);
   color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-/* Deep stylings for child question format components */
-:deep(.option-card) {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.22) !important;
-  color: var(--color-text-main) !important;
-  border-radius: 12px !important;
-  font-family: var(--font-body);
-}
-
-:deep(.option-card:hover:not(:disabled)) {
-  background: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-}
-
-:deep(.option-card.selected) {
-  background: rgba(227, 221, 196, 0.22) !important;
-  border-color: var(--color-button) !important;
-  color: var(--color-text-heading) !important;
-}
-
-:deep(.option-card.correct) {
-  background: rgba(16, 185, 129, 0.25) !important;
-  border-color: #10b981 !important;
-  color: #a7f3d0 !important;
-}
-
-:deep(.option-card.incorrect) {
-  background: rgba(239, 68, 68, 0.25) !important;
-  border-color: #ef4444 !important;
-  color: #fecaca !important;
-}
-
-:deep(.shortcut-badge),
-:deep(kbd) {
-  font-family: 'Consolas', 'Courier New', monospace !important;
-  background: rgba(0, 0, 0, 0.28) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.35) !important;
-  border-radius: 6px !important;
-  padding: 4px 10px !important;
-  color: var(--color-button) !important;
-}
-
-:deep(.text-input) {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-  color: var(--color-text-heading) !important;
-  font-family: var(--font-body) !important;
-  border-radius: 8px !important;
-}
-
-:deep(.text-input::placeholder) {
-  color: var(--color-text-muted) !important;
-}
-
-:deep(.key-cap),
-:deep(.key-token),
-:deep(.virtual-key),
-:deep(.draggable-item),
-:deep(.match-pill) {
-  font-family: 'Consolas', 'Courier New', monospace !important;
-  background: rgba(255, 255, 255, 0.12) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  color: var(--color-text-heading) !important;
-}
-
-:deep(.tray-container),
-:deep(.key-bank),
-:deep(.keyboard-visualizer),
-:deep(.matching-board),
-:deep(.sequence-list) {
-  background: rgba(0, 0, 0, 0.18) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: 12px !important;
+  border-color: rgba(255, 255, 255, 0.45);
 }
 </style>

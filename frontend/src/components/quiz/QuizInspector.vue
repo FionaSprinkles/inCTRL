@@ -52,7 +52,7 @@ const isOpen = ref(false)
 <style scoped>
 .inspector-wrapper {
   margin-top: 20px;
-  border-top: 1px dashed #cbd5e1;
+  border-top: 1px dashed rgba(255, 255, 255, 0.25);
   padding-top: 16px;
 }
 
@@ -62,24 +62,27 @@ const isOpen = ref(false)
   gap: 10px;
   background: none;
   border: none;
-  color: #64748b;
-  font-size: 0.85rem;
+  color: var(--color-text-main);
+  font-family: var(--font-display);
+  font-size: 0.92rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
   cursor: pointer;
   padding: 4px 0;
 }
 
 .inspector-toggle-btn:hover {
-  color: #1e293b;
+  color: var(--color-text-heading);
 }
 
 .prototype-badge {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.72rem;
-  font-family: monospace;
+  background: rgba(15, 76, 92, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--color-button);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-family: 'Consolas', 'Courier New', monospace;
 }
 
 .inspector-body {
@@ -90,22 +93,25 @@ const isOpen = ref(false)
 }
 
 .inspector-section {
-  background: #0f172a;
-  border-radius: 8px;
-  padding: 12px;
+  background: rgba(10, 35, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
 }
 
 .section-title {
-  color: #94a3b8;
-  font-size: 0.8rem;
+  font-family: var(--font-display);
+  color: var(--color-text-main);
+  font-size: 0.88rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
   margin-bottom: 6px;
 }
 
 .json-code {
-  color: #38bdf8;
+  color: var(--color-button);
   font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   margin: 0;
   max-height: 220px;
   overflow-y: auto;

@@ -287,43 +287,65 @@ function jumpToQuestion(idx) {
 
 <style scoped>
 .quiz-prototype-page {
-  max-width: 860px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 1.5rem 1rem 3rem;
   width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-body);
 }
 
 .question-nav-dots {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
+  width: 100%;
   margin-bottom: 20px;
-  overflow-x: auto;
   padding: 4px 0;
 }
 
 .nav-dot {
-  min-width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  color: #64748b;
+  min-width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(15, 76, 92, 0.45);
+  color: var(--color-text-main);
+  font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 15px;
+  letter-spacing: 0;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.15s ease;
 }
 
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
 .nav-dot.current {
-  border-color: #2563eb;
-  background: #2563eb;
-  color: #ffffff;
+  border-color: var(--color-button-border);
+  background: var(--color-button);
+  color: var(--color-button-text);
+  font-weight: 700;
 }
 
 .nav-dot.answered:not(.current) {
-  border-color: #93c5fd;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border-color: rgba(227, 221, 196, 0.5);
+  background: rgba(227, 221, 196, 0.22);
+  color: var(--color-text-heading);
+}
+
+.main-content {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .completed-layout {
