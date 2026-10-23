@@ -371,36 +371,38 @@ onUnmounted(stopTimer)
     <div v-else class="quiz-runner-view">
       <header v-if="!isCompleted || isReviewMode" class="runner-bar">
         <div class="runner-header-top">
-          <button
-            v-if="isReviewMode"
-            type="button"
-            class="btn-back"
-            @click="returnToSummary"
-          >
-            ← Back to Summary
-          </button>
-          <button
-            v-else
-            type="button"
-            class="btn-back"
-            @click="exitQuiz"
-          >
-            ← Back to Quizzes
-          </button>
-          <div class="runner-info">
-            <h2>{{ activeQuiz.title }}</h2>
-            <div class="runner-stats">
-              <span class="timer-display" title="Quiz Timer">
-                ⏱️ <strong>{{ formattedTimer }}</strong>
-              </span>
-              <span class="progress-display">
-                Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
-              </span>
-            </div>
+          <div class="runner-left">
+            <button
+              v-if="isReviewMode"
+              type="button"
+              class="btn-back"
+              @click="returnToSummary"
+            >
+              ← Back to Summary
+            </button>
+            <button
+              v-else
+              type="button"
+              class="btn-back"
+              @click="exitQuiz"
+            >
+              ← Back to Quizzes
+            </button>
+          </div>
+
+          <h2 class="runner-title">{{ activeQuiz.title }}</h2>
+
+          <div class="runner-stats">
+            <span class="timer-display" title="Quiz Timer">
+              ⏱️ <strong>{{ formattedTimer }}</strong>
+            </span>
+            <span class="progress-display">
+              Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
+            </span>
           </div>
         </div>
 
-        <!-- Question jump numbers tied directly into the top bar -->
+        <!-- Question jump numbers centered with the nav bar so they stay stationary -->
         <nav
           v-if="quizQuestions.length > 1"
           class="question-dots-nav"
@@ -487,10 +489,17 @@ onUnmounted(stopTimer)
 
 <style scoped>
 .quiz-page {
+  width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1.5rem 1.5rem 3rem;
+  box-sizing: border-box;
   font-family: var(--font-body);
+}
+
+.quiz-selection-view,
+.quiz-runner-view {
+  width: 100%;
 }
 
 .quiz-page-header {
@@ -521,86 +530,93 @@ onUnmounted(stopTimer)
   align-items: flex-end;
   gap: 1.25rem;
   margin-bottom: 2rem;
-  padding: 1.1rem 1.4rem;
-  background: rgba(255, 255, 255, 0.09);
+  padding: 1.25rem 1.5rem;
+  background: rgba(18, 86, 98, 0.5);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
   flex: 1;
   min-width: 180px;
 }
 
 .filter-group label {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 500;
-  letter-spacing: 1px;
-  color: var(--color-text-main);
+  letter-spacing: 1.5px;
+  color: var(--color-text-heading);
 }
 
 .filter-select {
-  padding: 0.6rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid var(--color-text-muted);
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   background: var(--color-dark-teal);
-  color: #fff;
+  color: var(--color-text-heading);
   font-size: 0.95rem;
   outline: none;
   font-family: var(--font-body);
+  transition: border-color 0.2s ease;
+}
+
+.filter-select:focus {
+  border-color: var(--color-button);
 }
 
 .filter-select option {
-  background: #125662;
+  background: var(--color-dark-teal);
   color: var(--color-text-heading);
 }
 
 .btn-reset {
   font-family: var(--font-display);
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
   font-size: 16px;
   letter-spacing: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 0.6rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 0.6rem 1.15rem;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-reset:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.2);
   color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(18, 86, 98, 0.5);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
   margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
 .empty-box .no-quizzes-message {
   font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   color: var(--color-text-heading);
   margin-bottom: 0.5rem;
 }
 
 .empty-hint {
   font-family: var(--font-body);
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
   margin-bottom: 1.25rem;
 }
 
@@ -608,13 +624,14 @@ onUnmounted(stopTimer)
   font-family: var(--font-display);
   font-size: 16px;
   letter-spacing: 1px;
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem 1.25rem;
   border-radius: 10px;
   background: var(--color-button);
   color: var(--color-button-text);
   border: 1px solid var(--color-button-border);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-clear:hover {
@@ -623,8 +640,8 @@ onUnmounted(stopTimer)
 
 .error-box {
   border-color: #ef4444;
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.45);
 }
 
 .error-icon {
@@ -643,11 +660,12 @@ onUnmounted(stopTimer)
   font-family: var(--font-display);
   font-size: 16px;
   letter-spacing: 1px;
-  padding: 0.55rem 1.1rem;
+  padding: 0.55rem 1.15rem;
   border-radius: 10px;
   background: var(--color-button);
   color: var(--color-button-text);
   border: 1px solid var(--color-button-border);
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -666,18 +684,20 @@ onUnmounted(stopTimer)
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.35rem;
+  padding: 1.4rem;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(18, 86, 98, 0.52);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .quiz-card:hover {
   border-color: rgba(255, 255, 255, 0.45);
   transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24);
 }
 
 .quiz-tags {
@@ -689,44 +709,46 @@ onUnmounted(stopTimer)
 
 .badge {
   font-family: var(--font-display);
-  font-size: 0.75rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 6px;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 8px;
   font-weight: 600;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .category-badge {
-  background: rgba(133, 180, 190, 0.25);
-  color: #c7e6ee;
-  border: 1px solid rgba(133, 180, 190, 0.4);
+  background: rgba(133, 180, 190, 0.28);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(133, 180, 190, 0.45);
 }
 
 .diff-badge.beginner {
-  background: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.28);
   color: #a7f3d0;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.45);
 }
 
 .diff-badge.intermediate {
-  background: rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.28);
   color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.45);
 }
 
 .diff-badge.advanced {
-  background: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.28);
   color: #fecaca;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.45);
 }
 
 .quiz-title {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 450;
   margin: 0 0 0.5rem;
   color: var(--color-text-heading);
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  text-transform: none;
 }
 
 .quiz-description {
@@ -741,13 +763,13 @@ onUnmounted(stopTimer)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .question-count {
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--color-text-main);
 }
 
@@ -755,11 +777,11 @@ onUnmounted(stopTimer)
   font-family: var(--font-display);
   font-size: 16px;
   letter-spacing: 1px;
-  padding: 0.5rem 1.1rem;
+  padding: 0.5rem 1.15rem;
   border-radius: 10px;
   background: var(--color-button);
   color: var(--color-button-text);
-  font-weight: 500;
+  font-weight: 600;
   border: 1px solid var(--color-button-border);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -767,54 +789,73 @@ onUnmounted(stopTimer)
 
 .btn-start:hover {
   background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
 }
 
-/* Unified top runner bar: back button, title, timer, progress + numbers tied together */
+/* Unified top runner bar: stationary width & centered page numbers aligned with NavBar */
 .runner-bar {
-  background: rgba(255, 255, 255, 0.09);
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(18, 86, 98, 0.52);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
-  padding: 1.1rem 1.4rem;
+  padding: 1.1rem 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.9rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
 .runner-header-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.runner-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
-.runner-info {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.runner-info h2 {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
+.runner-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 400;
   color: var(--color-text-heading);
   margin: 0;
-  letter-spacing: 2px;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  text-align: center;
 }
 
 .runner-stats {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.85rem;
   flex-wrap: wrap;
 }
 
+@media (max-width: 720px) {
+  .runner-header-top {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .runner-left,
+  .runner-stats {
+    justify-content: center;
+  }
+}
+
 .timer-display {
   font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--color-button);
@@ -834,8 +875,9 @@ onUnmounted(stopTimer)
 
 .progress-display {
   font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
   font-size: 0.92rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-main);
 }
 
 .progress-display strong {
@@ -847,62 +889,67 @@ onUnmounted(stopTimer)
   font-size: 16px;
   letter-spacing: 1px;
   color: var(--color-text-main);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   padding: 0.45rem 1rem;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .btn-back:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.2);
   color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
-/* Navigation dots row tied to the top bar */
+/* Navigation page numbers centered with the NavBar and stationary */
 .question-dots-nav {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  width: 100%;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .dot-btn {
-  min-width: 32px;
-  height: 32px;
+  min-width: 34px;
+  height: 34px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(15, 76, 92, 0.45);
   color: var(--color-text-main);
   font-family: var(--font-display);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .dot-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .dot-btn.current {
   border-color: var(--color-button-border);
   background: var(--color-button);
   color: var(--color-button-text);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .dot-btn.answered:not(.current):not(.correct):not(.wrong) {
-  border-color: rgba(227, 221, 196, 0.4);
-  background: rgba(227, 221, 196, 0.18);
+  border-color: rgba(227, 221, 196, 0.5);
+  background: rgba(227, 221, 196, 0.22);
   color: var(--color-text-heading);
 }
 
@@ -920,6 +967,12 @@ onUnmounted(stopTimer)
 
 .question-container {
   width: 100%;
+  box-sizing: border-box;
+}
+
+.summary-wrapper {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .summary-exit-bar {
@@ -934,17 +987,17 @@ onUnmounted(stopTimer)
   letter-spacing: 1px;
   padding: 0.65rem 1.4rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(18, 86, 98, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   color: var(--color-text-main);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .summary-exit-bar .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(18, 86, 98, 0.75);
   color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .error-actions {
