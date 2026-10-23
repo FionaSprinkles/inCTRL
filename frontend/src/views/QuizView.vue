@@ -492,7 +492,7 @@ onUnmounted(stopTimer)
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 1.5rem 1.5rem 3rem;
+  padding: 1.5rem 1rem 3rem;
   box-sizing: border-box;
   font-family: var(--font-body);
 }
@@ -676,7 +676,7 @@ onUnmounted(stopTimer)
 
 .quiz-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1.25rem;
 }
 

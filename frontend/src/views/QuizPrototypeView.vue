@@ -289,7 +289,7 @@ function jumpToQuestion(idx) {
 .quiz-prototype-page {
   max-width: 960px;
   margin: 0 auto;
-  padding: 1.5rem 1.5rem 3rem;
+  padding: 1.5rem 1rem 3rem;
   width: 100%;
   box-sizing: border-box;
   font-family: var(--font-body);
