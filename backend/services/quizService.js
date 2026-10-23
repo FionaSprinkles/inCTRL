@@ -133,13 +133,15 @@ function updateQuiz(id, data) {
 }
 
 /**
- * Deletes a quiz by ID.
+ * Deactivates a quiz by ID instead of permanently deleting it.
+ * Inactive quizzes are retained in the database so that existing
+ * quiz attempts can still reference the quiz in the history.
  * @param {number|string} id - Quiz ID.
  * @returns {Promise<object>} Resolves with query result.
  */
 function deleteQuiz(id) {
     return new Promise((resolve, reject) => {
-        const sql = 'DELETE FROM quizzes WHERE id = ?';
+        const sql = 'UPDATE quizzes SET is_active = FALSE WHERE id = ?';
         db.query(sql, [id], (err, result) => {
             if (err) return reject(err);
             resolve(result);
