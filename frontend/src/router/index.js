@@ -18,11 +18,6 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/categories',
-      name: 'categories',
-      component: CategoriesView,
-    },
-    {
       path:'/categories/:slug',
       name: 'category',
       component: CategoryViewTemplate
@@ -33,7 +28,7 @@ const router = createRouter({
       component: ShortcutsView,
     },
     {
-      path: '/quiz',
+      path: '/categories',
       name: 'quiz',
       component: QuizView,
     },
