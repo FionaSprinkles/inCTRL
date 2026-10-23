@@ -174,18 +174,30 @@ function isStepCorrect(id, index) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
-  color: #64748b;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
   margin-bottom: 12px;
 }
 
 .reset-btn {
-  padding: 4px 10px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  color: var(--color-text-main);
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reset-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--color-text-heading);
 }
 
 .steps-list {
@@ -197,64 +209,73 @@ function isStepCorrect(id, index) {
 .step-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--color-background-soft, #f8fafc);
-  border: 2px solid var(--color-border, #e2e8f0);
-  border-radius: 8px;
+  gap: 14px;
+  padding: 13px 16px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
+  color: var(--color-text-heading);
+  font-family: var(--font-body);
   transition: all 0.15s ease;
 }
 
 .step-card.step-correct {
   border-color: #10b981;
-  background: #ecfdf5;
+  background: rgba(16, 185, 129, 0.25);
+  color: #d1fae5;
 }
 
 .step-card.step-incorrect {
   border-color: #ef4444;
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.25);
+  color: #fee2e2;
 }
 
 .step-num {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  font-family: var(--font-display);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   flex-shrink: 0;
 }
 
 .step-text {
   flex: 1;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   font-weight: 500;
+  color: inherit;
 }
 
 .reorder-actions {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .arrow-btn {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+  padding: 2px 9px;
+  font-size: 0.78rem;
   cursor: pointer;
-  color: #475569;
+  color: var(--color-text-heading);
+  transition: all 0.15s ease;
 }
+
 .arrow-btn:hover:not(:disabled) {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1d4ed8;
+  background: var(--color-button);
+  border-color: var(--color-button-border);
+  color: var(--color-button-text);
 }
+
 .arrow-btn:disabled {
   opacity: 0.3;
   cursor: default;
@@ -262,13 +283,13 @@ function isStepCorrect(id, index) {
 
 .step-feedback {
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
 .icon-correct {
-  color: #10b981;
+  color: #6ee7b7;
 }
 .icon-wrong {
-  color: #ef4444;
+  color: #fca5a5;
 }
 </style>

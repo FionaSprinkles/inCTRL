@@ -79,11 +79,14 @@ function selectOption(id) {
 }
 
 .theme-banner {
-  background: #f1f5f9;
-  border-left: 4px solid #f59e0b;
-  padding: 10px 14px;
-  border-radius: 6px;
+  background: rgba(15, 76, 92, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-left: 4px solid var(--color-button);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: var(--font-body);
   font-size: 0.95rem;
+  color: var(--color-text-heading);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -91,15 +94,17 @@ function selectOption(id) {
 }
 
 .theme-tag {
-  color: #64748b;
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  color: var(--color-button);
+  font-size: 0.9rem;
   text-transform: uppercase;
+  letter-spacing: 1px;
   font-weight: 700;
 }
 
 .theme-sub {
-  color: #94a3b8;
-  font-size: 0.85rem;
+  color: var(--color-text-main);
+  font-size: 0.88rem;
 }
 
 .options-grid {
@@ -113,33 +118,37 @@ function selectOption(id) {
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  background: var(--color-background-soft, #f8fafc);
-  border: 2px solid var(--color-border, #e2e8f0);
-  border-radius: 8px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease;
-  color: inherit;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
 }
 
 .imposter-card:hover:not(:disabled) {
-  border-color: #3b82f6;
-  background: #f0f7ff;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(15, 76, 92, 0.75);
+  color: var(--color-text-heading);
 }
 
 .imposter-card.selected {
-  border-color: #f59e0b;
-  background: #fffbeb;
+  border-color: var(--color-button);
+  background: rgba(227, 221, 196, 0.22);
+  color: var(--color-text-heading);
 }
 
 .imposter-card.imposter {
   border-color: #ef4444 !important;
-  background: #fef2f2 !important;
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #fee2e2 !important;
 }
 
 .imposter-card.wrongly_picked {
-  border-color: #94a3b8;
-  opacity: 0.7;
+  border-color: rgba(255, 255, 255, 0.25);
+  opacity: 0.75;
 }
 
 .card-left {
@@ -150,21 +159,21 @@ function selectOption(id) {
 
 .shortcut-chip {
   display: inline-block;
-  padding: 4px 10px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
-  border-radius: 5px;
-  font-family: monospace;
+  padding: 5px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1rem;
-  color: #1e293b;
+  color: var(--color-button);
   width: fit-content;
 }
 
 .item-desc {
-  font-size: 0.85rem;
-  color: #64748b;
+  font-size: 0.88rem;
+  color: var(--color-text-main);
 }
 
 .pick-radio {
@@ -172,27 +181,32 @@ function selectOption(id) {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2px solid #94a3b8;
+  border: 2px solid var(--color-text-muted);
 }
 
 .imposter-card.selected .pick-radio {
-  border-color: #f59e0b;
-  background: #f59e0b;
-  box-shadow: inset 0 0 0 3px #ffffff;
+  border-color: var(--color-button);
+  background: var(--color-button);
+  box-shadow: inset 0 0 0 3px var(--color-dark-teal);
 }
 
 .badge-imposter {
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 0.85rem;
-  color: #ef4444;
-  background: #fee2e2;
-  padding: 4px 8px;
-  border-radius: 4px;
+  letter-spacing: 0.5px;
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  padding: 4px 10px;
+  border-radius: 6px;
 }
 
 .badge-legit {
-  font-size: 0.85rem;
-  color: #10b981;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  color: #6ee7b7;
   font-weight: 600;
 }
 </style>

@@ -219,21 +219,30 @@ function getRightMatchedLeft(rightId) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
-  color: #64748b;
-  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  margin-bottom: 14px;
 }
 
 .reset-btn {
-  padding: 4px 10px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  color: var(--color-text-main);
   cursor: pointer;
+  transition: all 0.15s ease;
 }
+
 .reset-btn:hover {
-  background: #e2e8f0;
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--color-text-heading);
 }
 
 .columns-grid {
@@ -255,11 +264,12 @@ function getRightMatchedLeft(rightId) {
 }
 
 .column-header {
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #64748b;
-  letter-spacing: 0.5px;
+  color: var(--color-text-heading);
+  letter-spacing: 1.5px;
 }
 
 .match-row {
@@ -277,20 +287,20 @@ function getRightMatchedLeft(rightId) {
   align-items: center;
   justify-content: center;
   padding: 0 12px;
-  background: #f1f5f9;
-  border: 2px solid var(--color-border, #cbd5e1);
-  border-radius: 8px;
-  color: #64748b;
-  font-size: 0.9rem;
+  background: rgba(15, 76, 92, 0.55);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  color: var(--color-text-main);
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .unlink-btn:hover:not(:disabled) {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.28);
   border-color: #ef4444;
-  color: #dc2626;
+  color: #fecaca;
 }
 
 .unlink-btn:disabled {
@@ -302,69 +312,85 @@ function getRightMatchedLeft(rightId) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   padding: 12px 14px;
-  background: var(--color-background-soft, #f8fafc);
-  border: 2px solid var(--color-border, #e2e8f0);
-  border-radius: 8px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  text-align: left;
   cursor: pointer;
   transition: all 0.15s ease;
   min-height: 54px;
 }
 
-.match-card:hover {
-  border-color: #3b82f6;
-  background: #f0f7ff;
+.match-card:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(15, 76, 92, 0.75);
+  color: var(--color-text-heading);
 }
 
 .left-card.active {
-  border-color: #2563eb;
-  background: #eff6ff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  border-color: var(--color-button);
+  background: rgba(227, 221, 196, 0.22);
+  box-shadow: 0 0 0 3px rgba(227, 221, 196, 0.2);
+  color: var(--color-text-heading);
 }
 
 .right-card.can-link {
   border-style: dashed;
+  border-color: rgba(227, 221, 196, 0.6);
 }
 
 .match-card.paired {
-  border-color: #94a3b8;
+  border-color: rgba(227, 221, 196, 0.55);
+  background: rgba(15, 76, 92, 0.72);
+  color: var(--color-text-heading);
 }
 
 .match-card.correct {
   border-color: #10b981 !important;
-  background: #ecfdf5 !important;
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #d1fae5 !important;
 }
 
 .match-card.incorrect {
   border-color: #ef4444 !important;
-  background: #fef2f2 !important;
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #fee2e2 !important;
 }
 
 .shortcut-text {
-  background: #ffffff;
-  padding: 4px 8px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  font-family: monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  font-family: 'Consolas', 'Courier New', monospace;
   font-weight: bold;
+  color: var(--color-button);
 }
 
 .action-text {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   color: inherit;
 }
 
 .match-pill {
-  font-size: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
   font-weight: 700;
-  padding: 2px 8px;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
   border-radius: 12px;
   color: #ffffff;
+  white-space: nowrap;
 }
 
 .badge-blue { background: #2563eb; }
 .badge-purple { background: #7c3aed; }
-.badge-orange { background: #ea580c; }
+.badge-orange { background: #d97706; }
 .badge-teal { background: #0d9488; }
 .badge-pink { background: #db2777; }
 </style>

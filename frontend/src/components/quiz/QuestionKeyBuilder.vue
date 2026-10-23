@@ -130,10 +130,10 @@ function clearAll() {
 }
 
 .combo-tray {
-  padding: 16px;
-  background: var(--color-background-soft, #f8fafc);
-  border: 2px dashed #94a3b8;
-  border-radius: 10px;
+  padding: 16px 18px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 1.5px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
   min-height: 80px;
   display: flex;
   flex-direction: column;
@@ -144,20 +144,21 @@ function clearAll() {
 
 .combo-tray.tray-correct {
   border: 2px solid #10b981;
-  background: #ecfdf5;
+  background: rgba(16, 185, 129, 0.22);
 }
 
 .combo-tray.tray-wrong {
   border: 2px solid #ef4444;
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.22);
 }
 
 .tray-label {
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
 }
 
 .slotted-keys {
@@ -169,7 +170,8 @@ function clearAll() {
 }
 
 .empty-tray-placeholder {
-  color: #94a3b8;
+  color: rgba(242, 229, 208, 0.7);
+  font-family: var(--font-body);
   font-style: italic;
   font-size: 0.95rem;
 }
@@ -177,7 +179,7 @@ function clearAll() {
 .plus-sign {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #64748b;
+  color: var(--color-text-heading);
 }
 
 .key-token {
@@ -185,11 +187,11 @@ function clearAll() {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  background: #ffffff;
-  color: #1e293b;
-  border: 1px solid #cbd5e1;
-  border-bottom: 3px solid #94a3b8;
-  border-radius: 7px;
+  background: rgba(15, 76, 92, 0.75);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1rem;
@@ -200,9 +202,8 @@ function clearAll() {
 
 .key-token:hover:not(:disabled) {
   transform: translateY(-1px);
-  border-color: #3b82f6;
-  border-bottom-color: #2563eb;
-  background: #f8fafc;
+  border-color: var(--color-button);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .key-token:active:not(:disabled) {
@@ -211,31 +212,36 @@ function clearAll() {
 }
 
 .key-token.slotted {
-  background: #eff6ff;
-  border-color: #93c5fd;
-  border-bottom-color: #3b82f6;
-  color: #1d4ed8;
+  background: var(--color-button);
+  border-color: var(--color-button-border);
+  border-bottom-color: #b8b096;
+  color: var(--color-button-text);
 }
 
 .remove-x {
   font-size: 1rem;
-  color: #ef4444;
+  color: #991b1b;
   font-weight: bold;
   line-height: 1;
 }
 
 .clear-tray-btn {
   align-self: flex-end;
-  padding: 4px 10px;
-  font-size: 0.8rem;
-  background: #e2e8f0;
-  border: none;
-  border-radius: 4px;
+  padding: 5px 12px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
   cursor: pointer;
-  color: #475569;
+  color: var(--color-text-main);
+  transition: all 0.15s ease;
 }
+
 .clear-tray-btn:hover {
-  background: #cbd5e1;
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--color-text-heading);
 }
 
 .key-bank-section {
@@ -245,9 +251,12 @@ function clearAll() {
 }
 
 .bank-label {
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #64748b;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text-main);
 }
 
 .key-bank-grid {
@@ -257,15 +266,18 @@ function clearAll() {
 }
 
 .target-reveal {
+  font-family: var(--font-body);
   font-size: 0.95rem;
   margin-top: 4px;
+  color: var(--color-text-main);
 }
 
 .highlight-target {
-  font-family: monospace;
-  color: #2563eb;
-  padding: 2px 6px;
-  background: #eff6ff;
-  border-radius: 4px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  color: var(--color-button);
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
 }
 </style>

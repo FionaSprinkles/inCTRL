@@ -190,14 +190,16 @@ function activateListening() {
 }
 
 .sub-instruction {
-  font-size: 0.9rem;
-  color: #64748b;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  margin: 0;
 }
 
 .capture-box {
-  background: var(--color-background-soft, #f8fafc);
-  border: 2px dashed #94a3b8;
-  border-radius: 12px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 2px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
   padding: 24px;
   text-align: center;
   cursor: pointer;
@@ -212,24 +214,25 @@ function activateListening() {
 }
 
 .capture-box.focused {
-  border-color: #2563eb;
-  background: #eff6ff;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  border-color: var(--color-button);
+  background: rgba(15, 76, 92, 0.72);
+  box-shadow: 0 0 0 3px rgba(227, 221, 196, 0.2);
 }
 
 .capture-box.box-correct {
   border: 2px solid #10b981;
-  background: #ecfdf5;
+  background: rgba(16, 185, 129, 0.22);
 }
 
 .capture-box.box-wrong {
   border: 2px solid #ef4444;
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.22);
 }
 
 .capture-status {
-  font-size: 0.85rem;
-  color: #64748b;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text-main);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -240,7 +243,7 @@ function activateListening() {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #cbd5e1;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .pulse-dot.active {
@@ -265,39 +268,48 @@ function activateListening() {
 }
 
 .press-hint {
-  color: #64748b;
+  font-family: var(--font-body);
+  color: rgba(242, 229, 208, 0.75);
   font-size: 1rem;
 }
 
 .plus {
   font-size: 1.4rem;
   font-weight: bold;
-  color: #475569;
+  color: var(--color-text-heading);
 }
 
 .live-kbd {
   display: inline-block;
   padding: 8px 16px;
-  background: #ffffff;
-  border: 2px solid #94a3b8;
-  border-bottom: 4px solid #64748b;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   font-family: 'Consolas', 'Courier New', monospace;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1e293b;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+  color: var(--color-button);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
 .clear-capture-btn {
   margin-top: 14px;
-  padding: 4px 12px;
-  background: #e2e8f0;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  padding: 5px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  color: #475569;
+  color: var(--color-text-main);
+  transition: all 0.15s ease;
+}
+
+.clear-capture-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--color-text-heading);
 }
 
 .virtual-keypad {
@@ -307,8 +319,10 @@ function activateListening() {
 }
 
 .vk-label {
-  font-size: 0.85rem;
-  color: #64748b;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  color: var(--color-text-main);
 }
 
 .vk-grid {
@@ -318,36 +332,42 @@ function activateListening() {
 }
 
 .vk-btn {
-  padding: 6px 12px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
-  border-radius: 6px;
-  font-family: monospace;
+  padding: 6px 14px;
+  background: rgba(15, 76, 92, 0.65);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  font-family: 'Consolas', 'Courier New', monospace;
   font-weight: bold;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .vk-btn:hover {
-  background: #f1f5f9;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--color-button);
 }
 
 .vk-btn.active {
-  background: #2563eb;
-  color: #ffffff;
-  border-color: #1d4ed8;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border-color: var(--color-button-border);
 }
 
 .result-display {
+  font-family: var(--font-body);
   font-size: 0.95rem;
+  color: var(--color-text-main);
 }
 
 .target-badge {
-  font-family: monospace;
-  color: #2563eb;
-  background: #eff6ff;
-  padding: 2px 8px;
-  border-radius: 4px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  color: var(--color-button);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 </style>

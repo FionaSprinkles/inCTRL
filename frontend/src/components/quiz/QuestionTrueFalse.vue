@@ -82,26 +82,30 @@ function setAnswer(val) {
 
 .statement-card {
   position: relative;
-  background: var(--color-background-soft, #f8fafc);
-  border-left: 4px solid #3b82f6;
-  padding: 16px 20px 16px 36px;
-  border-radius: 6px;
+  background: rgba(15, 76, 92, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-left: 4px solid var(--color-button);
+  padding: 18px 22px 18px 40px;
+  border-radius: 12px;
 }
 
 .quote-icon {
   position: absolute;
-  left: 10px;
+  left: 12px;
   top: 6px;
-  font-size: 2rem;
+  font-size: 2.2rem;
   line-height: 1;
-  color: #94a3b8;
-  font-family: Georgia, serif;
+  color: var(--color-button);
+  font-family: var(--font-heading);
 }
 
 .statement-text {
-  font-size: 1.05rem;
+  font-family: var(--font-body);
+  font-size: 1.08rem;
   line-height: 1.5;
-  font-weight: 500;
+  font-weight: 450;
+  color: var(--color-text-heading);
+  margin: 0;
 }
 
 .tf-actions {
@@ -116,41 +120,43 @@ function setAnswer(val) {
   justify-content: center;
   gap: 10px;
   padding: 16px;
-  border: 2px solid var(--color-border, #cbd5e1);
-  border-radius: 10px;
-  background: var(--color-background-soft, #ffffff);
+  border: 1.5px solid rgba(255, 255, 255, 0.26);
+  border-radius: 12px;
+  background: rgba(15, 76, 92, 0.5);
+  color: var(--color-text-main);
+  font-family: var(--font-display);
   cursor: pointer;
   transition: all 0.15s ease;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 2px;
 }
 
 .tf-btn:hover:not(:disabled) {
-  border-color: #3b82f6;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(15, 76, 92, 0.78);
+  color: var(--color-text-heading);
   transform: translateY(-1px);
 }
 
-
-
 .tf-btn.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
-  color: #1e40af;
+  border-color: var(--color-button);
+  background: rgba(227, 221, 196, 0.24);
+  color: var(--color-text-heading);
 }
 
 .btn-true.correct,
 .btn-false.correct {
   border-color: #10b981 !important;
-  background: #ecfdf5 !important;
-  color: #065f46 !important;
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #d1fae5 !important;
 }
 
 .btn-true.incorrect,
 .btn-false.incorrect {
   border-color: #ef4444 !important;
-  background: #fef2f2 !important;
-  color: #991b1b !important;
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #fee2e2 !important;
 }
 
 .tf-icon {
