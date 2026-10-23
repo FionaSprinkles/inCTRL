@@ -37,7 +37,9 @@ function appendKey(keyStr) {
   const current = props.modelValue ? props.modelValue.trim() : ''
   if (!current) {
     emit('update:modelValue', keyStr)
-  } else if (!current.endsWith('+') && !current.endsWith('+ ')) {
+  } else if (keyStr === '+') {
+    emit('update:modelValue', current.endsWith('+') ? `${current} ` : `${current} + `)
+  } else if (!current.endsWith('+')) {
     emit('update:modelValue', `${current} + ${keyStr}`)
   } else {
     emit('update:modelValue', `${current} ${keyStr}`)
