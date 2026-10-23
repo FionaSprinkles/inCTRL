@@ -408,13 +408,13 @@ function formatCorrectAnswer(question) {
 .summary-container {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(18, 86, 98, 0.52);
+  background: rgba(11, 56, 66, 0.88);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
   padding: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -519,7 +519,7 @@ function formatCorrectAnswer(question) {
 
 .breakdown-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: 12px;
   margin-top: 14px;
 }
