@@ -122,7 +122,7 @@ td {
 }
 
 th {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   font-weight: 450;
   letter-spacing: 1px;
@@ -158,13 +158,23 @@ kbd {
   padding: 0.6rem 1rem;
   font-size: 14px;
   background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
   color: var(--color-text-main);
   outline: none;
   width: 250px;
-  transition: border-color 0.2s;
-  backdrop-filter: blur(16px) saturate(160%);
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Search bar text */

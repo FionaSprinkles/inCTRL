@@ -78,7 +78,7 @@ import { RouterLink } from 'vue-router'
 .footer-col a {
   font-size: 16px;
   font-family: var(--font-body), sans-serif; /* Jost instead of the global link font */
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   text-decoration: none; /* no underline */
   transition: color 0.2s ease; /* smooth color change on hover */
 }

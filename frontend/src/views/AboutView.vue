@@ -120,7 +120,9 @@
 }
 
 .hero-section .description {
-  color: var(--color-text-white);
+  color: var(--color-text-main);
+  letter-spacing: 3px;
+  font-size: 1.1rem;
 }
 
 /* Story section layout and columns */
@@ -168,19 +170,19 @@
 
 /* Typography and common text elements */
 .about {
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   font-weight: 600;
   font-size: 12px;
 }
 
 .story {
-  color: var(--color-text-accenturate);
+  color: var(--color-dark-accenturate);
   font-weight: 600;
   font-size: 12px;
 }
 
 .taste {
-  color: var(--color-text-accenturate);
+  color: var(--color-dark-accenturate);
   font-weight: 600;
   font-size: 12px;
 }
@@ -287,7 +289,7 @@ kbd {
 .team-section h2 {
   font-size: 30px;
   font-family: var(--font-display), sans-serif;
-  color: var(--color-dark-teal);
+  color: var(--color-dark-accenturate);
   margin-bottom: 50px;
 }
 

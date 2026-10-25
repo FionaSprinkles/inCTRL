@@ -21,7 +21,8 @@
             linear-gradient(135deg, #2e0f3a 0%, #2f1a4f 30%, #17344f 65%, #10283e 100%);
 
     --color-text-main: #D0C4AF;
-    --color-text-accenturate: #9fd3e3;
+    --color-light-accenturate: #9fd3e3;
+    --color-dark-accenturate: #2e0f3a;
     --color-text-white: #FFFFFF;
     --color-text-black: #151515;
     --color-dark-teal: #125662;

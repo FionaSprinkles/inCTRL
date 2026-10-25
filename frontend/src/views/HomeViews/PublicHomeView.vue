@@ -20,7 +20,7 @@ import './assets/global.css'
 
     <section class="member">
       <div class="left-side">
-        <h1>progress. points. leaderboard.</h1>
+        <h1>Join the community!</h1>
         <p>
           Save your quiz results, track your progress, and climb the leaderboards as you earn
           points.
@@ -30,7 +30,7 @@ import './assets/global.css'
         </p>
       </div>
       <div class="right-side">
-        <PodiumLeaderboard />
+        <PodiumLeaderboard podium-only />
       </div>
     </section>
 
@@ -91,7 +91,7 @@ h1 {
 }
 
 .eyebrow {
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   font-size: 0.9rem;
   font-weight: bold; /* makes the font bold */
   letter-spacing: 0.15em;
@@ -100,7 +100,7 @@ h1 {
 }
 
 .how {
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   font-size: 0.9rem;
   font-weight: bold; /* makes the font bold */
   letter-spacing: 0.15em;
@@ -186,7 +186,7 @@ h1 {
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 3rem;
-  max-width: 1200px;
+  max-width: 950px;
   margin: 0 auto;
   padding: 5rem 2rem;
 }
@@ -201,16 +201,17 @@ h1 {
 }
 
 .member h1 {
-  font-size: 34px;
+  font-size: 40px;
 }
 
 .member p {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .member .ps {
-  font-size: 16px;
+  font-size: 14px;
   font-style: italic;
+  color: var(--color-light-accenturate);
 }
 
 /* HOW IT WORKS SECTION */
@@ -252,7 +253,7 @@ h1 {
 }
 
 .features span {
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   font-weight: bold;
 }
 

@@ -43,8 +43,6 @@
 
         <!-- Links for logged out users -->
         <template v-if="!isLoggedIn">
-          <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
-
           <RouterLink to="/about" class="nav-link"> About </RouterLink>
         </template>
 
@@ -56,7 +54,7 @@
 
           <RouterLink to="/shortcuts" class="nav-link"> Shortcuts List </RouterLink>
 
-          <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
+          <RouterLink to="/leaderboards" class="nav-link"> Leaderboard </RouterLink>
         </template>
       </div>
     </div>
@@ -225,7 +223,7 @@ onMounted(() => {
 }
 
 .nav-link:hover {
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   transition: color 0.2s ease; /* Smooth hover transition */
 }
 
@@ -310,7 +308,7 @@ onMounted(() => {
 }
 
 .user {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 20px;
 }
 </style>

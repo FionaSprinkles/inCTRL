@@ -538,7 +538,7 @@ onUnmounted(stopTimer)
 .filter-select {
   padding: 0.6rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid var(--color-text-accenturate);
+  border: 1px solid var(--color-light-accenturate);
   background: var(--color-dark-teal);
   color: #fff;
   font-size: 0.95rem;
@@ -548,12 +548,12 @@ onUnmounted(stopTimer)
 
 .filter-select option {
   background: #125662;
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
 }
 
 .btn-reset {
   font-family: var(--font-display), serif;
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   font-size: 16px;
   letter-spacing: 1px;
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -566,7 +566,7 @@ onUnmounted(stopTimer)
 
 .btn-reset:hover {
   background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
@@ -590,12 +590,12 @@ onUnmounted(stopTimer)
 
 .empty-hint {
   font-family: var(--font-body), sans-serif;
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
   margin-bottom: 1.25rem;
 }
 
 .btn-clear {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.6rem 1.2rem;
@@ -827,7 +827,7 @@ onUnmounted(stopTimer)
 .progress-display {
   font-family: var(--font-body), sans-serif;
   font-size: 0.92rem;
-  color: var(--color-text-accenturate);
+  color: var(--color-light-accenturate);
 }
 
 .progress-display strong {

@@ -144,13 +144,18 @@ async function handleSubmit() {
   max-width: 380px; /* Never gets wider than 380px on large screens */
   padding: 1rem 2rem;
   text-align: center;
+  border-radius: 40px;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 
-  background: rgba(255, 255, 255, 0.09); /* Makes background more transparent */
-  backdrop-filter: blur(16px) saturate(160%); /* Blurs the background */
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25); /* Thin light border */
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
 }
 
 /* Heading spacing */
@@ -204,21 +209,34 @@ input:focus {
 
 /* Sign up button */
 .btn-primary {
+  background: var(--color-dark-teal);
+  color: var(--color-text-white);
+  letter-spacing: 5px;
   margin-top: 0.5rem;
   padding: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
+
   font-weight: 500;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
+  border-radius: 40px;
+
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Sign up button hover */
 .btn-primary:hover {
-  background: var(--color-button-hover);
+  color: var(--color-text-main);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: box-shadow 0.25s ease;
+  transition: all 0.3s ease;
 }
 
 /* Divider with "or sign up with" text */
@@ -250,20 +268,29 @@ input:focus {
 /* Social buttons design*/
 .btn-social {
   padding: 8px 16px;
-  background-color: #1d7874;
+  background-color: var(--color-dark-teal);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 40px;
   cursor: pointer;
-  transition: all 0.25s ease; /* Smooth hover transition */
+
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Social buttons hover */
 .btn-social:hover {
-  background-color: var(--color-button-hover);
-  color: var(--color-button-text);
+  color: var(--color-text-main);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: box-shadow 0.25s ease;
+  transition: all 0.3s ease;
 }
 
 /* Back to home link */
