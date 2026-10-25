@@ -36,7 +36,7 @@ defineProps({
   border-radius: 50%;
   border-style: solid;
   border-color: rgba(255, 255, 255, 0.15);
-  border-top-color: var(--color-text-muted, #85b4be);
+  border-top-color: var(--color-text-accenturate, #85b4be);
   animation: spin 0.85s linear infinite;
 }
 

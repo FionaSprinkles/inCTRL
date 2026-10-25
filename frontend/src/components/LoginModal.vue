@@ -149,7 +149,7 @@ h1 {
 }
 
 .member a:hover {
-  color: var(--color-text-muted);
+  color: var(--color-text-accenturate);
 }
 
 /* Form layout */

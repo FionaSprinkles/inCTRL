@@ -168,19 +168,19 @@
 
 /* Typography and common text elements */
 .about {
-  color: var(--color-text-muted);
+  color: var(--color-text-accenturate);
   font-weight: 600;
   font-size: 12px;
 }
 
 .story {
-  color: var(--color-text-muted);
+  color: var(--color-text-accenturate);
   font-weight: 600;
   font-size: 12px;
 }
 
 .taste {
-  color: var(--color-text-muted);
+  color: var(--color-text-accenturate);
   font-weight: 600;
   font-size: 12px;
 }

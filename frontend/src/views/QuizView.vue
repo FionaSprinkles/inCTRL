@@ -202,9 +202,7 @@ function nextQuestion() {
 function getFinalAnswers() {
   const finalAnswers = {}
   quizQuestions.value.forEach((q) => {
-    finalAnswers[q.id] = isQuestionAnswered(q.id)
-      ? userAnswers.value[q.id]
-      : null
+    finalAnswers[q.id] = isQuestionAnswered(q.id) ? userAnswers.value[q.id] : null
   })
   return finalAnswers
 }
@@ -371,22 +369,10 @@ onUnmounted(stopTimer)
     <div v-else class="quiz-runner-view">
       <header v-if="!isCompleted || isReviewMode" class="runner-bar">
         <div class="runner-header-top">
-          <button
-            v-if="isReviewMode"
-            type="button"
-            class="btn-back"
-            @click="returnToSummary"
-          >
+          <button v-if="isReviewMode" type="button" class="btn-back" @click="returnToSummary">
             ← Back to Summary
           </button>
-          <button
-            v-else
-            type="button"
-            class="btn-back"
-            @click="exitQuiz"
-          >
-            ← Back to Quizzes
-          </button>
+          <button v-else type="button" class="btn-back" @click="exitQuiz">← Back to Quizzes</button>
           <div class="runner-info">
             <h2>{{ activeQuiz.title }}</h2>
             <div class="runner-stats">
@@ -431,7 +417,11 @@ onUnmounted(stopTimer)
         message="Fetching quiz questions from backend..."
       />
 
-      <div v-else-if="quizError && !isCompleted && !isReviewMode" class="status-box error-box" role="alert">
+      <div
+        v-else-if="quizError && !isCompleted && !isReviewMode"
+        class="status-box error-box"
+        role="alert"
+      >
         <div class="error-icon" aria-hidden="true">⚠️</div>
 
         <p class="error-message">{{ quizError }}</p>
@@ -490,7 +480,7 @@ onUnmounted(stopTimer)
   max-width: 960px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 .quiz-page-header {
@@ -499,16 +489,16 @@ onUnmounted(stopTimer)
 }
 
 .quiz-page-header h1 {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), serif;
   font-size: 38px;
   font-weight: 370;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin-top: 10px;
   margin-bottom: 8px;
 }
 
 .subtitle {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   color: var(--color-text-main);
   font-size: 17px;
   letter-spacing: 0.5px;
@@ -538,7 +528,7 @@ onUnmounted(stopTimer)
 }
 
 .filter-group label {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 1px;
@@ -548,22 +538,22 @@ onUnmounted(stopTimer)
 .filter-select {
   padding: 0.6rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid var(--color-text-muted);
+  border: 1px solid var(--color-text-accenturate);
   background: var(--color-dark-teal);
   color: #fff;
   font-size: 0.95rem;
   outline: none;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 .filter-select option {
   background: #125662;
-  color: var(--color-text-heading);
+  color: var(--color-text-accenturate);
 }
 
 .btn-reset {
-  font-family: var(--font-display);
-  color: var(--color-text-muted);
+  font-family: var(--font-display), serif;
+  color: var(--color-text-accenturate);
   font-size: 16px;
   letter-spacing: 1px;
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -576,7 +566,7 @@ onUnmounted(stopTimer)
 
 .btn-reset:hover {
   background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-heading);
+  color: var(--color-text-accenturate);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
@@ -592,15 +582,15 @@ onUnmounted(stopTimer)
 }
 
 .empty-box .no-quizzes-message {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 1.3rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin-bottom: 0.5rem;
 }
 
 .empty-hint {
-  font-family: var(--font-body);
-  color: var(--color-text-muted);
+  font-family: var(--font-body), sans-serif;
+  color: var(--color-text-accenturate);
   margin-bottom: 1.25rem;
 }
 
@@ -633,14 +623,14 @@ onUnmounted(stopTimer)
 }
 
 .error-message {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 1rem;
   color: #fecaca;
   margin-bottom: 1rem;
 }
 
 .btn-retry {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.55rem 1.1rem;
@@ -672,7 +662,9 @@ onUnmounted(stopTimer)
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .quiz-card:hover {
@@ -688,7 +680,7 @@ onUnmounted(stopTimer)
 }
 
 .badge {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 0.75rem;
   padding: 0.2rem 0.55rem;
   border-radius: 6px;
@@ -721,16 +713,16 @@ onUnmounted(stopTimer)
 }
 
 .quiz-title {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 1.35rem;
   font-weight: 600;
   margin: 0 0 0.5rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   letter-spacing: 1px;
 }
 
 .quiz-description {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   color: var(--color-text-main);
   margin-bottom: 1.25rem;
@@ -746,13 +738,13 @@ onUnmounted(stopTimer)
 }
 
 .question-count {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.85rem;
   color: var(--color-text-main);
 }
 
 .btn-start {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.5rem 1.1rem;
@@ -799,9 +791,9 @@ onUnmounted(stopTimer)
 }
 
 .runner-info h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 1.4rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin: 0;
   letter-spacing: 2px;
 }
@@ -814,7 +806,7 @@ onUnmounted(stopTimer)
 }
 
 .timer-display {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--color-button);
@@ -829,21 +821,21 @@ onUnmounted(stopTimer)
 
 .timer-display strong {
   font-weight: 600;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .progress-display {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.92rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-accenturate);
 }
 
 .progress-display strong {
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .btn-back {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   color: var(--color-text-main);
@@ -857,7 +849,7 @@ onUnmounted(stopTimer)
 
 .btn-back:hover {
   background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
@@ -877,7 +869,7 @@ onUnmounted(stopTimer)
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(255, 255, 255, 0.07);
   color: var(--color-text-main);
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
@@ -889,7 +881,7 @@ onUnmounted(stopTimer)
 
 .dot-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
@@ -903,7 +895,7 @@ onUnmounted(stopTimer)
 .dot-btn.answered:not(.current):not(.correct):not(.wrong) {
   border-color: rgba(227, 221, 196, 0.4);
   background: rgba(227, 221, 196, 0.18);
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .dot-btn.correct {
@@ -929,7 +921,7 @@ onUnmounted(stopTimer)
 }
 
 .summary-exit-bar .btn-secondary {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 17px;
   letter-spacing: 1px;
   padding: 0.65rem 1.4rem;
@@ -943,7 +935,7 @@ onUnmounted(stopTimer)
 
 .summary-exit-bar .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   border-color: rgba(255, 255, 255, 0.4);
 }
 

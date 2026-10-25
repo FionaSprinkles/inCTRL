@@ -178,7 +178,7 @@ form {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 /* Input fields */
@@ -189,7 +189,7 @@ input {
   border-bottom: 1px solid rgba(255, 255, 255, 0.6); /* Underline for each field */
   color: white;
   outline: none; /* Removes the browser's default focus outline */
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 /* Color of the placeholder text */
@@ -228,7 +228,7 @@ input:focus {
   gap: 10px;
   margin: 1.5rem 0 1rem;
   font-size: 0.8rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 /* Two lines beside the "or sign up with" text */

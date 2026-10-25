@@ -43,7 +43,6 @@
 
         <!-- Links for logged out users -->
         <template v-if="!isLoggedIn">
-
           <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
 
           <RouterLink to="/about" class="nav-link"> About </RouterLink>
@@ -51,9 +50,6 @@
 
         <!-- Links for logged in users -->
         <template v-else>
-          
-
-
           <RouterLink to="/quiz" class="nav-link"> Quiz </RouterLink>
 
           <RouterLink to="/history" class="nav-link"> History </RouterLink>
@@ -138,8 +134,7 @@ onUnmounted(() => {
   document.removeEventListener('click', closeBrowse)
 })
 
-
-// This function fetches categories from backend. 
+// This function fetches categories from backend.
 // Right now categories are displayed in drop down menu.
 const categories = ref([])
 
@@ -192,9 +187,21 @@ onMounted(() => {
   position: absolute;
   left: 50%; /* start at middle of navbar */
   transform: translateX(-50%); /* shift back half its width to center */
-  font-size: 2rem;
-  color: var(--color-text-main);
+  font-size: 2.3rem;
+  color: var(--color-text-white);
   text-decoration: none; /* no underline */
+
+  /* Lägg till glow-effekt här */
+  text-shadow:
+    0 0 12px rgba(159, 211, 227, 0.6),
+    0 0 25px rgba(159, 211, 227, 0.3);
+  transition: text-shadow 0.3s ease;
+}
+
+.logo:hover {
+  text-shadow:
+    0 0 15px rgba(159, 211, 227, 0.9),
+    0 0 30px rgba(159, 211, 227, 0.5);
 }
 
 /* Links in nav-bar */
@@ -209,20 +216,23 @@ onMounted(() => {
   background-color: transparent; /* removes the default grey button background */
   border: none; /* removes the default button border */
   padding: 0.8rem 1rem;
-  font-size: 19px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 1px;
   text-decoration: none;
   cursor: pointer; /* hand cursor, buttons don't get this by default */
   transition: text-shadow 0.2s ease; /* Smooth hover transition for glow effect */
 }
 
 .nav-link:hover {
-  color: var(--color-text-muted);
+  color: var(--color-text-accenturate);
   transition: color 0.2s ease; /* Smooth hover transition */
 }
 
 /* Browse */
 .browse {
   position: relative;
+  all: unset;
 }
 
 /* Browse dropdown */
@@ -263,21 +273,40 @@ onMounted(() => {
   gap: 0.5rem;
 }
 
-/* Log in / sign up buttons */
+/* Log in / sign up buttons (Exakt samma storlek oavsett tagg) */
 .btn-auth {
-  border: 1px solid #fdfbf7;
-  padding: 0.3rem 0.9rem;
-  font-size: 16px;
-  transition: all 0.25s ease; /* Smooth hover transition */
+  font-size: 18px;
   border-radius: 40px;
-  background-color: #1d7874;
+
+  /* Fast bredd och höjd tvingar båda att bli identiska */
+  width: 94px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0;
+
+  /* Glass effect */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Hover for log in / sign up buttons */
 .btn-auth:hover {
-  background-color: var(--color-button-hover);
-  color: var(--color-button-text);
+  color: var(--color-text-main);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 .user {

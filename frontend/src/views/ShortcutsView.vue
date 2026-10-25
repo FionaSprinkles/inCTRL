@@ -139,7 +139,7 @@ tbody tr:last-child td {
 }
 
 kbd {
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 6px;
   padding: 0.15rem 0.45rem;
