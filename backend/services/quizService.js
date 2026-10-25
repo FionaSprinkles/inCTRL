@@ -508,32 +508,48 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
 
 /**
  * Retrieves global quiz leaderboard sorted by highest score and fastest time.
+ * @param {string} [filter='total'] Time filter ('today', 'week', 'total').
  * @param {number|string} [limit=10] - Maximum number of leaderboard entries to retrieve.
  * @returns {Promise<Array<object>>} Resolves with array of leaderboard records.
  */
-function getLeaderboard(limit = 10) {
+function getLeaderboard(filter = 'total', limit=50) {
     return new Promise((resolve, reject) => {
+        let timeCondition = '';
+        if (filter === 'today') {
+            timeCondition = 'WHERE qa.completed_at >= CURDATE()';
+        } else if (filter === 'week') {
+            timeCondition = 'WHERE qa.completed_at >= (NOW() - INTERVAL 7 DAY)';
+        }
+
         const sql = `
-            SELECT 
-                a.id, 
-                a.score, 
-                a.max_score AS maxScore, 
-                a.total_answered AS totalAnswered, 
-                a.time_spent_seconds AS timeSpentSeconds, 
-                a.completed_at AS completedAt,
-                COALESCE(u.username, a.guest_name, 'Guest') AS username,
-                u.display_name AS displayName,
+            SELECT
+                u.id,
+                u.username AS name,
                 u.avatar,
-                u.xp
-            FROM quiz_attempts a
-            LEFT JOIN users u ON a.user_id = u.id
-            ORDER BY a.score DESC, a.time_spent_seconds ASC
-            LIMIT ?
+                SUM(qa.score) AS total_points
+            FROM users u
+                     JOIN quiz_attempts qa ON u.id = qa.user_id
+                ${timeCondition}
+            GROUP BY u.id, u.display_name, u.username, u.avatar
+            ORDER BY total_points DESC
+                LIMIT ?
         `;
-        const n = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+
+        const n = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 100);
         db.query(sql, [n], (err, rows) => {
             if (err) return reject(err);
-            resolve(rows);
+
+            const formatted = rows.rows || rows.map((row, index) => ({
+                rank: index + 1,
+                name: row.name,
+                initial: row.name ? row.name.charAt(0).toUpperCase() : 'U',
+                points: `${Number(row.total_points || 0).toLocaleString('sv-SE')} p`,
+                avatar: row.avatar,
+                avatarBg: index === 0 ? '#E06D53' : index === 1 ? '#5B8DEF' : '#45B69C',
+                podiumBg: index === 0 ? '#ECC046' : index === 1 ? '#D1D7E3' : '#DC976A'
+            }));
+
+            resolve(formatted);
         });
     });
 }

@@ -348,8 +348,9 @@ exports.submitAttempt = async (req, res) => {
  */
 exports.getLeaderboard = async (req, res) => {
     try {
-        const limit = req.query.limit || 10;
-        const leaderboard = await quizService.getLeaderboard(limit);
+        const limit = parseInt(req.query.limit, 10) || 50;
+        const filter = req.query.filter || 'total';
+        const leaderboard = await quizService.getLeaderboard(filter, limit);
         res.json({
             success: true,
             leaderboard
