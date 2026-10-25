@@ -30,7 +30,7 @@ import './assets/global.css'
         </p>
       </div>
       <div class="right-side">
-        <!-- <PodiumLeaderboardCard /> -->
+        <PodiumLeaderboard />
       </div>
     </section>
 
@@ -69,7 +69,7 @@ import './assets/global.css'
 
 <script setup>
 import { RouterLink } from 'vue-router'
-/* import PodiumLeaderboardCard from '@/components/PodiumLeaderboardCard.vue' */
+import PodiumLeaderboard from '@/components/PodiumLeaderboard.vue'
 </script>
 
 <style scoped>
