@@ -86,10 +86,12 @@ const formatBreakdown = computed(() => {
   const map = {}
   props.questions.forEach((q) => {
     if (!map[q.type]) {
-      map[q.type] = { type: q.type, total: 0, scored: 0 }
+      map[q.type] = { type: q.type, total: 0, scored: 0, maxScore: 0 }
     }
     map[q.type].total++
     const res = props.results[q.id]
+    const qMax = typeof res?.maxScore === 'number' ? res.maxScore : 1
+    map[q.type].maxScore += qMax
     if (res) {
       map[q.type].scored += res.score || 0
     }
@@ -276,12 +278,12 @@ function formatCorrectAnswer(question) {
         <div v-for="item in formatBreakdown" :key="item.type" class="breakdown-card">
           <div class="format-header">
             <span class="format-name">{{ formatLabels[item.type] || item.type }}</span>
-            <span class="format-stat">{{ item.scored }} / {{ item.total }}</span>
+            <span class="format-stat">{{ item.scored }} / {{ item.maxScore }} pts</span>
           </div>
           <div class="progress-track">
             <div
               class="progress-fill"
-              :style="{ width: `${item.total > 0 ? (item.scored / item.total) * 100 : 0}%` }"
+              :style="{ width: `${item.maxScore > 0 ? Math.min(100, (item.scored / item.maxScore) * 100) : 0}%` }"
             ></div>
           </div>
         </div>
@@ -327,19 +329,19 @@ function formatCorrectAnswer(question) {
                 v-if="results[q.id]?.isCorrect"
                 class="status-badge status-correct"
               >
-                ✓ Correct
+                ✓ Correct (+{{ results[q.id]?.score || 0 }} pts)
               </span>
               <span
                 v-else-if="(results[q.id]?.score || 0) > 0"
                 class="status-badge status-partial"
               >
-                ⚡ Partial ({{ results[q.id]?.score }})
+                ⚡ Partial (+{{ results[q.id]?.score }} pts)
               </span>
               <span
                 v-else
                 class="status-badge status-wrong"
               >
-                ✕ Missed
+                ✕ Missed (0 pts)
               </span>
               <span class="chevron" aria-hidden="true">{{ expandedMap[q.id] ? '▲' : '▼' }}</span>
             </div>

@@ -1,5 +1,5 @@
 const db = require('../connectionMySQL');
-const { validateAnswer, normalizeAnswers } = require('./quizValidator');
+const { validateAnswer, normalizeAnswers, calculateQuestionPoints } = require('./quizValidator');
 
 /**
  * Normalizes a database row into the format expected by frontend quiz components.
@@ -330,9 +330,10 @@ class ValidationError extends Error {
  * @param {string} [params.formatFilter='all'] - Format filter applied during the quiz.
  * @param {object|Array} params.answers - Submitted question answers.
  * @param {number} [params.timeSpentSeconds=0] - Total seconds spent taking quiz.
+ * @param {Record<string, number>|null} [params.questionTimes=null] - Optional per-question time spent in seconds.
  * @returns {Promise<object>} Resolves with attempt evaluation details and generated attempt ID.
  */
-function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', quizId = null, answers, timeSpentSeconds = 0 }) {
+function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', quizId = null, answers, timeSpentSeconds = 0, questionTimes = null }) {
     return new Promise((resolve, reject) => {
         const normalizedAnswers = normalizeAnswers(answers);
         const questionIds = Object.keys(normalizedAnswers);
@@ -366,27 +367,53 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
             // Server-side answer validation and score computation
             let rawScore = 0;
             let rawMaxScore = 0;
+            let totalPoints = 0;
+            let maxPossiblePoints = 0;
             const evaluations = [];
+
+            const fallbackAvgTime = timeSpentSeconds > 0 && questionIds.length > 0
+                ? timeSpentSeconds / questionIds.length
+                : null;
 
             for (const qId of questionIds) {
                 const question = foundMap.get(qId);
                 const userAnswer = normalizedAnswers[qId];
                 const evalResult = validateAnswer(question, userAnswer);
 
+                const rawQuestionTime = questionTimes && typeof questionTimes === 'object' && questionTimes[qId] !== undefined
+                    ? Number(questionTimes[qId])
+                    : null;
+                const qTime = (rawQuestionTime !== null && Number.isFinite(rawQuestionTime) && rawQuestionTime >= 0)
+                    ? rawQuestionTime
+                    : fallbackAvgTime;
+
+                const pointResult = calculateQuestionPoints(
+                    evalResult.score || 0,
+                    question.difficulty || 'Beginner',
+                    qTime
+                );
+
                 rawScore += (evalResult.score || 0);
                 rawMaxScore += (evalResult.maxScore || 1);
+                totalPoints += pointResult.points;
+                maxPossiblePoints += pointResult.maxPoints;
 
                 evaluations.push({
                     questionId: qId,
                     isCorrect: evalResult.isCorrect,
                     score: evalResult.score,
                     maxScore: evalResult.maxScore,
+                    points: pointResult.points,
+                    maxPoints: pointResult.maxPoints,
+                    timeSpentSeconds: qTime !== null ? Math.round(qTime * 100) / 100 : null,
                     feedback: evalResult.feedback
                 });
             }
 
             const computedScore = Math.min(Math.round(rawMaxScore), Math.max(0, Math.round(rawScore)));
             const computedMaxScore = Math.round(rawMaxScore);
+            const computedPoints = Math.min(maxPossiblePoints, Math.max(0, Math.round(totalPoints)));
+            const computedMaxPoints = Math.round(maxPossiblePoints);
             const totalAnswered = questionIds.length;
 
             const insertSql = `
@@ -428,6 +455,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                             quizId: quizId || null,
                             score: computedScore,
                             maxScore: computedMaxScore,
+                            points: computedPoints,
+                            maxPoints: computedMaxPoints,
                             totalAnswered,
                             evaluations
                         };

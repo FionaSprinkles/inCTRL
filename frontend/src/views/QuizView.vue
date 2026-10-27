@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   fetchQuizzes,
@@ -8,7 +8,7 @@ import {
   filterQuizzes,
   submitQuizAttempt,
 } from '@/services/quizService'
-import { validateAnswer, isAnswerProvided } from '@/services/quizValidator'
+import { evaluateQuestionWithPoints, isAnswerProvided } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 import QuizLoading from '@/components/quiz/QuizLoading.vue'
@@ -32,17 +32,34 @@ const submitError = ref('')
 const currentIndex = ref(0)
 const userAnswers = ref({})
 const evalResults = ref({})
+const questionTimes = ref({})
 const isCompleted = ref(false)
 const isSubmitted = ref(false)
 
 const elapsedSeconds = ref(0)
 const startedAt = ref(null)
+const activeQuestionEnteredAt = ref(null)
 let timerInterval = null
 const isReviewMode = ref(false)
 
+function recordCurrentQuestionTime(questionId) {
+  if (isCompleted.value || isReviewMode.value || !activeQuestionEnteredAt.value || !questionId) {
+    return
+  }
+  const delta = Math.max(0, (Date.now() - activeQuestionEnteredAt.value) / 1000)
+  const prev = questionTimes.value[questionId] || 0
+  questionTimes.value = {
+    ...questionTimes.value,
+    [questionId]: Math.round((prev + delta) * 100) / 100,
+  }
+  activeQuestionEnteredAt.value = Date.now()
+}
+
 function startTimer() {
   stopTimer()
-  startedAt.value = Date.now()
+  const now = Date.now()
+  startedAt.value = now
+  activeQuestionEnteredAt.value = now
   elapsedSeconds.value = 0
   timerInterval = setInterval(() => {
     if (startedAt.value) {
@@ -79,6 +96,16 @@ const totalScore = computed(() =>
 const answeredCount = computed(
   () => quizQuestions.value.filter((q) => isQuestionAnswered(q.id)).length,
 )
+
+watch(currentIndex, (newIdx, oldIdx) => {
+  if (isCompleted.value || isReviewMode.value) return
+  const prevQuestion = quizQuestions.value[oldIdx]
+  if (prevQuestion) {
+    recordCurrentQuestionTime(prevQuestion.id)
+  } else {
+    activeQuestionEnteredAt.value = Date.now()
+  }
+})
 
 async function loadData() {
   loading.value = true
@@ -131,11 +158,13 @@ async function startQuiz(quiz) {
   currentIndex.value = 0
   userAnswers.value = {}
   evalResults.value = {}
+  questionTimes.value = {}
   isCompleted.value = false
   isSubmitted.value = false
   isReviewMode.value = false
   stopTimer()
   elapsedSeconds.value = 0
+  activeQuestionEnteredAt.value = null
 
   try {
     const data = await fetchQuizById(quiz.id)
@@ -162,6 +191,8 @@ function exitQuiz() {
   stopTimer()
   isReviewMode.value = false
   elapsedSeconds.value = 0
+  activeQuestionEnteredAt.value = null
+  questionTimes.value = {}
   activeQuiz.value = null
   quizQuestions.value = []
   quizError.value = ''
@@ -211,7 +242,11 @@ function getFinalAnswers() {
 
 async function finishQuiz() {
   const myAttempt = attemptId
+  if (currentQuestion.value) {
+    recordCurrentQuestionTime(currentQuestion.value.id)
+  }
   stopTimer()
+  activeQuestionEnteredAt.value = null
   if (startedAt.value) {
     elapsedSeconds.value = Math.max(0, Math.floor((Date.now() - startedAt.value) / 1000))
   }
@@ -222,7 +257,11 @@ async function finishQuiz() {
 
   const results = {}
   quizQuestions.value.forEach((q) => {
-    results[q.id] = validateAnswer(q, finalAnswers[q.id])
+    const qTime = questionTimes.value[q.id] ?? 0
+    results[q.id] = evaluateQuestionWithPoints(q, finalAnswers[q.id], {
+      timeSpentSeconds: qTime,
+      difficulty: q.difficulty || activeQuiz.value?.difficulty || 'Beginner',
+    })
   })
   evalResults.value = results
 
@@ -233,6 +272,7 @@ async function finishQuiz() {
         answers: finalAnswers,
         formatFilter: 'all',
         timeSpentSeconds: elapsedSeconds.value,
+        questionTimes: questionTimes.value,
       })
       if (myAttempt !== attemptId) return
       isSubmitted.value = true
@@ -255,6 +295,7 @@ async function retrySubmit() {
       answers: finalAnswers,
       formatFilter: 'all',
       timeSpentSeconds: elapsedSeconds.value,
+      questionTimes: questionTimes.value,
     })
     if (myAttempt !== attemptId) return
     isSubmitted.value = true
@@ -272,6 +313,7 @@ function restartQuiz() {
   attemptId++
   userAnswers.value = {}
   evalResults.value = {}
+  questionTimes.value = {}
   currentIndex.value = 0
   isCompleted.value = false
   isSubmitted.value = false

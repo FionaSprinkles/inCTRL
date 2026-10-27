@@ -1,6 +1,12 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
-const { normalizeAnswers, validateAnswer } = require('../services/quizValidator');
+const {
+    normalizeAnswers,
+    validateAnswer,
+    getDifficultyMultiplier,
+    calculateTimeFactor,
+    calculateQuestionPoints
+} = require('../services/quizValidator');
 
 describe('backend/services/quizValidator', () => {
     describe('normalizeAnswers', () => {
@@ -400,6 +406,56 @@ describe('backend/services/quizValidator', () => {
             const res = validateAnswer(q, 'opt1');
             assert.strictEqual(res.isCorrect, false);
             assert.ok(res.feedback.includes('Incorrect.'));
+        });
+    });
+
+    describe('point system - difficulty & time decay', () => {
+        it('computes difficulty multipliers for Beginner/Easy, Intermediate, and Advanced/Hard', () => {
+            assert.strictEqual(getDifficultyMultiplier('Beginner'), 1.0);
+            assert.strictEqual(getDifficultyMultiplier('easy'), 1.0);
+            assert.strictEqual(getDifficultyMultiplier('Intermediate'), 1.25);
+            assert.strictEqual(getDifficultyMultiplier('Advanced'), 1.5);
+            assert.strictEqual(getDifficultyMultiplier('hard'), 1.5);
+            assert.strictEqual(getDifficultyMultiplier('unknown'), 1.0);
+            assert.strictEqual(getDifficultyMultiplier(), 1.0);
+        });
+
+        it('computes time factor with 3s grace period and linear decay up to 20s', () => {
+            assert.strictEqual(calculateTimeFactor(null), 1.0);
+            assert.strictEqual(calculateTimeFactor(undefined), 1.0);
+            assert.strictEqual(calculateTimeFactor(NaN), 1.0);
+            assert.strictEqual(calculateTimeFactor(0), 1.0);
+            assert.strictEqual(calculateTimeFactor(3), 1.0);
+            assert.strictEqual(calculateTimeFactor(11.5), 0.75); // midpoint between 3s and 20s
+            assert.strictEqual(calculateTimeFactor(20), 0.5);
+            assert.strictEqual(calculateTimeFactor(45), 0.5);
+        });
+
+        it('calculates points across difficulties and response speeds', () => {
+            // Fast within grace period (<= 3s)
+            assert.deepStrictEqual(calculateQuestionPoints(1, 'Beginner', 2), {
+                points: 100,
+                maxPoints: 100,
+                difficultyMultiplier: 1.0,
+                timeFactor: 1.0
+            });
+            assert.strictEqual(calculateQuestionPoints(1, 'Intermediate', 3).points, 125);
+            assert.strictEqual(calculateQuestionPoints(1, 'Advanced', 1).points, 150);
+
+            // Midpoint (11.5s -> 0.75 factor)
+            assert.strictEqual(calculateQuestionPoints(1, 'Beginner', 11.5).points, 75);
+            assert.strictEqual(calculateQuestionPoints(1, 'Intermediate', 11.5).points, 94);
+            assert.strictEqual(calculateQuestionPoints(1, 'Advanced', 11.5).points, 113);
+
+            // Slow (>= 20s -> 0.5 floor)
+            assert.strictEqual(calculateQuestionPoints(1, 'Beginner', 25).points, 50);
+            assert.strictEqual(calculateQuestionPoints(1, 'Intermediate', 20).points, 63);
+            assert.strictEqual(calculateQuestionPoints(1, 'Advanced', 30).points, 75);
+
+            // Wrong answer (0 accuracy)
+            const wrong = calculateQuestionPoints(0, 'Advanced', 1);
+            assert.strictEqual(wrong.points, 0);
+            assert.strictEqual(wrong.maxPoints, 150);
         });
     });
 });
