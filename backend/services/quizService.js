@@ -52,6 +52,7 @@ function getQuizzes() {
             FROM quizzes q
             LEFT JOIN categories c ON q.category_id = c.id
             LEFT JOIN quiz_questions qq ON qq.quiz_id = q.id
+            WHERE q.is_active = TRUE
             GROUP BY q.id
             ORDER BY q.id ASC
         `;
@@ -80,7 +81,7 @@ function getQuizById(id) {
                 q.created_at AS createdAt
             FROM quizzes q
             LEFT JOIN categories c ON q.category_id = c.id
-            WHERE q.id = ?
+            WHERE q.id = ? AND q.is_active = TRUE
         `;
         db.query(sql, [id], (err, rows) => {
             if (err) return reject(err);
