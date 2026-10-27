@@ -78,12 +78,7 @@ const filteredShortcuts = computed(() => {
         const sSlug = String(shortcut.categorySlug || '').toLowerCase()
         const sName = String(shortcut.categoryName || '').toLowerCase()
 
-        return (
-          sId === target ||
-          sSlug === target ||
-          sName === target ||
-          (sName && (sName.includes(target) || target.includes(sName)))
-        )
+        return sId === target || sSlug === target || sName === target
       })
 
     // Difficulty filter
@@ -122,7 +117,9 @@ async function fetchShortcuts() {
       <div class="header-controls">
         <!-- Filter button -->
         <div class="filter-wrapper" ref="filterRef">
-          <button class="filter-btn" @click="toggleDropdown">Filter</button>
+          <button class="filter-btn" :aria-expanded="showDropdown" @click="toggleDropdown">
+            Filter
+          </button>
           <!-- Dropdown -->
           <div v-if="showDropdown" class="dropdown-menu">
             <div class="dropdown-section">
@@ -131,6 +128,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.length === 0 }"
+                :aria-pressed="selectedCategories.length === 0"
                 @click="toggleCategory('')"
               >
                 All categories
@@ -138,6 +136,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Essential Windows Navigation') }"
+                :aria-pressed="selectedCategories.includes('Essential Windows Navigation')"
                 @click="toggleCategory('Essential Windows Navigation')"
               >
                 Essential Windows Navigation
@@ -145,6 +144,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('System & Troubleshooting') }"
+                :aria-pressed="selectedCategories.includes('System & Troubleshooting')"
                 @click="toggleCategory('System & Troubleshooting')"
               >
                 System & Troubleshooting
@@ -152,6 +152,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('File Explorer & Windows Tools') }"
+                :aria-pressed="selectedCategories.includes('File Explorer & Windows Tools')"
                 @click="toggleCategory('File Explorer & Windows Tools')"
               >
                 File Explorer & Windows Tools
@@ -159,6 +160,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Multitasking & Window Management') }"
+                :aria-pressed="selectedCategories.includes('Multitasking & Window Management')"
                 @click="toggleCategory('Multitasking & Window Management')"
               >
                 Multitasking & Window Management
@@ -166,6 +168,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Window Snapping & Layout') }"
+                :aria-pressed="selectedCategories.includes('Window Snapping & Layout')"
                 @click="toggleCategory('Window Snapping & Layout')"
               >
                 Window Snapping & Layout
@@ -173,6 +176,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Virtual Desktops') }"
+                :aria-pressed="selectedCategories.includes('Virtual Desktops')"
                 @click="toggleCategory('Virtual Desktops')"
               >
                 Virtual Desktops
@@ -180,6 +184,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Windows Power Keys') }"
+                :aria-pressed="selectedCategories.includes('Windows Power Keys')"
                 @click="toggleCategory('Windows Power Keys')"
               >
                 Windows Power Keys
@@ -187,6 +192,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Interactive Keyboard Practice') }"
+                :aria-pressed="selectedCategories.includes('Interactive Keyboard Practice')"
                 @click="toggleCategory('Interactive Keyboard Practice')"
               >
                 Interactive Keyboard Practice
@@ -194,6 +200,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Text Editing & Formatting') }"
+                :aria-pressed="selectedCategories.includes('Text Editing & Formatting')"
                 @click="toggleCategory('Text Editing & Formatting')"
               >
                 Text Editing & Formatting
@@ -201,6 +208,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Taskbar & System Tray') }"
+                :aria-pressed="selectedCategories.includes('Taskbar & System Tray')"
                 @click="toggleCategory('Taskbar & System Tray')"
               >
                 Taskbar & System Tray
@@ -208,6 +216,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedCategories.includes('Dialog Boxes & Settings') }"
+                :aria-pressed="selectedCategories.includes('Dialog Boxes & Settings')"
                 @click="toggleCategory('Dialog Boxes & Settings')"
               >
                 Dialog Boxes & Settings
@@ -220,6 +229,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedDifficulty === '' }"
+                :aria-pressed="selectedDifficulty === ''"
                 @click="selectDifficulty('')"
               >
                 All difficulties
@@ -227,6 +237,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedDifficulty === 'beginner' }"
+                :aria-pressed="selectedDifficulty === 'beginner'"
                 @click="selectDifficulty('beginner')"
               >
                 Beginner
@@ -234,6 +245,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedDifficulty === 'intermediate' }"
+                :aria-pressed="selectedDifficulty === 'intermediate'"
                 @click="selectDifficulty('intermediate')"
               >
                 Intermediate
@@ -241,6 +253,7 @@ async function fetchShortcuts() {
               <button
                 class="dropdown-item"
                 :class="{ active: selectedDifficulty === 'advanced' }"
+                :aria-pressed="selectedDifficulty === 'advanced'"
                 @click="selectDifficulty('advanced')"
               >
                 Advanced

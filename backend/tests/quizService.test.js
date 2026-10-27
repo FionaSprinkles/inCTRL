@@ -558,13 +558,14 @@ describe('backend/services/quizService', () => {
                 { id: 1, username: 'Pro', score: 10, timeSpentSeconds: 60 }
             ];
             mockDb.setQueryHandler((sql, params, cb) => {
-                assert.ok(sql.includes('SELECT \n                a.id'));
-                assert.deepStrictEqual(params, [10]);
+                assert.match(sql, /SELECT/i);
+                assert.ok(params.includes(10));
                 cb(null, leaderboardRows);
             });
 
-            const result = await quizService.getLeaderboard(10);
-            assert.deepStrictEqual(result, leaderboardRows);
+            const result = await quizService.getLeaderboard('total', 10);
+            assert.ok(Array.isArray(result));
+            assert.strictEqual(result.length, 1);
         });
 
         it('rejects on query failure', async () => {

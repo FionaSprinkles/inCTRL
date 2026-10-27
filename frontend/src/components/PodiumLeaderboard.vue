@@ -8,6 +8,10 @@ const props = defineProps({
 const activeTab = ref('Total')
 const tabs = ['Today', 'Week', 'Total']
 const leaderboardData = ref([])
+const loading = ref(false)
+const loadError = ref('')
+
+let currentRequestId = 0
 
 // Split players into podium (top 3) and remaining list
 const podiumPlayers = computed(() => leaderboardData.value.slice(0, 3))
@@ -15,12 +19,33 @@ const remainingPlayers = computed(() => leaderboardData.value.slice(3))
 
 // Fetch leaderboard data from the backend based on the active time filter
 const fetchLeaderboard = async () => {
+  const requestId = ++currentRequestId
   const limit = props.podiumOnly ? 3 : 50
-  const res = await fetch(
-    `/api/quiz/leaderboard?filter=${activeTab.value.toLowerCase()}&limit=${limit}`,
-  )
-  const data = await res.json()
-  if (data.success) leaderboardData.value = data.leaderboard
+
+  loading.value = true
+  loadError.value = ''
+
+  try {
+    const res = await fetch(
+      `/api/quiz/leaderboard?filter=${activeTab.value.toLowerCase()}&limit=${limit}`,
+    )
+    if (!res.ok) throw new Error(`Server responded with ${res.status}`)
+    const data = await res.json()
+
+    if (requestId !== currentRequestId) return
+
+    if (!data.success) throw new Error(data.error || 'Could not load leaderboard.')
+    leaderboardData.value = data.leaderboard
+  } catch (err) {
+    if (requestId === currentRequestId) {
+      loadError.value = err.message || 'Could not load leaderboard.'
+      leaderboardData.value = []
+    }
+  } finally {
+    if (requestId === currentRequestId) {
+      loading.value = false
+    }
+  }
 }
 
 // Fetch data immediately on component mount and trigger when tab changes
@@ -45,6 +70,13 @@ onMounted(fetchLeaderboard)
         </button>
       </div>
     </header>
+
+    <div v-if="loading && !leaderboardData.length" class="status-box">Loading leaderboard...</div>
+
+    <div v-else-if="loadError" class="status-box error-box" role="alert">
+      <p class="error-message">{{ loadError }}</p>
+      <button type="button" class="btn-retry" @click="fetchLeaderboard">Retry</button>
+    </div>
 
     <!-- Podium card for top 3 players -->
     <div class="podium-card" :class="{ bare: podiumOnly }" v-if="podiumPlayers.length > 0">
