@@ -13,24 +13,24 @@ import QuestionOddOneOut from './QuestionOddOneOut.vue'
 const props = defineProps({
   question: {
     type: Object,
-    required: true
+    required: true,
   },
   savedAnswer: {
     type: [Object, Array, String, Number, Boolean, null],
-    default: null
+    default: null,
   },
   savedResult: {
     type: Object,
-    default: null
+    default: null,
   },
   questionNumber: {
     type: Number,
-    default: 1
+    default: 1,
   },
   totalQuestions: {
     type: Number,
-    default: 1
-  }
+    default: 1,
+  },
 })
 
 const emit = defineEmits(['answered', 'update:answer', 'retry', 'next', 'previous'])
@@ -51,7 +51,7 @@ const componentMap = {
   ordering: QuestionOrdering,
   true_false: QuestionTrueFalse,
   live_press: QuestionLivePress,
-  odd_one_out: QuestionOddOneOut
+  odd_one_out: QuestionOddOneOut,
 }
 
 const currentComponent = computed(() => {
@@ -68,7 +68,7 @@ const formatLabels = {
   ordering: 'Step Sequence',
   true_false: 'True or False',
   live_press: 'Live Keyboard Press',
-  odd_one_out: 'Spot The Imposter'
+  odd_one_out: 'Spot The Imposter',
 }
 
 // When question changes, reset or load saved answer
@@ -84,7 +84,7 @@ watch(
       isInitializing = false
     })
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Emit answer changes so parent keeps state in real time, excluding initializations
@@ -98,11 +98,11 @@ watch(
     if (newVal !== undefined) {
       emit('update:answer', {
         questionId: props.question.id,
-        userAnswer: newVal
+        userAnswer: newVal,
       })
     }
   },
-  { deep: true }
+  { deep: true },
 )
 
 /**
@@ -113,7 +113,7 @@ watch(
 function getInitialAnswer(q) {
   if (q.type === 'multiple_choice' || q.type === 'key_builder' || q.type === 'live_press') return []
   if (q.type === 'matching') return {}
-  if (q.type === 'ordering') return (q.items || []).map(i => i.id).reverse()
+  if (q.type === 'ordering') return (q.items || []).map((i) => i.id).reverse()
   if (q.type === 'fill_blank') return ''
   return null
 }
@@ -136,7 +136,7 @@ function handleNext() {
   if (hasAnswer.value) {
     emit('update:answer', {
       questionId: props.question.id,
-      userAnswer: userAnswer.value
+      userAnswer: userAnswer.value,
     })
   }
   emit('next')
@@ -154,14 +154,16 @@ function handleNext() {
         <span v-if="question.category" class="badge category-badge">
           {{ question.category }}
         </span>
-        <span v-if="question.difficulty" class="badge difficulty-badge" :class="question.difficulty.toLowerCase()">
+        <span
+          v-if="question.difficulty"
+          class="badge difficulty-badge"
+          :class="question.difficulty.toLowerCase()"
+        >
           {{ question.difficulty }}
         </span>
       </div>
 
-      <div class="progress-pill">
-        Question {{ questionNumber }} of {{ totalQuestions }}
-      </div>
+      <div class="progress-pill">Question {{ questionNumber }} of {{ totalQuestions }}</div>
     </div>
 
     <!-- Question Prompt -->
@@ -169,12 +171,7 @@ function handleNext() {
 
     <!-- Hint Section -->
     <div v-if="question.hint" class="hint-container">
-      <button
-        v-if="!showHint"
-        type="button"
-        class="hint-toggle-btn"
-        @click="showHint = true"
-      >
+      <button v-if="!showHint" type="button" class="hint-toggle-btn" @click="showHint = true">
         💡 Show Hint
       </button>
       <div v-else class="hint-content">
@@ -223,11 +220,7 @@ function handleNext() {
       </div>
 
       <div class="right-actions">
-        <button
-          type="button"
-          class="btn btn-primary"
-          @click="handleNext"
-        >
+        <button type="button" class="btn btn-primary" @click="handleNext">
           {{ questionNumber < totalQuestions ? 'Next Question →' : 'See Results' }}
         </button>
       </div>
@@ -247,7 +240,7 @@ function handleNext() {
   flex-direction: column;
   gap: 18px;
   color: var(--color-text-main);
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   transition: all 0.2s ease;
 }
 
@@ -267,18 +260,17 @@ function handleNext() {
 }
 
 .badge {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   padding: 4px 10px;
   border-radius: 20px;
-  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.5px;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .format-badge {
   background: rgba(255, 255, 255, 0.12);
-  color: var(--color-text-heading);
+  color: var(--color-text-main);
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
@@ -307,9 +299,8 @@ function handleNext() {
 }
 
 .progress-pill {
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  color: var(--color-text-muted);
+  font-family: var(--font-display), serif;
+  color: var(--color-text-main);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
   padding: 4px 12px;
@@ -317,12 +308,14 @@ function handleNext() {
 }
 
 .question-prompt {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), serif;
   font-size: 1.55rem;
   font-weight: 400;
   line-height: 1.35;
-  color: var(--color-text-heading);
+  letter-spacing: 0px;
+  color: var(--color-text-white);
   margin: 6px 0;
+  text-transform: none;
 }
 
 .hint-container {
@@ -330,37 +323,36 @@ function handleNext() {
 }
 
 .hint-toggle-btn {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   background: rgba(255, 255, 255, 0.08);
   border: 1px dashed rgba(255, 255, 255, 0.35);
   padding: 5px 12px;
   border-radius: 8px;
-  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 0.9rem;
   letter-spacing: 0.5px;
   transition: all 0.2s;
+  color: var(--color-text-main);
 }
 
 .hint-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 .hint-content {
-  background: rgba(245, 158, 11, 0.15);
-  border-left: 3px solid #f59e0b;
+  background: rgba(56, 189, 248, 0.15);
+  border-left: 3px solid #38bdf8;
   padding: 8px 14px;
   border-radius: 6px;
-  color: var(--color-text-heading);
-  font-family: var(--font-body);
+  color: var(--color-text-main);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
 }
 
 .hint-label {
   font-weight: 700;
-  color: #fde68a;
+  color: var(--color-text-main);
 }
 
 .interactive-area {
@@ -377,8 +369,14 @@ function handleNext() {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .box-success {
@@ -397,14 +395,14 @@ function handleNext() {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-weight: 600;
   font-size: 1.15rem;
   letter-spacing: 0.5px;
 }
 
 .explanation-body {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--color-text-main);
@@ -429,30 +427,31 @@ function handleNext() {
 }
 
 .btn {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
 }
 
 .btn-primary {
-  font-family: var(--font-display);
-  font-size: 18px;
+  font-family: var(--font-display), serif;
+  font-size: 16px;
   letter-spacing: 1px;
-  font-weight: 500;
-  padding: 10px 24px;
+  font-weight: 450;
+  padding: 9px 20px;
   border-radius: 12px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-main);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 .btn-secondary {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   font-weight: 450;
@@ -464,9 +463,8 @@ function handleNext() {
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 /* Deep stylings for child question format components */
@@ -475,7 +473,7 @@ function handleNext() {
   border: 1.5px solid rgba(255, 255, 255, 0.22) !important;
   color: var(--color-text-main) !important;
   border-radius: 12px !important;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 :deep(.option-card:hover:not(:disabled)) {
@@ -485,8 +483,8 @@ function handleNext() {
 
 :deep(.option-card.selected) {
   background: rgba(227, 221, 196, 0.22) !important;
-  border-color: var(--color-button) !important;
-  color: var(--color-text-heading) !important;
+  border-color: var(--color-light-accenturate) !important;
+  color: var(--color-text-white) !important;
 }
 
 :deep(.option-card.correct) {
@@ -509,19 +507,19 @@ function handleNext() {
   border-bottom: 2px solid rgba(255, 255, 255, 0.35) !important;
   border-radius: 6px !important;
   padding: 4px 10px !important;
-  color: var(--color-button) !important;
+  color: var(--color-text-main) !important;
 }
 
 :deep(.text-input) {
   background: rgba(255, 255, 255, 0.1) !important;
   border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-  color: var(--color-text-heading) !important;
-  font-family: var(--font-body) !important;
+  color: var(--color-text-white) !important;
+  font-family: var(--font-body), sans-serif !important;
   border-radius: 8px !important;
 }
 
 :deep(.text-input::placeholder) {
-  color: var(--color-text-muted) !important;
+  color: var(--color-light-accenturate) !important;
 }
 
 :deep(.key-cap),
@@ -532,7 +530,7 @@ function handleNext() {
   font-family: 'Consolas', 'Courier New', monospace !important;
   background: rgba(255, 255, 255, 0.12) !important;
   border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  color: var(--color-text-heading) !important;
+  color: var(--color-text-white) !important;
 }
 
 :deep(.tray-container),

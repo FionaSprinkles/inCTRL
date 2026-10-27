@@ -130,52 +130,50 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
+/* Page layout */
 .signup-page {
-  min-height: 85vh;
   display: flex;
   align-items: center; /* Centers the card vertically */
   justify-content: center; /* Centers the card horizontally */
-  padding: 2rem;
 }
 
-/* Glass-card */
+/* Card layout */
 .glass-card {
-  width: 100%; /* Takes the full available width on small screens */
-  max-width: 380px; /* Never gets wider than 380px on large screens */
+  width: 100%; /* Takes the full available width */
+  max-width: 380px; /* Never gets wider than 380px */
   padding: 1rem 2rem;
   text-align: center;
   border-radius: 40px;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+
+  /* Border */
   border: 1px solid rgba(197, 204, 214, 0.55);
   border-top-color: rgba(245, 247, 250, 0.9);
+
+  /* Glassmorphism */
+  backdrop-filter: saturate(120%);
+  -webkit-backdrop-filter: saturate(120%);
   box-shadow:
     6px 12px 26px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
   transition: all 0.3s ease;
 }
 
-/* Heading spacing */
-h1 {
-  margin-bottom: 0.5rem;
-}
-
+/* Log in link */
 .link-button {
   background: none;
   border: none;
-  padding: 0;
   font-size: 18px;
-  font-family: inherit;
-  color: inherit;
+  font-family: var(--font-body), sans-serif;
+  color: var(--color-text-main);
   text-decoration: underline;
   cursor: pointer;
 }
 
+/* Log in link hover */
 .link-button:hover {
-  color: var(--color-button-text);
+  color: var(--color-light-accenturate);
 }
 
 /* Form layout */
@@ -214,11 +212,11 @@ input:focus {
   letter-spacing: 5px;
   margin-top: 0.5rem;
   padding: 10px;
-
   font-weight: 500;
   cursor: pointer;
   border-radius: 40px;
 
+  /* Glassmorphism */
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -228,7 +226,6 @@ input:focus {
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
   transition: all 0.3s ease;
 }
 
@@ -258,14 +255,14 @@ input:focus {
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* Social buttons layout*/
+/* Social buttons layout */
 .social {
   display: flex;
   justify-content: center;
   gap: 12px;
 }
 
-/* Social buttons design*/
+/* Social buttons design */
 .btn-social {
   padding: 8px 16px;
   background-color: var(--color-dark-teal);
@@ -273,6 +270,7 @@ input:focus {
   border-radius: 40px;
   cursor: pointer;
 
+  /* Glassmorphism */
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -282,7 +280,6 @@ input:focus {
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
   transition: all 0.3s ease;
 }
 
@@ -302,7 +299,7 @@ input:focus {
 
 /* Back to home link hover */
 .back-link:hover {
-  color: var(--color-button-text);
+  color: var(--color-light-accenturate);
 }
 
 .error {

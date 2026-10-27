@@ -189,7 +189,6 @@ onMounted(() => {
   color: var(--color-text-white);
   text-decoration: none; /* no underline */
 
-  /* Lägg till glow-effekt här */
   text-shadow:
     0 0 12px rgba(159, 211, 227, 0.6),
     0 0 25px rgba(159, 211, 227, 0.3);
@@ -241,14 +240,19 @@ onMounted(() => {
   z-index: 10; /* stays on top of other elements */
   width: 280px;
   padding: 1rem;
+  border-radius: 20px;
 
-  /* Glass effect for the dropdown */
-  background: rgba(255, 255, 255, 0.12); /* Semi-transparent white background */
-  backdrop-filter: blur(16px) saturate(160%); /* Blurs background and boosts color saturation */
-  -webkit-backdrop-filter: blur(16px) saturate(160%); /* Safari support for backdrop filter */
-  border: 1px solid rgba(255, 255, 255, 0.25); /* Subtle light border for glass edge */
-  border-radius: 20px; /* Rounded corners */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* Soft shado% */
+  /* Glassmorphism */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Dropdown heading */
@@ -271,12 +275,10 @@ onMounted(() => {
   gap: 0.5rem;
 }
 
-/* Log in / sign up buttons (Exakt samma storlek oavsett tagg) */
 .btn-auth {
   font-size: 18px;
   border-radius: 40px;
 
-  /* Fast bredd och höjd tvingar båda att bli identiska */
   width: 94px;
   height: 38px;
   display: flex;
@@ -285,7 +287,6 @@ onMounted(() => {
   box-sizing: border-box;
   padding: 0;
 
-  /* Glass effect */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);

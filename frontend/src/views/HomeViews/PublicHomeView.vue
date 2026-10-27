@@ -87,13 +87,13 @@ import PodiumLeaderboard from '@/components/PodiumLeaderboard.vue'
 }
 
 h1 {
-  font-size: 4rem; /* makes the font 4x bigger than standard h1 */
+  font-size: 4rem;
 }
 
 .eyebrow {
   color: var(--color-light-accenturate);
   font-size: 0.9rem;
-  font-weight: bold; /* makes the font bold */
+  font-weight: bold;
   letter-spacing: 0.15em;
   margin-top: -10px;
   padding-bottom: 10px;
@@ -102,7 +102,7 @@ h1 {
 .how {
   color: var(--color-light-accenturate);
   font-size: 0.9rem;
-  font-weight: bold; /* makes the font bold */
+  font-weight: bold;
   letter-spacing: 0.15em;
   margin-top: -10px;
 }
@@ -119,6 +119,7 @@ h1 {
   margin-top: 2rem; /* Makes space above the element */
 }
 
+/* Hero buttons */
 .buttons a {
   position: relative;
   padding: 0.9rem 2.2rem;
@@ -129,7 +130,7 @@ h1 {
   letter-spacing: 0.02em;
   border-radius: 12px;
 
-  /* MÖRKT GLAS MED SILVERKANT */
+  /* Glassmorphism */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
@@ -140,11 +141,10 @@ h1 {
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
   transition: all 0.3s ease;
 }
 
-/* Silverglöd längs nedre kanten */
+/* Silver light on buttons bottom */
 .buttons a::after {
   content: '';
   position: absolute;
@@ -161,6 +161,7 @@ h1 {
   transition: all 0.3s ease;
 }
 
+/* Hero button hover */
 .buttons a:hover {
   color: #ffffff;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.08) 100%);
@@ -172,6 +173,7 @@ h1 {
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
+/* Silver light on buttons bottom hover */
 .buttons a:hover::after {
   left: 10%;
   width: 80%;
@@ -181,6 +183,7 @@ h1 {
 }
 
 /* MEMBER SECTION */
+/* Layout */
 .member {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -191,23 +194,23 @@ h1 {
   padding: 5rem 2rem;
 }
 
-.member .left-side {
-  margin: 0;
-}
-
+/* Podium layout */
 .member .right-side {
   display: flex;
   justify-content: center;
 }
 
+/* Left-side title */
 .member h1 {
   font-size: 40px;
 }
 
+/* Left-side description */
 .member p {
   font-size: 20px;
 }
 
+/* Left-side note */
 .member .ps {
   font-size: 14px;
   font-style: italic;
@@ -215,14 +218,16 @@ h1 {
 }
 
 /* HOW IT WORKS SECTION */
+/* Layout */
 .how-it-works {
   padding: 5rem 2rem;
 }
 
+/* Title */
 .how-it-works h2 {
-  font-size: 2.5rem;
 }
 
+/* Feature cards layout */
 .features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -230,13 +235,17 @@ h1 {
   margin: 3rem auto;
 }
 
+/* Feature cards title */
 .features h3 {
   color: var(--color-text-white);
 }
 
+/* Feature cards design */
 .features article {
   padding: 2rem;
   text-align: center;
+
+  /* Glassmorphism */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
@@ -248,23 +257,26 @@ h1 {
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
   transition: all 0.3s ease;
 }
 
+/* Feature cards number */
 .features span {
   color: var(--color-light-accenturate);
   font-weight: bold;
 }
 
+/* Feature cards hover */
 .features article:hover {
   box-shadow: 0 0 40px 6px rgba(197, 204, 214, 0.35);
 }
 
+/* Feature cards description */
 .features article p {
   font-style: italic;
 }
 
+/* Description */
 .section-lead {
   font-style: italic;
 }

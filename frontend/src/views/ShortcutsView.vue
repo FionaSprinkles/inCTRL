@@ -113,7 +113,6 @@ async function fetchShortcuts() {
     loading.value = false
   }
 }
-
 </script>
 
 <template>
@@ -306,10 +305,18 @@ async function fetchShortcuts() {
 .table-wrap {
   overflow-x: auto;
   background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 table {
@@ -325,7 +332,7 @@ td {
 }
 
 th {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   font-weight: 450;
   letter-spacing: 1px;
@@ -342,7 +349,7 @@ tbody tr:last-child td {
 }
 
 kbd {
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 6px;
   padding: 0.15rem 0.45rem;
@@ -360,19 +367,29 @@ kbd {
 .search-input {
   padding: 0.6rem 1rem;
   font-size: 18px;
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
   outline: none;
-  width: 250px;
-  transition: border-color 0.2s;
-  backdrop-filter: blur(16px) saturate(160%);
-  color: var(--color-text-main);
+  width: 200px;
+  color: var(--color-text-white);
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .search-input::placeholder {
-  color: var(--color-text-main);
+  color: var(--color-text-white);
 }
 
 .search-input:focus {
@@ -395,20 +412,29 @@ kbd {
   padding: 0.6rem 1.2rem;
   font-size: 18px;
   background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--color-text-white);
   border-radius: 12px;
   outline: none;
   cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(16px) saturate(160%);
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Filter button hover */
 .filter-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: box-shadow 0.25s ease;
+  transition: all 0.3s ease;
 }
 
 /* Dropdown menu styling */
@@ -418,22 +444,30 @@ kbd {
   width: 280px;
   max-height: 350px;
   overflow-y: auto;
-  background: var(--color-dark-teal);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
   padding: 1rem;
   z-index: 100;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Dropdown title */
 .dropdown-title {
   font-size: 18px;
   text-transform: uppercase;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin-bottom: 0.5rem;
   font-weight: bold;
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
 }
 
 /* Dropdown buttons */
@@ -443,24 +477,29 @@ kbd {
   border: none;
   color: var(--color-text-main);
   padding: 0.45rem 0.6rem;
-  border-radius: 8px;
+  background: transparent;
+  border-radius: 10px;
   font-size: 14px;
   cursor: pointer;
   transition:
     background 0.2s,
     color 0.2s;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 /* Dropdown buttons hover */
 .dropdown-item:hover {
-  background: var(--color-button-hover);
-  color: var(--color-dark-teal);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
+  color: var(--color-dark-accenturate);
+  background: rgba(255, 255, 255, 0.25);
+  font-weight: 600;
 }
 
 /* Dropdown buttons when marked */
 .dropdown-item.active {
   background: rgba(255, 255, 255, 0.25);
   font-weight: 600;
+  color: var(--color-dark-accenturate);
 }
 </style>

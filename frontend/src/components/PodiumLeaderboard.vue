@@ -128,7 +128,6 @@ onMounted(fetchLeaderboard)
 
 /* Time filter tabs */
 .tabs {
-  background-color: rgba(255, 255, 255, 0.08);
   padding: 4px;
   border-radius: 30px;
   display: flex;
@@ -205,7 +204,6 @@ onMounted(fetchLeaderboard)
   padding-top: 10px;
 }
 
-/* Order podium items: 2nd place left, 1st center, 3rd right */
 .podium-item {
   display: flex;
   flex-direction: column;
@@ -263,15 +261,15 @@ onMounted(fetchLeaderboard)
 
 .rank-1 .podium-pillar {
   height: 110px;
-  background-color: #ecbd4a; /* 1:a plats */
+  background-color: #ecbd4a;
 }
 .rank-2 .podium-pillar {
   height: 80px;
-  background-color: #d3d8e6; /* 2:a plats */
+  background-color: #d3d8e6;
 }
 .rank-3 .podium-pillar {
   height: 60px;
-  background-color: #dc9a6b; /* 3:e plats */
+  background-color: #dc9a6b;
 }
 
 /* Winner crown */
@@ -418,7 +416,6 @@ onMounted(fetchLeaderboard)
   font-size: 0.9rem;
 }
 
-/* ===== podium-only mode (used on the home page) ===== */
 .leaderboard-container.bare {
   background: none;
   padding: 0;
@@ -430,6 +427,10 @@ onMounted(fetchLeaderboard)
   background: none;
   border: none;
   padding: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  text-shadow: none;
 }
 
 .bare .player-points {

@@ -476,6 +476,7 @@ onUnmounted(stopTimer)
 </template>
 
 <style scoped>
+/* Page layout */
 .quiz-page {
   max-width: 960px;
   margin: 0 auto;
@@ -483,11 +484,13 @@ onUnmounted(stopTimer)
   font-family: var(--font-body), sans-serif;
 }
 
+/* Header layout */
 .quiz-page-header {
   margin-bottom: 2rem;
   text-align: center;
 }
 
+/* Header style */
 .quiz-page-header h1 {
   font-family: var(--font-heading), serif;
   font-size: 38px;
@@ -497,14 +500,16 @@ onUnmounted(stopTimer)
   margin-bottom: 8px;
 }
 
+/* Description style */
 .subtitle {
   font-family: var(--font-body), sans-serif;
   color: var(--color-text-main);
-  font-size: 17px;
-  letter-spacing: 0.5px;
   margin-top: 0;
+  letter-spacing: 2px;
+  font-size: 1.1rem;
 }
 
+/* Filters bar layout */
 .filters-bar {
   display: flex;
   flex-wrap: wrap;
@@ -513,10 +518,20 @@ onUnmounted(stopTimer)
   margin-bottom: 2rem;
   padding: 1.1rem 1.4rem;
   background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .filter-group {
@@ -527,6 +542,7 @@ onUnmounted(stopTimer)
   min-width: 180px;
 }
 
+/* Filters label style */
 .filter-group label {
   font-family: var(--font-display), serif;
   font-size: 16px;
@@ -535,52 +551,153 @@ onUnmounted(stopTimer)
   color: var(--color-text-main);
 }
 
+/* Filters button style */
 .filter-select {
-  padding: 0.6rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid var(--color-light-accenturate);
-  background: var(--color-dark-teal);
-  color: #fff;
-  font-size: 0.95rem;
-  outline: none;
-  font-family: var(--font-body), sans-serif;
-}
-
-.filter-select option {
-  background: #125662;
-  color: var(--color-light-accenturate);
-}
-
-.btn-reset {
   font-family: var(--font-display), serif;
-  color: var(--color-light-accenturate);
-  font-size: 16px;
-  letter-spacing: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 0.6rem 1.1rem;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  padding: 0.6rem 1.2rem;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--color-text-white);
+  border-radius: 12px;
+  outline: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
+@supports (appearance: base-select) {
+  .filter-select,
+  .filter-select::picker(select) {
+    appearance: base-select;
+  }
+
+  /* Dropdown menu styling */
+  .filter-select::picker(select) {
+    width: 280px;
+    max-height: 350px;
+    margin-top: 0.5rem;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 1rem;
+
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(197, 204, 214, 0.55);
+    border-top-color: rgba(245, 247, 250, 0.9);
+    box-shadow:
+      6px 12px 26px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Dropdown buttons */
+  .filter-select option {
+    width: 100%;
+    text-align: left;
+    border: none;
+    color: var(--color-text-main);
+    padding: 0.45rem 0.6rem;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s;
+    font-family: var(--font-body), sans-serif;
+  }
+
+  /* Dropdown buttons hover */
+  .filter-select option:hover {
+    box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+    transition: all 0.3s ease;
+    color: var(--color-dark-accenturate);
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 600;
+  }
+
+  /* Dropdown buttons when marked */
+  .filter-select option:checked {
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 600;
+    color: var(--color-dark-accenturate);
+  }
+
+  .filter-select option::checkmark {
+    display: none;
+  }
+}
+
+/* Reset filters button */
+.btn-reset {
+  padding: 0.6rem 1.2rem;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--color-text-white);
+  border-radius: 12px;
+  outline: none;
+  cursor: pointer;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
+}
+
+/* Reset filters button hover */
 .btn-reset:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--color-light-accenturate);
-  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
+/* Box style for when no quiz is showing */
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
   background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
   margin-bottom: 2rem;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
+/* No quizzez header */
 .empty-box .no-quizzes-message {
   font-family: var(--font-display), serif;
   font-size: 1.3rem;
@@ -588,6 +705,7 @@ onUnmounted(stopTimer)
   margin-bottom: 0.5rem;
 }
 
+/* No quizzez description */
 .empty-hint {
   font-family: var(--font-body), sans-serif;
   color: var(--color-light-accenturate);
@@ -595,22 +713,34 @@ onUnmounted(stopTimer)
 }
 
 .btn-clear {
-  font-family: var(--font-display), serif;
-  font-size: 16px;
-  letter-spacing: 1px;
   padding: 0.6rem 1.2rem;
-  border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
-  font-weight: 500;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--color-text-white);
+  border-radius: 12px;
+  outline: none;
   cursor: pointer;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .btn-clear:hover {
-  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
+/* Error */
 .error-box {
   border-color: #ef4444;
   color: #fca5a5;
@@ -635,10 +765,21 @@ onUnmounted(stopTimer)
   letter-spacing: 1px;
   padding: 0.55rem 1.1rem;
   border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
+  color: var(--color-text-white);
   cursor: pointer;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .summary-error {
@@ -648,30 +789,52 @@ onUnmounted(stopTimer)
 
 .quiz-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
 }
 
+@media (max-width: 900px) {
+  .quiz-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .quiz-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Quiz card style */
 .quiz-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 1.35rem;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  transition:
-    transform 0.15s ease,
-    border-color 0.15s ease;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
+/* Quiz card hover */
 .quiz-card:hover {
-  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
   transform: translateY(-2px);
 }
 
+/* Quiz tags layout */
 .quiz-tags {
   display: flex;
   gap: 0.5rem;
@@ -679,12 +842,12 @@ onUnmounted(stopTimer)
   flex-wrap: wrap;
 }
 
+/* Quiz tags text */
 .badge {
   font-family: var(--font-display), serif;
   font-size: 0.75rem;
   padding: 0.2rem 0.55rem;
   border-radius: 6px;
-  font-weight: 600;
   letter-spacing: 0.5px;
 }
 
@@ -712,15 +875,17 @@ onUnmounted(stopTimer)
   border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
+/* Quiz title */
 .quiz-title {
   font-family: var(--font-display), serif;
-  font-size: 1.35rem;
   font-weight: 600;
   margin: 0 0 0.5rem;
   color: var(--color-text-white);
   letter-spacing: 1px;
+  text-transform: none;
 }
 
+/* Quiz description */
 .quiz-description {
   font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
@@ -729,6 +894,7 @@ onUnmounted(stopTimer)
   flex-grow: 1;
 }
 
+/* Quiz footer */
 .quiz-footer {
   display: flex;
   align-items: center;
@@ -737,42 +903,64 @@ onUnmounted(stopTimer)
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* Quiz footer count */
 .question-count {
-  font-family: var(--font-body), sans-serif;
-  font-size: 0.85rem;
+  font-family: var(--font-display), serif;
   color: var(--color-text-main);
 }
 
+/* Start button */
 .btn-start {
   font-family: var(--font-display), serif;
-  font-size: 16px;
+  font-size: 14px;
   letter-spacing: 1px;
   padding: 0.5rem 1.1rem;
-  border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
+  border-radius: 20px;
+  color: var(--color-text-main);
   font-weight: 500;
-  border: 1px solid var(--color-button-border);
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
+/* Start button hover */
 .btn-start:hover {
-  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 /* Unified top runner bar: back button, title, timer, progress + numbers tied together */
 .runner-bar {
-  background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
   padding: 1.1rem 1.4rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .runner-header-top {
@@ -796,12 +984,13 @@ onUnmounted(stopTimer)
   color: var(--color-text-white);
   margin: 0;
   letter-spacing: 2px;
+  text-transform: none;
 }
 
 .runner-stats {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
@@ -809,7 +998,7 @@ onUnmounted(stopTimer)
   font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--color-button);
+  color: var(--color-text-main);
   background: rgba(227, 221, 196, 0.15);
   border: 1px solid rgba(227, 221, 196, 0.35);
   padding: 0.25rem 0.75rem;
@@ -817,6 +1006,7 @@ onUnmounted(stopTimer)
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  margin-left: 130px;
 }
 
 .timer-display strong {
@@ -827,16 +1017,17 @@ onUnmounted(stopTimer)
 .progress-display {
   font-family: var(--font-body), sans-serif;
   font-size: 0.92rem;
-  color: var(--color-light-accenturate);
+  color: var(--color-text-main);
 }
 
 .progress-display strong {
-  color: var(--color-text-white);
+  color: var(--color-text-main);
 }
 
+/* Button back */
 .btn-back {
   font-family: var(--font-display), serif;
-  font-size: 16px;
+  font-size: 14px;
   letter-spacing: 1px;
   color: var(--color-text-main);
   background: rgba(255, 255, 255, 0.08);
@@ -847,10 +1038,10 @@ onUnmounted(stopTimer)
   transition: all 0.15s ease;
 }
 
+/* Button back hover */
 .btn-back:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-white);
-  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 /* Navigation dots row tied to the top bar */
@@ -880,16 +1071,14 @@ onUnmounted(stopTimer)
 }
 
 .dot-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--color-text-white);
-  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 .dot-btn.current {
-  border-color: var(--color-button-border);
-  background: var(--color-button);
-  color: var(--color-button-text);
   font-weight: 600;
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--color-dark-accenturate);
 }
 
 .dot-btn.answered:not(.current):not(.correct):not(.wrong) {
@@ -926,17 +1115,26 @@ onUnmounted(stopTimer)
   letter-spacing: 1px;
   padding: 0.65rem 1.4rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   color: var(--color-text-main);
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .summary-exit-bar .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-white);
-  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
 }
 
 .error-actions {
