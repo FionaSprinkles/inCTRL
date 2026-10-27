@@ -81,7 +81,7 @@ function setPage(next) {
   cursor: pointer;
   border-radius: 40px;
 
-  /* Samma glas som dina andra knappar */
+  /* Glassmorphism */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
