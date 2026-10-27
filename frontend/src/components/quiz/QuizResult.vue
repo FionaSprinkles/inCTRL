@@ -110,10 +110,12 @@ const timeLabel = computed(() => (props.seconds === 1 ? '1 second' : `${props.se
 .sheet {
   margin: 0 0 1.5rem;
   text-align: left;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(18, 86, 98, 0.52);
   backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
 .row {

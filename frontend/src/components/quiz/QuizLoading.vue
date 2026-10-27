@@ -49,10 +49,11 @@ defineProps({
   max-width: 580px;
   padding: 2.5rem 2rem;
   text-align: center;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  background: rgba(18, 86, 98, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 

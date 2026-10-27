@@ -369,24 +369,38 @@ onUnmounted(stopTimer)
     <div v-else class="quiz-runner-view">
       <header v-if="!isCompleted || isReviewMode" class="runner-bar">
         <div class="runner-header-top">
-          <button v-if="isReviewMode" type="button" class="btn-back" @click="returnToSummary">
-            ← Back to Summary
-          </button>
-          <button v-else type="button" class="btn-back" @click="exitQuiz">← Back to Quizzes</button>
-          <div class="runner-info">
-            <h2>{{ activeQuiz.title }}</h2>
-            <div class="runner-stats">
-              <span class="timer-display" title="Quiz Timer">
-                ⏱️ <strong>{{ formattedTimer }}</strong>
-              </span>
-              <span class="progress-display">
-                Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
-              </span>
-            </div>
+          <div class="runner-left">
+            <button
+              v-if="isReviewMode"
+              type="button"
+              class="btn-back"
+              @click="returnToSummary"
+            >
+              ← Back to Summary
+            </button>
+            <button
+              v-else
+              type="button"
+              class="btn-back"
+              @click="exitQuiz"
+            >
+              ← Back to Quizzes
+            </button>
+          </div>
+
+          <h2 class="runner-title">{{ activeQuiz.title }}</h2>
+
+          <div class="runner-stats">
+            <span class="timer-display" title="Quiz Timer">
+              ⏱️ <strong>{{ formattedTimer }}</strong>
+            </span>
+            <span class="progress-display">
+              Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
+            </span>
           </div>
         </div>
 
-        <!-- Question jump numbers tied directly into the top bar -->
+        <!-- Question jump numbers centered with the nav bar so they stay stationary -->
         <nav
           v-if="quizQuestions.length > 1"
           class="question-dots-nav"
@@ -478,6 +492,7 @@ onUnmounted(stopTimer)
 <style scoped>
 /* Page layout */
 .quiz-page {
+  width: 100%;
   max-width: 960px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
@@ -537,7 +552,7 @@ onUnmounted(stopTimer)
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
   flex: 1;
   min-width: 180px;
 }
@@ -547,8 +562,8 @@ onUnmounted(stopTimer)
   font-family: var(--font-display), serif;
   font-size: 16px;
   font-weight: 500;
-  letter-spacing: 1px;
-  color: var(--color-text-main);
+  letter-spacing: 1.5px;
+  color: var(--color-text-heading);
 }
 
 /* Filters button style */
@@ -743,8 +758,8 @@ onUnmounted(stopTimer)
 /* Error */
 .error-box {
   border-color: #ef4444;
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.45);
 }
 
 .error-icon {
@@ -763,7 +778,7 @@ onUnmounted(stopTimer)
   font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
-  padding: 0.55rem 1.1rem;
+  padding: 0.55rem 1.15rem;
   border-radius: 10px;
   color: var(--color-text-white);
   cursor: pointer;
@@ -810,7 +825,7 @@ onUnmounted(stopTimer)
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.35rem;
+  padding: 1.4rem;
   border-radius: 20px;
 
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
@@ -832,6 +847,7 @@ onUnmounted(stopTimer)
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
   transition: all 0.3s ease;
   transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24);
 }
 
 /* Quiz tags layout */
@@ -849,30 +865,31 @@ onUnmounted(stopTimer)
   padding: 0.2rem 0.55rem;
   border-radius: 6px;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .category-badge {
-  background: rgba(133, 180, 190, 0.25);
-  color: #c7e6ee;
-  border: 1px solid rgba(133, 180, 190, 0.4);
+  background: rgba(133, 180, 190, 0.28);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(133, 180, 190, 0.45);
 }
 
 .diff-badge.beginner {
-  background: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.28);
   color: #a7f3d0;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.45);
 }
 
 .diff-badge.intermediate {
-  background: rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.28);
   color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.45);
 }
 
 .diff-badge.advanced {
-  background: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.28);
   color: #fecaca;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.45);
 }
 
 /* Quiz title */
@@ -899,8 +916,8 @@ onUnmounted(stopTimer)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Quiz footer count */
@@ -940,10 +957,10 @@ onUnmounted(stopTimer)
   transition: all 0.3s ease;
 }
 
-/* Unified top runner bar: back button, title, timer, progress + numbers tied together */
+/* Unified top runner bar: stationary width & centered page numbers aligned with NavBar */
 .runner-bar {
   border-radius: 20px;
-  padding: 1.1rem 1.4rem;
+  padding: 1.1rem 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -964,18 +981,16 @@ onUnmounted(stopTimer)
 }
 
 .runner-header-top {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
-  flex-wrap: wrap;
 }
 
-.runner-info {
+.runner-left {
   display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .runner-info h2 {
@@ -992,6 +1007,18 @@ onUnmounted(stopTimer)
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .runner-header-top {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .runner-left,
+  .runner-stats {
+    justify-content: center;
+  }
 }
 
 .timer-display {
@@ -1030,12 +1057,13 @@ onUnmounted(stopTimer)
   font-size: 14px;
   letter-spacing: 1px;
   color: var(--color-text-main);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   padding: 0.45rem 1rem;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 /* Button back hover */
@@ -1044,30 +1072,34 @@ onUnmounted(stopTimer)
   transition: all 0.3s ease;
 }
 
-/* Navigation dots row tied to the top bar */
+/* Navigation page numbers centered with the NavBar and stationary */
 .question-dots-nav {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  width: 100%;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .dot-btn {
-  min-width: 32px;
-  height: 32px;
+  min-width: 34px;
+  height: 34px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(15, 76, 92, 0.45);
   color: var(--color-text-main);
   font-family: var(--font-display), serif;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .dot-btn:hover {
@@ -1101,6 +1133,12 @@ onUnmounted(stopTimer)
 
 .question-container {
   width: 100%;
+  box-sizing: border-box;
+}
+
+.summary-wrapper {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .summary-exit-bar {

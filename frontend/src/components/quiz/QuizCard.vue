@@ -230,12 +230,14 @@ function handleNext() {
 
 <style scoped>
 .quiz-card {
-  background: rgba(255, 255, 255, 0.09);
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(18, 86, 98, 0.52);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
-  padding: 26px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -275,27 +277,27 @@ function handleNext() {
 }
 
 .category-badge {
-  background: rgba(133, 180, 190, 0.25);
-  color: #c7e6ee;
-  border: 1px solid rgba(133, 180, 190, 0.4);
+  background: rgba(133, 180, 190, 0.28);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(133, 180, 190, 0.45);
 }
 
 .difficulty-badge.beginner {
-  background: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.28);
   color: #a7f3d0;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.45);
 }
 
 .difficulty-badge.intermediate {
-  background: rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.28);
   color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.45);
 }
 
 .difficulty-badge.advanced {
-  background: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.28);
   color: #fecaca;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.45);
 }
 
 .progress-pill {
@@ -319,7 +321,7 @@ function handleNext() {
 }
 
 .hint-container {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
 }
 
 .hint-toggle-btn {
@@ -329,7 +331,7 @@ function handleNext() {
   padding: 5px 12px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   letter-spacing: 0.5px;
   transition: all 0.2s;
   color: var(--color-text-main);
@@ -356,11 +358,11 @@ function handleNext() {
 }
 
 .interactive-area {
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .feedback-box {
-  padding: 16px;
+  padding: 16px 18px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -380,15 +382,15 @@ function handleNext() {
 }
 
 .box-success {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.22);
   border: 1.5px solid #10b981;
-  color: #a7f3d0;
+  color: #d1fae5;
 }
 
 .box-danger {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.22);
   border: 1.5px solid #ef4444;
-  color: #fecaca;
+  color: #fee2e2;
 }
 
 .feedback-header {
@@ -405,9 +407,14 @@ function handleNext() {
   font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--color-text-main);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-text-heading);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: 8px;
+}
+
+.explanation-body p {
+  margin: 4px 0 0;
+  color: var(--color-text-main);
 }
 
 .card-actions {
@@ -416,7 +423,7 @@ function handleNext() {
   align-items: center;
   gap: 12px;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .right-actions {
@@ -454,12 +461,12 @@ function handleNext() {
   font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
-  font-weight: 450;
+  font-weight: 500;
   padding: 9px 20px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--color-text-main);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .btn-secondary:hover {
