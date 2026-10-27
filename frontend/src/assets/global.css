@@ -5,7 +5,7 @@
 :root {
     /* Colors */
     --bg-gradient:
-        /* Ljusa glöd-partier, dämpade */
+        /* Background with light parts */
             radial-gradient(ellipse 22% 55% at 18% 70%, rgba(120, 25, 110, 0.38) 0%, transparent 100%),
             radial-gradient(ellipse 18% 48% at 40% 30%, rgba(106, 40, 150, 0.36) 0%, transparent 100%),
             radial-gradient(ellipse 24% 58% at 66% 72%, rgba(26, 166, 189, 0.3) 0%, transparent 100%),
