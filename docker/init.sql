@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS quizzes (
     description TEXT,
     category_id INT NULL,
     difficulty ENUM('Beginner', 'Intermediate', 'Advanced') DEFAULT 'Beginner',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
