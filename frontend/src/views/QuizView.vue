@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   fetchQuizzes,
@@ -8,7 +8,7 @@ import {
   filterQuizzes,
   submitQuizAttempt,
 } from '@/services/quizService'
-import { validateAnswer } from '@/services/quizValidator'
+import { validateAnswer, isAnswerProvided } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 import QuizLoading from '@/components/quiz/QuizLoading.vue'
@@ -28,11 +28,42 @@ const activeQuiz = ref(null)
 const quizQuestions = ref([])
 const loadingQuestions = ref(false)
 const quizError = ref('')
+const submitError = ref('')
 const currentIndex = ref(0)
 const userAnswers = ref({})
 const evalResults = ref({})
 const isCompleted = ref(false)
 const isSubmitted = ref(false)
+
+const elapsedSeconds = ref(0)
+const startedAt = ref(null)
+let timerInterval = null
+const isReviewMode = ref(false)
+
+function startTimer() {
+  stopTimer()
+  startedAt.value = Date.now()
+  elapsedSeconds.value = 0
+  timerInterval = setInterval(() => {
+    if (startedAt.value) {
+      elapsedSeconds.value = Math.floor((Date.now() - startedAt.value) / 1000)
+    }
+  }, 1000)
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+
+const formattedTimer = computed(() => {
+  const total = elapsedSeconds.value
+  const mins = Math.floor(total / 60)
+  const secs = total % 60
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+})
 
 const filteredQuizzes = computed(() => {
   return filterQuizzes(quizzes.value, {
@@ -83,22 +114,28 @@ function resetFilters() {
 }
 
 let quizRequestId = 0
+let attemptId = 0
 
 async function startQuiz(quiz) {
   if (!quiz || !quiz.id) {
     quizError.value = 'Invalid quiz selected.'
     return
   }
+  attemptId++
   const requestId = ++quizRequestId
   activeQuiz.value = quiz
   loadingQuestions.value = true
   quizError.value = ''
+  submitError.value = ''
   quizQuestions.value = []
   currentIndex.value = 0
   userAnswers.value = {}
   evalResults.value = {}
   isCompleted.value = false
   isSubmitted.value = false
+  isReviewMode.value = false
+  stopTimer()
+  elapsedSeconds.value = 0
 
   try {
     const data = await fetchQuizById(quiz.id)
@@ -108,6 +145,7 @@ async function startQuiz(quiz) {
       activeQuiz.value.title = data.title
     }
     quizQuestions.value = data.questions
+    startTimer()
   } catch (err) {
     if (requestId !== quizRequestId) return
     quizError.value = err.message || 'Could not load quiz questions.'
@@ -119,10 +157,15 @@ async function startQuiz(quiz) {
 }
 
 function exitQuiz() {
+  attemptId++
   quizRequestId++
+  stopTimer()
+  isReviewMode.value = false
+  elapsedSeconds.value = 0
   activeQuiz.value = null
   quizQuestions.value = []
   quizError.value = ''
+  submitError.value = ''
   isCompleted.value = false
   isSubmitted.value = false
 }
@@ -137,12 +180,7 @@ function handleAnswerUpdate({ questionId, userAnswer }) {
 }
 
 function isQuestionAnswered(questionId) {
-  const ans = userAnswers.value[questionId]
-  if (ans === null || ans === undefined) return false
-  if (typeof ans === 'string') return ans.trim().length > 0
-  if (Array.isArray(ans)) return ans.length > 0
-  if (typeof ans === 'object') return Object.keys(ans).length > 0
-  return true
+  return isAnswerProvided(userAnswers.value[questionId])
 }
 
 function handleRetry({ questionId }) {
@@ -151,28 +189,78 @@ function handleRetry({ questionId }) {
   evalResults.value = next
 }
 
-async function nextQuestion() {
+function nextQuestion() {
   if (currentIndex.value < quizQuestions.value.length - 1) {
     currentIndex.value++
+  } else if (isReviewMode.value) {
+    returnToSummary()
   } else if (!isCompleted.value) {
-    isCompleted.value = true
-    quizQuestions.value.forEach((q) => {
-      if (!evalResults.value[q.id]) {
-        evalResults.value[q.id] = validateAnswer(q, userAnswers.value[q.id] ?? null)
-      }
-    })
-    if (!isSubmitted.value) {
+    finishQuiz()
+  }
+}
+
+function getFinalAnswers() {
+  const finalAnswers = {}
+  quizQuestions.value.forEach((q) => {
+    finalAnswers[q.id] = isQuestionAnswered(q.id)
+      ? userAnswers.value[q.id]
+      : null
+  })
+  return finalAnswers
+}
+
+async function finishQuiz() {
+  const myAttempt = attemptId
+  stopTimer()
+  if (startedAt.value) {
+    elapsedSeconds.value = Math.max(0, Math.floor((Date.now() - startedAt.value) / 1000))
+  }
+  isCompleted.value = true
+  isReviewMode.value = false
+
+  const finalAnswers = getFinalAnswers()
+
+  const results = {}
+  quizQuestions.value.forEach((q) => {
+    results[q.id] = validateAnswer(q, finalAnswers[q.id])
+  })
+  evalResults.value = results
+
+  if (!isSubmitted.value) {
+    try {
+      await submitQuizAttempt({
+        quizId: activeQuiz.value?.id,
+        answers: finalAnswers,
+        formatFilter: 'all',
+        timeSpentSeconds: elapsedSeconds.value,
+      })
+      if (myAttempt !== attemptId) return
       isSubmitted.value = true
-      try {
-        await submitQuizAttempt({
-          quizId: activeQuiz.value?.id,
-          answers: userAnswers.value,
-          formatFilter: 'all',
-        })
-      } catch (err) {
-        quizError.value = err.message || 'Could not submit quiz attempt.'
-      }
+      submitError.value = ''
+    } catch (err) {
+      if (myAttempt !== attemptId) return
+      submitError.value = err.message || 'Could not submit quiz attempt.'
     }
+  }
+}
+
+async function retrySubmit() {
+  if (isSubmitted.value) return
+  const myAttempt = attemptId
+  submitError.value = ''
+  const finalAnswers = getFinalAnswers()
+  try {
+    await submitQuizAttempt({
+      quizId: activeQuiz.value?.id,
+      answers: finalAnswers,
+      formatFilter: 'all',
+      timeSpentSeconds: elapsedSeconds.value,
+    })
+    if (myAttempt !== attemptId) return
+    isSubmitted.value = true
+  } catch (err) {
+    if (myAttempt !== attemptId) return
+    submitError.value = err.message || 'Could not submit quiz attempt.'
   }
 }
 
@@ -181,20 +269,31 @@ function previousQuestion() {
 }
 
 function restartQuiz() {
+  attemptId++
   userAnswers.value = {}
   evalResults.value = {}
   currentIndex.value = 0
   isCompleted.value = false
   isSubmitted.value = false
+  isReviewMode.value = false
   quizError.value = ''
+  submitError.value = ''
+  startTimer()
 }
 
 function reviewQuestion(index) {
   currentIndex.value = index
+  isReviewMode.value = true
   isCompleted.value = false
 }
 
+function returnToSummary() {
+  isReviewMode.value = false
+  isCompleted.value = true
+}
+
 onMounted(loadData)
+onUnmounted(stopTimer)
 </script>
 
 <template>
@@ -270,15 +369,63 @@ onMounted(loadData)
 
     <!-- View 2: Active Quiz Runner -->
     <div v-else class="quiz-runner-view">
-      <div class="runner-header">
-        <button type="button" class="btn-back" @click="exitQuiz">← Back to Quizzes</button>
-        <div class="runner-info">
-          <h2>{{ activeQuiz.title }}</h2>
-          <span class="score-display"
-            >Score: <strong>{{ totalScore }}</strong> / {{ answeredCount }}</span
-          >
+      <header v-if="!isCompleted || isReviewMode" class="runner-bar">
+        <div class="runner-header-top">
+          <div class="runner-left">
+            <button
+              v-if="isReviewMode"
+              type="button"
+              class="btn-back"
+              @click="returnToSummary"
+            >
+              ← Back to Summary
+            </button>
+            <button
+              v-else
+              type="button"
+              class="btn-back"
+              @click="exitQuiz"
+            >
+              ← Back to Quizzes
+            </button>
+          </div>
+
+          <h2 class="runner-title">{{ activeQuiz.title }}</h2>
+
+          <div class="runner-stats">
+            <span class="timer-display" title="Quiz Timer">
+              ⏱️ <strong>{{ formattedTimer }}</strong>
+            </span>
+            <span class="progress-display">
+              Answered: <strong>{{ answeredCount }}</strong> / {{ quizQuestions.length }}
+            </span>
+          </div>
         </div>
-      </div>
+
+        <!-- Question jump numbers centered with the nav bar so they stay stationary -->
+        <nav
+          v-if="quizQuestions.length > 1"
+          class="question-dots-nav"
+          aria-label="Question navigation"
+        >
+          <button
+            v-for="(q, idx) in quizQuestions"
+            :key="q.id"
+            type="button"
+            class="dot-btn"
+            :class="{
+              current: idx === currentIndex,
+              answered: isQuestionAnswered(q.id),
+              correct: isReviewMode && evalResults[q.id]?.isCorrect,
+              wrong: isReviewMode && evalResults[q.id] && !evalResults[q.id].isCorrect,
+            }"
+            :title="`Question ${idx + 1}`"
+            @click="currentIndex = idx"
+          >
+            {{ idx + 1 }}
+          </button>
+        </nav>
+      </header>
 
       <QuizLoading
         v-if="loadingQuestions"
@@ -286,7 +433,7 @@ onMounted(loadData)
         message="Fetching quiz questions from backend..."
       />
 
-      <div v-else-if="quizError && !isCompleted" class="status-box error-box" role="alert">
+      <div v-else-if="quizError && !isCompleted && !isReviewMode" class="status-box error-box" role="alert">
         <div class="error-icon" aria-hidden="true">⚠️</div>
 
         <p class="error-message">{{ quizError }}</p>
@@ -296,33 +443,12 @@ onMounted(loadData)
         </div>
       </div>
 
-      <template v-else-if="!isCompleted && currentQuestion">
-        <div v-if="quizQuestions.length > 1" class="question-dots">
-          <button
-            v-for="(q, idx) in quizQuestions"
-            :key="q.id"
-            type="button"
-            class="dot-btn"
-            :class="{
-              current: idx === currentIndex,
-              answered: isQuestionAnswered(q.id),
-              correct: isQuestionAnswered(q.id) && evalResults[q.id]?.isCorrect,
-              wrong: isQuestionAnswered(q.id) && evalResults[q.id] && !evalResults[q.id].isCorrect,
-            }"
-            :title="`Question ${idx + 1}`"
-            @click="currentIndex = idx"
-          >
-            {{ idx + 1 }}
-          </button>
-        </div>
-
+      <template v-else-if="(!isCompleted || isReviewMode) && currentQuestion">
         <main class="question-container">
           <QuizCard
             :question="currentQuestion"
             :saved-answer="userAnswers[currentQuestion.id]"
-            :saved-result="
-              isQuestionAnswered(currentQuestion.id) ? evalResults[currentQuestion.id] : null
-            "
+            :saved-result="isReviewMode ? evalResults[currentQuestion.id] : null"
             :question-number="currentIndex + 1"
             :total-questions="quizQuestions.length"
             @answered="handleAnswered"
@@ -335,15 +461,19 @@ onMounted(loadData)
       </template>
 
       <div v-else-if="isCompleted" class="summary-wrapper">
-        <div v-if="quizError" class="status-box error-box summary-error" role="alert">
+        <div v-if="submitError" class="status-box error-box summary-error" role="alert">
           <div class="error-icon" aria-hidden="true">⚠️</div>
 
-          <p class="error-message">{{ quizError }}</p>
+          <p class="error-message">{{ submitError }}</p>
+          <div class="error-actions">
+            <button type="button" class="btn-retry" @click="retrySubmit">Retry Submission</button>
+          </div>
         </div>
         <QuizSummary
           :questions="quizQuestions"
           :answers="userAnswers"
           :results="evalResults"
+          :time-spent-seconds="elapsedSeconds"
           @restart="restartQuiz"
           @review-question="reviewQuestion"
         />
@@ -359,252 +489,517 @@ onMounted(loadData)
 
 <style scoped>
 .quiz-page {
+  width: 100%;
   max-width: 960px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
+  box-sizing: border-box;
+  font-family: var(--font-body);
 }
+
+.quiz-selection-view,
+.quiz-runner-view {
+  width: 100%;
+}
+
 .quiz-page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
-.subtitle {
-  color: var(--color-text-muted, #85b4be);
-  margin-top: -0.5rem;
+
+.quiz-page-header h1 {
+  font-family: var(--font-heading);
+  font-size: 38px;
+  font-weight: 370;
+  color: var(--color-text-heading);
+  margin-top: 10px;
+  margin-bottom: 8px;
 }
+
+.subtitle {
+  font-family: var(--font-body);
+  color: var(--color-text-main);
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  margin-top: 0;
+}
+
 .filters-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 1rem;
+  gap: 1.25rem;
   margin-bottom: 2rem;
-  padding: 1rem 1.25rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  background: rgba(18, 86, 98, 0.5);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
+
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.45rem;
   flex: 1;
   min-width: 180px;
 }
+
 .filter-group label {
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 17px;
   font-weight: 500;
-  color: var(--color-text-main, #e6d5b8);
+  letter-spacing: 1.5px;
+  color: var(--color-text-heading);
 }
+
 .filter-select {
-  padding: 0.6rem 0.85rem;
-  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(20, 30, 40, 0.7);
-  color: #fff;
+  background: var(--color-dark-teal);
+  color: var(--color-text-heading);
   font-size: 0.95rem;
   outline: none;
+  font-family: var(--font-body);
+  transition: border-color 0.2s ease;
 }
-.btn-reset,
-.btn-clear,
-.btn-back,
-.btn-secondary,
-.btn-retry {
-  padding: 0.5rem 0.9rem;
-  border-radius: 8px;
+
+.filter-select:focus {
+  border-color: var(--color-button);
+}
+
+.filter-select option {
+  background: var(--color-dark-teal);
+  color: var(--color-text-heading);
+}
+
+.btn-reset {
+  font-family: var(--font-display);
+  color: var(--color-text-main);
+  font-size: 16px;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 0.6rem 1.15rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  background: transparent;
-  color: var(--color-text-main, #e6d5b8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
 }
-.btn-reset,
-.btn-clear {
-  color: #85b4be;
-  border-color: #85b4be;
-  align-self: flex-end;
+
+.btn-reset:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
 }
-.btn-retry {
-  background: #ef4444;
-  color: #fff;
-  border: none;
-}
+
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  margin: 1.5rem 0;
+  background: rgba(18, 86, 98, 0.5);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
-.no-quizzes-message {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-heading, #fdfbf7);
+
+.empty-box .no-quizzes-message {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--color-text-heading);
   margin-bottom: 0.5rem;
 }
+
 .empty-hint {
-  color: var(--color-text-muted, #85b4be);
+  font-family: var(--font-body);
+  color: var(--color-text-main);
   margin-bottom: 1.25rem;
 }
+
+.btn-clear {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  background: var(--color-button-hover);
+}
+
 .error-box {
   border-color: #ef4444;
-  color: #fca5a5;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.45);
 }
+
 .error-icon {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
+
 .error-message {
+  font-family: var(--font-body);
   font-size: 1rem;
-  color: #fca5a5;
+  color: #fecaca;
   margin-bottom: 1rem;
 }
+
+.btn-retry {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.55rem 1.15rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .summary-error {
   margin-bottom: 1.5rem;
   padding: 1rem 1.25rem;
 }
+
 .quiz-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1.25rem;
 }
+
 .quiz-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.25rem;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(8px);
+  padding: 1.4rem;
+  border-radius: 20px;
+  background: rgba(18, 86, 98, 0.52);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+.quiz-card:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24);
+}
+
 .quiz-tags {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
   flex-wrap: wrap;
 }
+
 .badge {
-  font-size: 0.75rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 6px;
-  font-weight: 500;
-}
-.category-badge {
-  background: rgba(133, 180, 190, 0.25);
-  color: #c7e6ee;
-}
-.diff-badge.beginner {
-  background: rgba(16, 185, 129, 0.25);
-  color: #a7f3d0;
-}
-.diff-badge.intermediate {
-  background: rgba(245, 158, 11, 0.25);
-  color: #fde68a;
-}
-.diff-badge.advanced {
-  background: rgba(239, 68, 68, 0.25);
-  color: #fecaca;
-}
-.quiz-title {
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 8px;
   font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.category-badge {
+  background: rgba(133, 180, 190, 0.28);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(133, 180, 190, 0.45);
+}
+
+.diff-badge.beginner {
+  background: rgba(16, 185, 129, 0.28);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.diff-badge.intermediate {
+  background: rgba(245, 158, 11, 0.28);
+  color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.diff-badge.advanced {
+  background: rgba(239, 68, 68, 0.28);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+}
+
+.quiz-title {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 450;
   margin: 0 0 0.5rem;
-  color: var(--color-text-heading, #fdfbf7);
-  letter-spacing: normal;
+  color: var(--color-text-heading);
+  letter-spacing: 0.5px;
   text-transform: none;
 }
+
 .quiz-description {
-  font-size: 0.9rem;
-  color: var(--color-text-main, #e6d5b8);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
   margin-bottom: 1.25rem;
   flex-grow: 1;
 }
+
 .quiz-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
+
 .question-count {
-  font-size: 0.85rem;
-  color: var(--color-text-muted, #85b4be);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text-main);
 }
+
 .btn-start {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: var(--color-button, #e3ddc4);
-  color: var(--color-button-text, #422f23);
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.5rem 1.15rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
   font-weight: 600;
-  border: none;
+  border: 1px solid var(--color-button-border);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.runner-header {
+
+.btn-start:hover {
+  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+}
+
+/* Unified top runner bar: stationary width & centered page numbers aligned with NavBar */
+.runner-bar {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(18, 86, 98, 0.52);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 1.1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.runner-header-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.runner-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  justify-content: flex-start;
 }
-.runner-info {
+
+.runner-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 400;
+  color: var(--color-text-heading);
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  text-align: center;
+}
+
+.runner-stats {
   display: flex;
-  align-items: baseline;
-  gap: 1rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.85rem;
   flex-wrap: wrap;
 }
-.runner-info h2 {
-  font-size: 1.2rem;
-  margin: 0;
-  letter-spacing: 1px;
+
+@media (max-width: 720px) {
+  .runner-header-top {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .runner-left,
+  .runner-stats {
+    justify-content: center;
+  }
 }
-.score-display {
-  font-size: 0.9rem;
-  color: #c7e6ee;
+
+.timer-display {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-button);
+  background: rgba(227, 221, 196, 0.15);
+  border: 1px solid rgba(227, 221, 196, 0.35);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
-.question-dots {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 1.25rem;
-  overflow-x: auto;
-  padding: 4px 0;
-}
-.dot-btn {
-  min-width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-text-main, #e6d5b8);
-  font-size: 0.8rem;
+
+.timer-display strong {
   font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+.progress-display {
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+  color: var(--color-text-main);
+}
+
+.progress-display strong {
+  color: var(--color-text-heading);
+}
+
+.btn-back {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 0.45rem 1rem;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* Navigation page numbers centered with the NavBar and stationary */
+.question-dots-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.dot-btn {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(15, 76, 92, 0.45);
+  color: var(--color-text-main);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.dot-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
 .dot-btn.current {
-  border-color: #3b82f6;
-  background: #3b82f6;
-  color: #fff;
+  border-color: var(--color-button-border);
+  background: var(--color-button);
+  color: var(--color-button-text);
+  font-weight: 700;
 }
-.dot-btn.answered:not(.correct):not(.wrong) {
-  border-color: #60a5fa;
-  background: rgba(59, 130, 246, 0.25);
-  color: #bfdbfe;
+
+.dot-btn.answered:not(.current):not(.correct):not(.wrong) {
+  border-color: rgba(227, 221, 196, 0.5);
+  background: rgba(227, 221, 196, 0.22);
+  color: var(--color-text-heading);
 }
+
 .dot-btn.correct {
   border-color: #10b981;
-  background: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.35);
   color: #a7f3d0;
 }
+
 .dot-btn.wrong {
   border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.35);
+  color: #fecaca;
 }
+
+.question-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.summary-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .summary-exit-bar {
-  margin-top: 1.25rem;
+  margin-top: 1.5rem;
   display: flex;
   justify-content: center;
 }
+
+.summary-exit-bar .btn-secondary {
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 1px;
+  padding: 0.65rem 1.4rem;
+  border-radius: 12px;
+  background: rgba(18, 86, 98, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summary-exit-bar .btn-secondary:hover {
+  background: rgba(18, 86, 98, 0.75);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
 .error-actions {
   display: flex;
   gap: 0.75rem;

@@ -37,7 +37,9 @@ function appendKey(keyStr) {
   const current = props.modelValue ? props.modelValue.trim() : ''
   if (!current) {
     emit('update:modelValue', keyStr)
-  } else if (!current.endsWith('+') && !current.endsWith('+ ')) {
+  } else if (keyStr === '+') {
+    emit('update:modelValue', current.endsWith('+') ? `${current} ` : `${current} + `)
+  } else if (!current.endsWith('+')) {
     emit('update:modelValue', `${current} + ${keyStr}`)
   } else {
     emit('update:modelValue', `${current} ${keyStr}`)
@@ -116,33 +118,41 @@ function clearInput() {
 
 .text-input {
   width: 100%;
-  padding: 14px 18px;
+  box-sizing: border-box;
+  padding: 14px 44px 14px 18px;
   font-size: 1.15rem;
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 600;
   letter-spacing: 0.5px;
-  background: var(--color-background-soft, #f8fafc);
-  border: 2px solid var(--color-border, #cbd5e1);
-  border-radius: 8px;
-  color: inherit;
+  background: rgba(15, 76, 92, 0.55);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: var(--color-text-heading);
   transition: all 0.15s ease-in-out;
+}
+
+.text-input::placeholder {
+  color: rgba(242, 229, 208, 0.65);
+  font-weight: 400;
 }
 
 .text-input:focus {
   outline: none;
-  border-color: #2563eb;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: var(--color-button);
+  background: rgba(15, 76, 92, 0.78);
+  box-shadow: 0 0 0 3px rgba(227, 221, 196, 0.2);
 }
 
 .text-input.has-result-correct {
   border-color: #10b981;
-  background: #ecfdf5;
+  background: rgba(16, 185, 129, 0.25);
+  color: #d1fae5;
 }
 
 .text-input.has-result-wrong {
   border-color: #ef4444;
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.25);
+  color: #fee2e2;
 }
 
 .clear-btn {
@@ -150,55 +160,63 @@ function clearInput() {
   right: 12px;
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--color-text-main);
   cursor: pointer;
-  font-size: 1rem;
-  padding: 4px;
+  font-size: 1.05rem;
+  padding: 4px 6px;
+  transition: color 0.15s ease;
 }
+
 .clear-btn:hover {
-  color: #475569;
+  color: var(--color-text-heading);
 }
 
 .quick-helpers {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
   flex-wrap: wrap;
 }
 
 .helper-label {
-  font-size: 0.85rem;
-  color: #64748b;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  color: var(--color-text-main);
 }
 
 .key-pill {
-  padding: 4px 10px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
-  border-radius: 5px;
-  font-family: monospace;
+  padding: 5px 12px;
+  background: rgba(15, 76, 92, 0.65);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.1s;
+  transition: all 0.15s ease;
 }
 
 .key-pill:hover {
-  background: #e2e8f0;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border-color: var(--color-button-border);
 }
 
 .answer-review {
   margin-top: 12px;
+  font-family: var(--font-body);
   font-size: 0.95rem;
 }
 
 .text-success {
-  color: #059669;
+  color: #6ee7b7;
 }
 
 .text-danger {
-  color: #dc2626;
+  color: #fca5a5;
 }
 </style>

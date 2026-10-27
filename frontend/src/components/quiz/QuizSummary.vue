@@ -1,56 +1,97 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   questions: {
     type: Array,
-    required: true
+    required: true,
   },
   answers: {
     type: Object,
-    required: true
+    required: true,
   },
   results: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
+  timeSpentSeconds: {
+    type: Number,
+    default: 0,
+  },
 })
 
-const emit = defineEmits(['restart', 'review-question', 'filter-format'])
+defineEmits(['restart', 'review-question', 'filter-format'])
 
 const totalScore = computed(() => {
   return props.questions.reduce((sum, q) => {
     const res = props.results[q.id]
-    return sum + (res ? res.score : 0)
+    return sum + (res ? res.score || 0 : 0)
   }, 0)
 })
 
-const maxScore = computed(() => props.questions.length)
+const maxScore = computed(() => {
+  return props.questions.reduce((sum, q) => {
+    const max = props.results[q.id]?.maxScore
+    return sum + (typeof max === 'number' ? max : 1)
+  }, 0)
+})
+
+const correctCount = computed(() => {
+  return props.questions.filter((q) => props.results[q.id]?.isCorrect).length
+})
 
 const scorePercentage = computed(() => {
   if (maxScore.value === 0) return 0
   return Math.round((totalScore.value / maxScore.value) * 100)
 })
 
+const formattedDuration = computed(() => {
+  const seconds = props.timeSpentSeconds || 0
+  if (seconds <= 0) return '0s'
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  if (mins === 0) return `${secs}s`
+  return `${mins}m ${secs}s`
+})
+
 const performanceGrade = computed(() => {
   const p = scorePercentage.value
-  if (p === 100) return { title: 'Windows Keyboard Wizard! 🏆', desc: 'Flawless execution! You know Windows short commands like the back of your hand.', color: '#10b981' }
-  if (p >= 80) return { title: 'inCTRL Power User! ⚡', desc: 'Impressive muscle memory! You can navigate Windows without touching your mouse.', color: '#2563eb' }
-  if (p >= 50) return { title: 'Apprentice Shortcutter 🛠️', desc: 'Good foundation! Review the missed shortcuts to level up your workflow.', color: '#f59e0b' }
-  return { title: 'Keep Practicing! ⌨️', desc: 'Windows shortcuts take a bit of practice to become second nature. Try again!', color: '#ef4444' }
+  if (p === 100)
+    return {
+      title: 'Windows Keyboard Wizard! 🏆',
+      desc: 'Flawless execution! You know Windows short commands like the back of your hand.',
+      color: '#6ee7b7',
+    }
+  if (p >= 80)
+    return {
+      title: 'inCTRL Power User! ⚡',
+      desc: 'Impressive muscle memory! You can navigate Windows without touching your mouse.',
+      color: 'var(--color-text-heading)',
+    }
+  if (p >= 50)
+    return {
+      title: 'Apprentice Shortcutter 🛠️',
+      desc: 'Good foundation! Review the missed shortcuts to level up your workflow.',
+      color: '#fde68a',
+    }
+  return {
+    title: 'Keep Practicing! ⌨️',
+    desc: 'Windows shortcuts take a bit of practice to become second nature. Try again!',
+    color: '#fca5a5',
+  }
 })
 
 // Breakdown by format
 const formatBreakdown = computed(() => {
   const map = {}
-  props.questions.forEach(q => {
+  props.questions.forEach((q) => {
     if (!map[q.type]) {
       map[q.type] = { type: q.type, total: 0, scored: 0 }
     }
     map[q.type].total++
     const res = props.results[q.id]
     if (res) {
-      map[q.type].scored += res.score
+      map[q.type].scored += res.score || 0
     }
   })
   return Object.values(map)
@@ -65,7 +106,134 @@ const formatLabels = {
   ordering: 'Step Sequence',
   true_false: 'True or False',
   live_press: 'Live Keyboard Press',
-  odd_one_out: 'Spot The Imposter'
+  odd_one_out: 'Spot The Imposter',
+}
+
+// Track expanded state of breakdown cards (all expanded by default for full answer summary)
+const expandedMap = ref({})
+props.questions.forEach((q) => {
+  expandedMap.value[q.id] = true
+})
+
+const allExpanded = computed(() => {
+  return props.questions.every((q) => expandedMap.value[q.id])
+})
+
+function toggleAll() {
+  const next = !allExpanded.value
+  props.questions.forEach((q) => {
+    expandedMap.value[q.id] = next
+  })
+}
+
+function toggleCard(id) {
+  expandedMap.value[id] = !expandedMap.value[id]
+}
+
+function formatUserAnswer(question, answer) {
+  if (answer === null || answer === undefined || answer === '') {
+    return 'No answer given'
+  }
+  switch (question.type) {
+    case 'single_choice': {
+      const opt = question.options?.find((o) => o.id === answer)
+      return opt ? opt.label || opt.text : String(answer)
+    }
+    case 'multiple_choice': {
+      if (!Array.isArray(answer) || answer.length === 0) return 'No answer given'
+      const names = answer.map((id) => {
+        const opt = question.options?.find((o) => o.id === id)
+        return opt ? opt.label || opt.text : id
+      })
+      return names.join(', ')
+    }
+    case 'fill_blank': {
+      return String(answer).trim() || 'No answer given'
+    }
+    case 'key_builder': {
+      if (!Array.isArray(answer) || answer.length === 0) return 'No keys placed'
+      return answer.join(' + ')
+    }
+    case 'live_press': {
+      if (!Array.isArray(answer) || answer.length === 0) return 'No keys pressed'
+      return answer.join(' + ')
+    }
+    case 'true_false': {
+      if (typeof answer === 'boolean') return answer ? 'True' : 'False'
+      return String(answer)
+    }
+    case 'odd_one_out': {
+      const opt = question.options?.find((o) => o.id === answer)
+      return opt ? opt.text : String(answer)
+    }
+    case 'ordering': {
+      if (!Array.isArray(answer) || answer.length === 0) return 'No order chosen'
+      const itemsMap = (question.items || []).reduce((acc, item) => {
+        acc[item.id] = item.text
+        return acc
+      }, {})
+      return answer.map((id, i) => `${i + 1}. ${itemsMap[id] || id}`).join(' → ')
+    }
+    case 'matching': {
+      if (!answer || typeof answer !== 'object') return 'No pairs matched'
+      const pairs = question.pairs || []
+      const parts = []
+      pairs.forEach((pair) => {
+        const matchedRightId = answer[pair.id]
+        const matchedRight = pairs.find((p) => p.id === matchedRightId)
+        if (matchedRight) {
+          parts.push(`${pair.left} ➔ ${matchedRight.right}`)
+        }
+      })
+      return parts.length ? parts.join(' | ') : 'No matches made'
+    }
+    default:
+      return typeof answer === 'object' ? JSON.stringify(answer) : String(answer)
+  }
+}
+
+function formatCorrectAnswer(question) {
+  switch (question.type) {
+    case 'single_choice': {
+      const opt = question.options?.find((o) => o.isCorrect)
+      return opt ? opt.label || opt.text : ''
+    }
+    case 'multiple_choice': {
+      const opts = question.options?.filter((o) => o.isCorrect) || []
+      return opts.map((o) => o.label || o.text).join(', ')
+    }
+    case 'fill_blank': {
+      return question.canonicalAnswer || question.acceptedAnswers?.[0] || ''
+    }
+    case 'key_builder': {
+      const target = question.targetCombo || question.payload?.targetCombo || []
+      return target.join(' + ')
+    }
+    case 'live_press': {
+      return question.displayCombo || (question.targetKeys || []).join(' + ')
+    }
+    case 'true_false': {
+      return question.correctAnswer ? 'True' : 'False'
+    }
+    case 'odd_one_out': {
+      const opt = question.options?.find((o) => o.id === question.imposterId)
+      return `${opt?.text || 'Imposter'}${question.imposterReason ? ' — ' + question.imposterReason : ''}`
+    }
+    case 'ordering': {
+      const itemsMap = (question.items || []).reduce((acc, item) => {
+        acc[item.id] = item.text
+        return acc
+      }, {})
+      const order = question.correctOrder || []
+      return order.map((id, i) => `${i + 1}. ${itemsMap[id] || id}`).join(' → ')
+    }
+    case 'matching': {
+      const pairs = question.pairs || []
+      return pairs.map((p) => `${p.left} ➔ ${p.right}`).join(' | ')
+    }
+    default:
+      return ''
+  }
 }
 </script>
 
@@ -80,17 +248,32 @@ const formatLabels = {
         {{ performanceGrade.title }}
       </h2>
       <p class="grade-desc">{{ performanceGrade.desc }}</p>
+
+      <!-- Key Metrics Row (Time, Correct, Total Questions) -->
+      <div class="metrics-row">
+        <div class="metric-pill">
+          <span class="metric-icon">⏱️</span>
+          <span class="metric-label">Time Taken:</span>
+          <strong>{{ formattedDuration }}</strong>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-icon">🎯</span>
+          <span class="metric-label">Correct:</span>
+          <strong>{{ correctCount }} of {{ questions.length }}</strong>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-icon">🏆</span>
+          <span class="metric-label">Score:</span>
+          <strong>{{ totalScore }} / {{ maxScore }}</strong>
+        </div>
+      </div>
     </div>
 
     <!-- Format Breakdown Grid -->
     <div class="breakdown-section">
       <h3 class="section-title">Performance by Format</h3>
       <div class="breakdown-grid">
-        <div
-          v-for="item in formatBreakdown"
-          :key="item.type"
-          class="breakdown-card"
-        >
+        <div v-for="item in formatBreakdown" :key="item.type" class="breakdown-card">
           <div class="format-header">
             <span class="format-name">{{ formatLabels[item.type] || item.type }}</span>
             <span class="format-stat">{{ item.scored }} / {{ item.total }}</span>
@@ -98,37 +281,117 @@ const formatLabels = {
           <div class="progress-track">
             <div
               class="progress-fill"
-              :style="{ width: `${(item.scored / item.total) * 100}%` }"
+              :style="{ width: `${item.total > 0 ? (item.scored / item.total) * 100 : 0}%` }"
             ></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Question by Question Review -->
+    <!-- Question by Question Summary & Answer Review -->
     <div class="review-section">
-      <h3 class="section-title">Question Breakdown</h3>
+      <div class="review-header">
+        <h3 class="section-title">Answers Summary ({{ questions.length }} Questions)</h3>
+        <button type="button" class="btn-toggle-all" @click="toggleAll">
+          {{ allExpanded ? 'Collapse All' : 'Expand All' }}
+        </button>
+      </div>
+
       <div class="review-list">
-        <button
+        <article
           v-for="(q, idx) in questions"
           :key="q.id"
-          type="button"
-          class="review-item"
-          :class="results[q.id]?.isCorrect ? 'item-correct' : 'item-wrong'"
-          :aria-label="`Review question ${idx + 1}: ${q.prompt}`"
-          @click="$emit('review-question', idx)"
+          class="answer-card"
+          :class="{
+            'card-correct': results[q.id]?.isCorrect,
+            'card-wrong': !results[q.id]?.isCorrect && results[q.id]?.score === 0,
+            'card-partial': !results[q.id]?.isCorrect && (results[q.id]?.score || 0) > 0,
+          }"
         >
-          <div class="item-left">
-            <span class="q-num">#{{ idx + 1 }}</span>
-            <span class="item-prompt">{{ q.prompt }}</span>
+          <!-- Card Header / Summary Click Bar -->
+          <div
+            class="card-header"
+            role="button"
+            tabindex="0"
+            :aria-expanded="expandedMap[q.id]"
+            @click="toggleCard(q.id)"
+            @keydown.enter.space.prevent="toggleCard(q.id)"
+          >
+            <div class="header-left">
+              <span class="q-num">#{{ idx + 1 }}</span>
+              <span class="q-prompt">{{ q.prompt }}</span>
+            </div>
+            <div class="header-right">
+              <span class="q-type-badge">{{ formatLabels[q.type] || q.type }}</span>
+              <span
+                v-if="results[q.id]?.isCorrect"
+                class="status-badge status-correct"
+              >
+                ✓ Correct
+              </span>
+              <span
+                v-else-if="(results[q.id]?.score || 0) > 0"
+                class="status-badge status-partial"
+              >
+                ⚡ Partial ({{ results[q.id]?.score }})
+              </span>
+              <span
+                v-else
+                class="status-badge status-wrong"
+              >
+                ✕ Missed
+              </span>
+              <span class="chevron" aria-hidden="true">{{ expandedMap[q.id] ? '▲' : '▼' }}</span>
+            </div>
           </div>
-          <div class="item-right">
-            <span class="q-type-badge">{{ formatLabels[q.type] || q.type }}</span>
-            <span class="result-badge">
-              {{ results[q.id]?.isCorrect ? '✓ Correct' : '✕ Missed' }}
-            </span>
+
+          <!-- Card Body: Expanded Answer Summary -->
+          <div v-if="expandedMap[q.id]" class="card-body">
+            <div class="answer-comparison">
+              <!-- User's Answer -->
+              <div class="answer-pane user-pane">
+                <span class="pane-label">Your Answer:</span>
+                <div
+                  class="pane-value"
+                  :class="results[q.id]?.isCorrect ? 'val-correct' : 'val-wrong'"
+                >
+                  <span class="val-icon">{{ results[q.id]?.isCorrect ? '✓' : '✗' }}</span>
+                  <span class="val-text">{{ formatUserAnswer(q, answers[q.id]) }}</span>
+                </div>
+              </div>
+
+              <!-- Correct Answer (shown if incorrect/partial, or always for reference) -->
+              <div v-if="!results[q.id]?.isCorrect" class="answer-pane correct-pane">
+                <span class="pane-label">Correct Answer:</span>
+                <div class="pane-value val-target">
+                  <span class="val-icon">🎯</span>
+                  <span class="val-text">{{ formatCorrectAnswer(q) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feedback / Explanation Note -->
+            <div v-if="results[q.id]?.feedback || q.explanation" class="explanation-box">
+              <p v-if="results[q.id]?.feedback" class="feedback-text">
+                {{ results[q.id]?.feedback }}
+              </p>
+              <p v-if="q.explanation" class="explanation-text">
+                <strong>Explanation:</strong> {{ q.explanation }}
+              </p>
+            </div>
+
+            <!-- Jump to interactive review button -->
+            <div class="card-footer">
+              <button
+                type="button"
+                class="btn-inspect"
+                @click="$emit('review-question', idx)"
+              >
+                Inspect in Question View ↗
+              </button>
+            </div>
           </div>
-        </button>
+        </article>
       </div>
     </div>
 
@@ -143,14 +406,20 @@ const formatLabels = {
 
 <style scoped>
 .summary-container {
-  background: var(--color-background, #ffffff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 14px;
-  padding: 30px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(11, 56, 66, 0.88);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
 }
 
 .score-hero {
@@ -158,65 +427,108 @@ const formatLabels = {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  gap: 12px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .score-circle {
-  width: 120px;
-  height: 120px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
-  background: #eff6ff;
-  border: 4px solid #2563eb;
+  background: rgba(15, 76, 92, 0.65);
+  border: 3px solid var(--color-button);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #1e3a8a;
+  color: var(--color-text-heading);
+  box-shadow: 0 0 24px rgba(227, 221, 196, 0.2);
 }
 
 .score-number {
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: 2.3rem;
+  font-weight: 500;
   line-height: 1;
+  color: var(--color-text-heading);
 }
 
 .score-fraction {
-  font-size: 0.85rem;
-  color: #64748b;
-  margin-top: 4px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--color-text-main);
+  margin-top: 6px;
 }
 
 .grade-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 450;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  margin: 4px 0 0;
 }
 
 .grade-desc {
-  max-width: 500px;
-  font-size: 0.95rem;
-  color: #64748b;
+  max-width: 540px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.metrics-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.metric-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 76, 92, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--color-text-heading);
+}
+
+.metric-icon {
+  font-size: 1rem;
+}
+
+.metric-label {
+  color: var(--color-text-main);
 }
 
 .section-title {
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
   font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--color-heading, #1e293b);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--color-text-heading);
 }
 
 .breakdown-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: 12px;
+  margin-top: 14px;
 }
 
 .breakdown-card {
-  background: var(--color-background-soft, #f8fafc);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 8px;
-  padding: 10px 14px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -225,135 +537,311 @@ const formatLabels = {
 .format-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--color-text-heading);
+}
+
+.format-stat {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--color-text-main);
 }
 
 .progress-track {
   height: 6px;
-  background: #e2e8f0;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: #2563eb;
-  border-radius: 3px;
+  background: var(--color-button);
+  border-radius: 4px;
   transition: width 0.3s ease;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.btn-toggle-all {
+  font-family: var(--font-display);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-toggle-all:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .review-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 380px;
-  overflow-y: auto;
+  gap: 12px;
 }
 
-.review-item {
+.answer-card {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  background: rgba(15, 76, 92, 0.48);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.answer-card.card-correct {
+  border-left: 5px solid #10b981;
+}
+
+.answer-card.card-wrong {
+  border-left: 5px solid #ef4444;
+}
+
+.answer-card.card-partial {
+  border-left: 5px solid #f59e0b;
+}
+
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border, #e2e8f0);
+  padding: 14px 18px;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-  width: 100%;
-  background: var(--color-background, #ffffff);
-  text-align: left;
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
+  background: rgba(255, 255, 255, 0.05);
+  gap: 12px;
+  transition: background-color 0.15s ease;
 }
 
-.review-item:hover {
-  background: #f8fafc;
+.card-header:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.review-item:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-.item-correct {
-  border-left: 4px solid #10b981;
-}
-
-.item-wrong {
-  border-left: 4px solid #ef4444;
-}
-
-.item-left {
+.header-left {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
   flex: 1;
 }
 
 .q-num {
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.85rem;
-  color: #64748b;
+  font-size: 1rem;
+  color: var(--color-button);
+  min-width: 30px;
 }
 
-.item-prompt {
-  font-size: 0.92rem;
+.q-prompt {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 480px;
+  color: var(--color-text-heading);
 }
 
-.item-right {
+.header-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .q-type-badge {
-  font-size: 0.75rem;
-  background: #ede9fe;
-  color: #6d28d9;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: rgba(133, 180, 190, 0.25);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(133, 180, 190, 0.4);
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
-.result-badge {
+.status-badge {
+  font-family: var(--font-display);
   font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+.status-correct {
+  background: rgba(16, 185, 129, 0.25);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.status-wrong {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+}
+
+.status-partial {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.chevron {
+  font-size: 0.78rem;
+  color: var(--color-text-main);
+}
+
+.card-body {
+  padding: 16px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.answer-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.answer-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pane-label {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
+}
+
+.pane-value {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.val-icon {
   font-weight: 700;
 }
 
-.item-correct .result-badge {
-  color: #10b981;
+.val-correct {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #d1fae5;
 }
 
-.item-wrong .result-badge {
-  color: #ef4444;
+.val-wrong {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fee2e2;
+}
+
+.val-target {
+  background: rgba(227, 221, 196, 0.16);
+  border: 1px solid rgba(227, 221, 196, 0.45);
+  color: var(--color-text-heading);
+}
+
+.explanation-box {
+  background: rgba(0, 0, 0, 0.22);
+  border-left: 3px solid var(--color-button);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--color-text-main);
+  line-height: 1.5;
+}
+
+.feedback-text {
+  margin: 0 0 6px;
+  font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+.explanation-text {
+  margin: 0;
+  color: var(--color-text-main);
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-inspect {
+  font-family: var(--font-display);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--color-button);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.btn-inspect:hover {
+  background: rgba(227, 221, 196, 0.2);
+  color: var(--color-text-heading);
+  border-color: var(--color-button);
 }
 
 .summary-actions {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .btn-large {
-  padding: 12px 28px;
-  font-size: 1.05rem;
+  padding: 12px 30px;
+  font-size: 1.1rem;
 }
 
 .btn-primary {
-  background: #2563eb;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
+
 .btn-primary:hover {
-  background: #1d4ed8;
+  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
 }
 </style>

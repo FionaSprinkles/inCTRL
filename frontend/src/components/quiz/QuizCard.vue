@@ -9,7 +9,6 @@ import QuestionOrdering from './QuestionOrdering.vue'
 import QuestionTrueFalse from './QuestionTrueFalse.vue'
 import QuestionLivePress from './QuestionLivePress.vue'
 import QuestionOddOneOut from './QuestionOddOneOut.vue'
-import { validateAnswer } from '../../services/quizValidator'
 
 const props = defineProps({
   question: {
@@ -131,49 +130,16 @@ const hasAnswer = computed(() => {
 })
 
 /**
- * Validates the current question answer and emits answered event with evaluation result.
- */
-function checkAnswer() {
-  const result = validateAnswer(props.question, userAnswer.value)
-  evaluationResult.value = result
-  emit('answered', {
-    questionId: props.question.id,
-    userAnswer: userAnswer.value,
-    result
-  })
-}
-
-/**
- * Advances to the next question, saving and validating answer if not yet checked.
+ * Advances to the next question, saving the current answer if present.
  */
 function handleNext() {
-  if (!evaluationResult.value && hasAnswer.value) {
-    const result = validateAnswer(props.question, userAnswer.value)
-    evaluationResult.value = result
-    emit('answered', {
-      questionId: props.question.id,
-      userAnswer: userAnswer.value,
-      result
-    })
-  } else if (hasAnswer.value) {
+  if (hasAnswer.value) {
     emit('update:answer', {
       questionId: props.question.id,
       userAnswer: userAnswer.value
     })
   }
   emit('next')
-}
-
-/**
- * Resets local answer and evaluation state and emits retry event.
- */
-function retryQuestion() {
-  evaluationResult.value = null
-  if (props.question.type === 'ordering') {
-    isOrderingTouched.value = false
-  }
-  userAnswer.value = getInitialAnswer(props.question)
-  emit('retry', { questionId: props.question.id })
 }
 </script>
 
@@ -258,28 +224,8 @@ function retryQuestion() {
 
       <div class="right-actions">
         <button
-          v-if="evaluationResult && !evaluationResult.isCorrect"
-          type="button"
-          class="btn btn-outline"
-          @click="retryQuestion"
-        >
-          Try Again
-        </button>
-
-        <button
-          v-if="!evaluationResult"
-          type="button"
-          class="btn btn-outline"
-          :disabled="!hasAnswer"
-          @click="checkAnswer"
-        >
-          Check Answer
-        </button>
-
-        <button
           type="button"
           class="btn btn-primary"
-          :disabled="!evaluationResult && !hasAnswer"
           @click="handleNext"
         >
           {{ questionNumber < totalQuestions ? 'Next Question →' : 'See Results' }}
@@ -291,14 +237,21 @@ function retryQuestion() {
 
 <style scoped>
 .quiz-card {
-  background: var(--color-background, #ffffff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(18, 86, 98, 0.52);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  transition: border-color 0.2s ease;
 }
 
 .card-meta {
@@ -306,7 +259,7 @@ function retryQuestion() {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .tags-row {
@@ -317,94 +270,113 @@ function retryQuestion() {
 }
 
 .badge {
-  padding: 4px 10px;
+  font-family: var(--font-display);
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
 .format-badge {
-  background: #ede9fe;
-  color: #6d28d9;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .category-badge {
-  background: #f1f5f9;
-  color: #475569;
+  background: rgba(133, 180, 190, 0.28);
+  color: var(--color-text-heading);
+  border: 1px solid rgba(133, 180, 190, 0.45);
 }
 
 .difficulty-badge.beginner {
-  background: #dcfce7;
-  color: #15803d;
+  background: rgba(16, 185, 129, 0.28);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.45);
 }
 
 .difficulty-badge.intermediate {
-  background: #fef3c7;
-  color: #b45309;
+  background: rgba(245, 158, 11, 0.28);
+  color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.45);
 }
 
 .difficulty-badge.advanced {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.28);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.45);
 }
 
 .progress-pill {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #64748b;
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  color: var(--color-text-heading);
+  background: rgba(15, 76, 92, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 4px 14px;
+  border-radius: 20px;
 }
 
 .question-prompt {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-heading, #0f172a);
-  line-height: 1.4;
-  margin: 4px 0;
+  font-family: var(--font-heading);
+  font-size: 1.65rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  color: var(--color-text-heading);
+  margin: 6px 0;
 }
 
 .hint-container {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .hint-toggle-btn {
-  background: none;
-  border: 1px dashed #cbd5e1;
-  padding: 4px 10px;
-  border-radius: 6px;
-  color: #64748b;
+  font-family: var(--font-display);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  padding: 6px 14px;
+  border-radius: 8px;
+  color: var(--color-text-main);
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.15s;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
 }
 
 .hint-toggle-btn:hover {
-  background: #f8fafc;
-  color: #2563eb;
-  border-color: #93c5fd;
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .hint-content {
-  background: #fffbeb;
-  border-left: 3px solid #f59e0b;
-  padding: 8px 12px;
-  border-radius: 4px;
-  color: #92400e;
-  font-size: 0.9rem;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-left: 4px solid #fbbf24;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: var(--color-text-heading);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
 }
 
 .hint-label {
   font-weight: 700;
+  color: #fde68a;
 }
 
 .interactive-area {
-  margin: 6px 0;
+  margin: 8px 0;
 }
 
 .feedback-box {
-  padding: 16px;
-  border-radius: 10px;
+  padding: 16px 18px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -417,31 +389,39 @@ function retryQuestion() {
 }
 
 .box-success {
-  background: #ecfdf5;
+  background: rgba(16, 185, 129, 0.22);
   border: 1.5px solid #10b981;
-  color: #065f46;
+  color: #d1fae5;
 }
 
 .box-danger {
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.22);
   border: 1.5px solid #ef4444;
-  color: #991b1b;
+  color: #fee2e2;
 }
 
 .feedback-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
 }
 
 .explanation-body {
-  font-size: 0.92rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
   line-height: 1.5;
-  color: #334155;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--color-text-heading);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: 8px;
+}
+
+.explanation-body p {
+  margin: 4px 0 0;
+  color: var(--color-text-main);
 }
 
 .card-actions {
@@ -449,8 +429,8 @@ function retryQuestion() {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border, #f1f5f9);
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .right-actions {
@@ -461,46 +441,44 @@ function retryQuestion() {
 }
 
 .btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: var(--font-display);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   border: none;
 }
 
 .btn-primary {
-  background: #2563eb;
-  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 1px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 12px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1d4ed8;
-}
-
-.btn-primary:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-  opacity: 0.7;
+  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.3);
 }
 
 .btn-secondary {
-  background: #f1f5f9;
-  color: #475569;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  padding: 9px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-main);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid #cbd5e1;
-  color: #475569;
-}
-
-.btn-outline:hover {
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 </style>
