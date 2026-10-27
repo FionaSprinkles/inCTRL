@@ -343,13 +343,22 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
         }
 
         // Query stored questions from database matching the supplied question IDs
-        const sql = 'SELECT * FROM quiz_questions WHERE id IN (?)';
+        const sql = `
+            SELECT qq.*, q.difficulty AS quiz_difficulty
+            FROM quiz_questions qq
+            LEFT JOIN quizzes q ON q.id = qq.quiz_id
+            WHERE qq.id IN (?)
+        `;
         db.query(sql, [questionIds], (err, rows) => {
             if (err) return reject(err);
 
             // Validate that every submitted question ID exists in the database
             const foundMap = new Map();
-            rows.forEach(r => foundMap.set(r.id, formatQuestionRow(r)));
+            rows.forEach(r => {
+                const question = formatQuestionRow(r);
+                question.quizDifficulty = r.quiz_difficulty;
+                foundMap.set(r.id, question);
+            });
 
             const invalidIds = questionIds.filter(id => !foundMap.has(id));
             if (invalidIds.length > 0) {
@@ -389,7 +398,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
 
                 const pointResult = calculateQuestionPoints(
                     evalResult.score || 0,
-                    question.difficulty || 'Beginner',
+                    question.difficulty || question.quizDifficulty || 'Beginner',
                     qTime
                 );
 
