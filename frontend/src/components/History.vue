@@ -59,7 +59,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
             <tr>
               <td colspan= "3"></td>
               <td>{{ getTotalScore() }}</td>
-              <td></td>
+              <td>{{ getTotalTime() }}</td>
               
             </tr>
           </tfoot>
@@ -116,6 +116,16 @@ function getTotalScore() {
   }
 
   return totalScore
+}
+
+//Total time function
+function getTotalTime() {
+  let totalTime = 0
+
+  for (const attempt of history.value) {
+    totalTime = totalTime + attempt.timeSpentSeconds  }
+
+  return totalTime
 }
 
 </script>

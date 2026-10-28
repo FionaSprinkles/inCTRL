@@ -550,6 +550,67 @@ describe('backend/services/quizService', () => {
             assert.strictEqual(result.score, 1);
             assert.strictEqual(committed, true);
         });
+
+        it('computes per-question points using questionTimes and difficulty', async () => {
+            const hardQuestionRow = {
+                ...sampleQuestionRow,
+                difficulty: 'Advanced'
+            };
+            mockDb.setQueryHandler((sql, params, cb) => {
+                cb(null, [hardQuestionRow]);
+            });
+            mockDb.setConnectionHandler((cb) => {
+                cb(null, {
+                    beginTransaction: (bCb) => bCb(null),
+                    query: (sql, params, qCb) => qCb(null, { insertId: 101 }),
+                    commit: (cCb) => cCb(null),
+                    release: () => {}
+                });
+            });
+
+            const result = await quizService.saveAttempt({
+                guestName: 'Speedster',
+                answers: { q1: 'opt1' },
+                timeSpentSeconds: 2,
+                questionTimes: { q1: 2 }
+            });
+
+            assert.strictEqual(result.points, 150);
+            assert.strictEqual(result.maxPoints, 150);
+            assert.strictEqual(result.evaluations[0].points, 150);
+            assert.strictEqual(result.evaluations[0].maxPoints, 150);
+            assert.strictEqual(result.evaluations[0].timeSpentSeconds, 2);
+        });
+
+        it('falls back to quiz_difficulty when question difficulty is missing', async () => {
+            const rowWithQuizDifficulty = {
+                ...sampleQuestionRow,
+                difficulty: null,
+                quiz_difficulty: 'Intermediate'
+            };
+            mockDb.setQueryHandler((sql, params, cb) => {
+                assert.ok(sql.includes('LEFT JOIN quizzes q ON q.id = qq.quiz_id'));
+                cb(null, [rowWithQuizDifficulty]);
+            });
+            mockDb.setConnectionHandler((cb) => {
+                cb(null, {
+                    beginTransaction: (bCb) => bCb(null),
+                    query: (sql, params, qCb) => qCb(null, { insertId: 102 }),
+                    commit: (cCb) => cCb(null),
+                    release: () => {}
+                });
+            });
+
+            const result = await quizService.saveAttempt({
+                guestName: 'FallbackTester',
+                answers: { q1: 'opt1' },
+                questionTimes: { q1: 2 }
+            });
+
+            assert.strictEqual(result.points, 125);
+            assert.strictEqual(result.maxPoints, 125);
+            assert.strictEqual(result.evaluations[0].points, 125);
+        });
     });
 
     describe('getLeaderboard', () => {
