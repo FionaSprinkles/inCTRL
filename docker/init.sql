@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS quiz_questions (
 CREATE TABLE IF NOT EXISTS quiz_attempts (
     id INT NOT NULL AUTO_INCREMENT,
     quiz_id INT NULL,
+    category_id INT NULL,
     user_id INT NULL,
     guest_name VARCHAR(100) NULL,
     format_filter VARCHAR(50) DEFAULT 'all',
@@ -103,6 +104,7 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
     completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE SET NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -321,9 +323,9 @@ INSERT IGNORE INTO quiz_questions (id, type, category_id, category_name, difficu
 -- ----------------------------------------------------------
 -- SEED DATA: SAMPLE ATTEMPTS (For Leaderboard)
 -- ----------------------------------------------------------
-INSERT IGNORE INTO quiz_attempts (id, quiz_id, user_id, format_filter, score, max_score, total_answered, time_spent_seconds) VALUES
-(1, 1, 2, 'all', 19, 20, 18, 142),
-(3, 2, 3, 'all', 15, 20, 18, 210);
+INSERT IGNORE INTO quiz_attempts (id, quiz_id, category_id, user_id, format_filter, score, max_score, total_answered, time_spent_seconds) VALUES
+(1, 1, 1, 2, 'all', 19, 20, 18, 142),
+(3, 2, 2, 3, 'all', 15, 20, 18, 210);
 
 -- ----------------------------------------------------------
 -- SEED DATA: RESULT QUESTIONS (Per-Question Attempt Breakdown)

@@ -68,6 +68,7 @@ erDiagram
     quiz_attempts {
         int id PK
         int quiz_id FK
+        int category_id FK
         int user_id FK
         varchar guest_name
         varchar format_filter
@@ -94,6 +95,7 @@ erDiagram
     categories ||--o{ quiz_questions : "classifies questions (ON DELETE SET NULL)"
     quizzes ||--o{ quiz_questions : "contains questions (ON DELETE SET NULL)"
     quizzes ||--o{ quiz_attempts : "receives attempts (ON DELETE SET NULL)"
+    categories ||--o{ quiz_attempts : "categorizes attempts (ON DELETE SET NULL)"
     users ||--o{ quiz_attempts : "completes attempts (ON DELETE CASCADE)"
     quiz_attempts ||--|{ result_questions : "has question results (ON DELETE CASCADE)"
     quiz_questions ||--o{ result_questions : "evaluated in results (ON DELETE CASCADE)"
@@ -197,6 +199,7 @@ Below is the layout of each table representing keys, data types, nullability, de
 | :--- | :--- | :--- | :--- |
 | `id` | `INT` | **PK**, `AUTO_INCREMENT`, `NOT NULL` | Unique attempt identifier |
 | `quiz_id` | `INT` | **FK** &rarr; `quizzes(id)`, `NULL`, `ON DELETE SET NULL` | Specific quiz attempted (`NULL` for quick/all mix) |
+| `category_id` | `INT` | **FK** &rarr; `categories(id)`, `NULL`, `ON DELETE SET NULL` | Category of the attempted quiz |
 | `user_id` | `INT` | **FK** &rarr; `users(id)`, `NULL`, `ON DELETE CASCADE` | Registered user (`NULL` for guest) |
 | `guest_name` | `VARCHAR(100)` | `NULL` | Display name if taken by an unauthenticated guest |
 | `format_filter`| `VARCHAR(50)` | `DEFAULT 'all'` | Filter mode used for the session |
@@ -233,6 +236,7 @@ Below is the layout of each table representing keys, data types, nullability, de
 | `categories` &rarr; `quiz_questions` | 1 : N | `quiz_questions.category_id` | `ON DELETE SET NULL` | Questions remain usable if category deleted. |
 | `quizzes` &rarr; `quiz_questions` | 1 : N | `quiz_questions.quiz_id` | `ON DELETE SET NULL` | Questions stay in master bank if quiz is deleted. |
 | `quizzes` &rarr; `quiz_attempts` | 1 : N | `quiz_attempts.quiz_id` | `ON DELETE SET NULL` | Attempt history is preserved if quiz is removed. |
+| `categories` &rarr; `quiz_attempts` | 1 : N | `quiz_attempts.category_id` | `ON DELETE SET NULL` | Attempt history is preserved if the category is removed. |
 | `users` &rarr; `quiz_attempts` | 1 : N | `quiz_attempts.user_id` | `ON DELETE CASCADE` | Removing a user account deletes their attempt history. |
 | `quiz_attempts` &rarr; `result_questions`| 1 : N | `result_questions.result_id` | `ON DELETE CASCADE` | Deleting an attempt purges all granular breakdown rows. |
 | `quiz_questions` &rarr; `result_questions`| 1 : N | `result_questions.question_id`| `ON DELETE CASCADE` | Removing a question cascades cleanup to result items. |

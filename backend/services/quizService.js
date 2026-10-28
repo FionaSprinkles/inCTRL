@@ -428,94 +428,109 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
             const computedMaxPoints = Math.round(maxPossiblePoints);
             const totalAnswered = questionIds.length;
 
-            const insertSql = `
-                INSERT INTO quiz_attempts 
-                (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds, quiz_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-            const params = [
-                userId || null,
-                guestName || null,
-                formatFilter || 'all',
-                computedScore,
-                computedMaxScore,
-                totalAnswered,
-                timeSpentSeconds || 0,
-                quizId || null
-            ];
+            const persist = (categoryId) => {
+                const insertSql = `
+                    INSERT INTO quiz_attempts 
+                    (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds, quiz_id, category_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `;
+                const params = [
+                    userId || null,
+                    guestName || null,
+                    formatFilter || 'all',
+                    computedScore,
+                    computedMaxScore,
+                    totalAnswered,
+                    timeSpentSeconds || 0,
+                    quizId || null,
+                    categoryId
+                ];
 
-            db.getConnection((connErr, connection) => {
-                if (connErr) return reject(connErr);
+                db.getConnection((connErr, connection) => {
+                    if (connErr) return reject(connErr);
 
-                connection.beginTransaction((beginErr) => {
-                    if (beginErr) {
-                        connection.release();
-                        return reject(beginErr);
-                    }
-
-                    connection.query(insertSql, params, (insertErr, result) => {
-                        if (insertErr) {
-                            return connection.rollback(() => {
-                                connection.release();
-                                reject(insertErr);
-                            });
+                    connection.beginTransaction((beginErr) => {
+                        if (beginErr) {
+                            connection.release();
+                            return reject(beginErr);
                         }
 
-                        const attemptId = result.insertId;
-                        const responseData = {
-                            id: attemptId,
-                            quizId: quizId || null,
-                            score: computedScore,
-                            maxScore: computedMaxScore,
-                            points: computedPoints,
-                            maxPoints: computedMaxPoints,
-                            totalAnswered,
-                            evaluations
-                        };
-
-                        const resultQuestionsSql = `
-                            INSERT INTO result_questions 
-                            (result_id, question_id, attempts, is_correct, score, user_answer) 
-                            VALUES ?
-                        `;
-                        const resultQuestionsValues = evaluations.map(ev => {
-                            const rawAnswer = normalizedAnswers[ev.questionId];
-                            const answerStr = typeof rawAnswer === 'object' && rawAnswer !== null
-                                ? JSON.stringify(rawAnswer)
-                                : String(rawAnswer ?? '');
-                            const attemptsCount = (typeof rawAnswer === 'object' && rawAnswer !== null && rawAnswer.attempts)
-                                ? Math.max(1, parseInt(rawAnswer.attempts, 10) || 1)
-                                : 1;
-
-                            return [
-                                attemptId,
-                                ev.questionId,
-                                attemptsCount,
-                                Boolean(ev.isCorrect),
-                                ev.score || 0,
-                                answerStr.slice(0, 500)
-                            ];
-                        });
-
-                        connection.query(resultQuestionsSql, [resultQuestionsValues], (rqErr) => {
-                            if (rqErr) {
+                        connection.query(insertSql, params, (insertErr, result) => {
+                            if (insertErr) {
                                 return connection.rollback(() => {
                                     connection.release();
-                                    reject(rqErr);
+                                    reject(insertErr);
                                 });
                             }
 
-                            // Award XP to registered user based strictly on server-computed score (10 XP per point)
-                            if (userId && computedScore > 0) {
-                                const xpGain = computedScore * 10;
-                                connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
-                                    if (xpErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(xpErr);
-                                        });
-                                    }
+                            const attemptId = result.insertId;
+                            const responseData = {
+                                id: attemptId,
+                                quizId: quizId || null,
+                                categoryId,
+                                score: computedScore,
+                                maxScore: computedMaxScore,
+                                points: computedPoints,
+                                maxPoints: computedMaxPoints,
+                                totalAnswered,
+                                evaluations
+                            };
 
+                            const resultQuestionsSql = `
+                                INSERT INTO result_questions 
+                                (result_id, question_id, attempts, is_correct, score, user_answer) 
+                                VALUES ?
+                            `;
+                            const resultQuestionsValues = evaluations.map(ev => {
+                                const rawAnswer = normalizedAnswers[ev.questionId];
+                                const answerStr = typeof rawAnswer === 'object' && rawAnswer !== null
+                                    ? JSON.stringify(rawAnswer)
+                                    : String(rawAnswer ?? '');
+                                const attemptsCount = (typeof rawAnswer === 'object' && rawAnswer !== null && rawAnswer.attempts)
+                                    ? Math.max(1, parseInt(rawAnswer.attempts, 10) || 1)
+                                    : 1;
+
+                                return [
+                                    attemptId,
+                                    ev.questionId,
+                                    attemptsCount,
+                                    Boolean(ev.isCorrect),
+                                    ev.score || 0,
+                                    answerStr.slice(0, 500)
+                                ];
+                            });
+
+                            connection.query(resultQuestionsSql, [resultQuestionsValues], (rqErr) => {
+                                if (rqErr) {
+                                    return connection.rollback(() => {
+                                        connection.release();
+                                        reject(rqErr);
+                                    });
+                                }
+
+                                // Award XP to registered user based strictly on server-computed score (10 XP per point)
+                                if (userId && computedScore > 0) {
+                                    const xpGain = computedScore * 10;
+                                    connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
+                                        if (xpErr) {
+                                            return connection.rollback(() => {
+                                                connection.release();
+                                                reject(xpErr);
+                                            });
+                                        }
+
+                                        connection.commit((commitErr) => {
+                                            if (commitErr) {
+                                                return connection.rollback(() => {
+                                                    connection.release();
+                                                    reject(commitErr);
+                                                });
+                                            }
+                                            connection.release();
+                                            resolve(responseData);
+                                        });
+                                    });
+                                } else {
                                     connection.commit((commitErr) => {
                                         if (commitErr) {
                                             return connection.rollback(() => {
@@ -526,22 +541,22 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                                         connection.release();
                                         resolve(responseData);
                                     });
-                                });
-                            } else {
-                                connection.commit((commitErr) => {
-                                    if (commitErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(commitErr);
-                                        });
-                                    }
-                                    connection.release();
-                                    resolve(responseData);
-                                });
-                            }
+                                }
+                            });
                         });
                     });
                 });
+            };
+
+            if (!quizId) {
+                persist(null);
+                return;
+            }
+
+            db.query('SELECT category_id FROM quizzes WHERE id = ?', [quizId], (catErr, catRows) => {
+                if (catErr) return reject(catErr);
+                const row = catRows && catRows[0];
+                persist(row && row.category_id != null ? row.category_id : null);
             });
         });
     });

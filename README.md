@@ -75,6 +75,14 @@ ALTER TABLE users
   ADD COLUMN last_name VARCHAR(50) NULL AFTER first_name;
 ```
 
+`quiz_attempts.category_id` is the same kind of change:
+
+```sql
+ALTER TABLE quiz_attempts
+  ADD COLUMN category_id INT NULL AFTER quiz_id,
+  ADD FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL;
+```
+
 ## Testing
 
 Both test suites report a coverage summary.

@@ -611,6 +611,53 @@ describe('backend/services/quizService', () => {
             assert.strictEqual(result.maxPoints, 125);
             assert.strictEqual(result.evaluations[0].points, 125);
         });
+
+        it('stores the quiz category on the attempt for a signed-in user and a guest', async () => {
+            const inserts = [];
+
+            mockDb.setQueryHandler((sql, params, cb) => {
+                if (sql.includes('SELECT category_id FROM quizzes')) {
+                    assert.deepStrictEqual(params, [4]);
+                    return cb(null, [{ category_id: 7 }]);
+                }
+                cb(null, [sampleQuestionRow]);
+            });
+            mockDb.setConnectionHandler((cb) => {
+                cb(null, {
+                    beginTransaction: (bCb) => bCb(null),
+                    query: (sql, params, qCb) => {
+                        if (sql.includes('INSERT INTO quiz_attempts')) {
+                            assert.ok(sql.includes('category_id'));
+                            inserts.push(params);
+                            return qCb(null, { insertId: inserts.length });
+                        }
+                        qCb(null, {});
+                    },
+                    commit: (cCb) => cCb(null),
+                    release: () => {}
+                });
+            });
+
+            const signedIn = await quizService.saveAttempt({
+                userId: 5,
+                quizId: 4,
+                answers: { q1: 'opt1' }
+            });
+            const guest = await quizService.saveAttempt({
+                quizId: 4,
+                answers: { q1: 'opt1' }
+            });
+
+            assert.strictEqual(inserts[0][0], 5);
+            assert.strictEqual(inserts[0][7], 4);
+            assert.strictEqual(inserts[0][8], 7);
+            assert.strictEqual(signedIn.categoryId, 7);
+
+            assert.strictEqual(inserts[1][0], null);
+            assert.strictEqual(inserts[1][7], 4);
+            assert.strictEqual(inserts[1][8], 7);
+            assert.strictEqual(guest.categoryId, 7);
+        });
     });
 
     describe('getLeaderboard', () => {
