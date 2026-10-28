@@ -437,8 +437,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 userId || null,
                 guestName || null,
                 formatFilter || 'all',
-                computedScore,
-                computedMaxScore,
+                computedPoints,
+                computedMaxPoints,
                 totalAnswered,
                 timeSpentSeconds || 0,
                 quizId || null
@@ -492,7 +492,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                                 ev.questionId,
                                 attemptsCount,
                                 Boolean(ev.isCorrect),
-                                ev.score || 0,
+                                ev.points || 0,
                                 answerStr.slice(0, 500)
                             ];
                         });
@@ -505,40 +505,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                                 });
                             }
 
-                            // Award XP to registered user based strictly on server-computed score (10 XP per point)
-                            if (userId && computedScore > 0) {
-                                const xpGain = computedScore * 10;
-                                connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
-                                    if (xpErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(xpErr);
-                                        });
-                                    }
-
-                                    connection.commit((commitErr) => {
-                                        if (commitErr) {
-                                            return connection.rollback(() => {
-                                                connection.release();
-                                                reject(commitErr);
-                                            });
-                                        }
+                            connection.commit((commitErr) => {
+                                if (commitErr) {
+                                    return connection.rollback(() => {
                                         connection.release();
-                                        resolve(responseData);
+                                        reject(commitErr);
                                     });
-                                });
-                            } else {
-                                connection.commit((commitErr) => {
-                                    if (commitErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(commitErr);
-                                        });
-                                    }
-                                    connection.release();
-                                    resolve(responseData);
-                                });
-                            }
+                                }
+                                connection.release();
+                                resolve(responseData);
+                            });
                         });
                     });
                 });
