@@ -173,6 +173,10 @@ async function seedDatabase(
             }
         }
         console.log('✅ All quiz questions successfully seeded/updated.');
+        if (isDefaultRun) {
+            await executeQuery('UPDATE quiz_attempts SET score = score * 100, max_score = max_score * 100 WHERE max_score > 0 AND max_score < 100', []);
+            await executeQuery('UPDATE result_questions SET score = score * 100 WHERE is_correct = TRUE AND score > 0 AND score < 50', []);
+        }
     }
 }
 
