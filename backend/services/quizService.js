@@ -558,7 +558,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
  * Retrieves global quiz leaderboard sorted by highest score and fastest time.
  *
  * @param {string} [filter='total'] Time filter ('today', 'week', 'total').
- * @param {number|string} [limit=10] Maximum number of leaderboard entries to retrieve.
+ * @param {number|string} [limit=50] Maximum number of leaderboard entries to retrieve.
  * @returns {Promise<Array<object>>} Resolves with array of leaderboard records.
  */
 function getLeaderboard(filter = 'total', limit = 50) {
@@ -570,12 +570,13 @@ function getLeaderboard(filter = 'total', limit = 50) {
             timeCondition = 'WHERE qa.completed_at >= (NOW() - INTERVAL 7 DAY)';
         }
 
+        // Summera poängen multiplicerat med 10 (eller använd tabellens faktiska poängberäkning)
         const sql = `
             SELECT
                 u.id,
                 u.username AS name,
                 u.avatar,
-                SUM(qa.score) AS total_points
+                SUM(qa.score * 10) AS total_points
             FROM users u
                      JOIN quiz_attempts qa ON u.id = qa.user_id
                 ${timeCondition}
@@ -602,7 +603,6 @@ function getLeaderboard(filter = 'total', limit = 50) {
         });
     });
 }
-
 /**
  * Retrieves all quiz attempts for a specific user ID.
  * Makes join with "quizzes" to fetch quiz name to frontend
