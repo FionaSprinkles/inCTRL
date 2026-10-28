@@ -164,7 +164,7 @@ describe('backend/controllers/userController', () => {
 
         it('returns 201 with auth token and created user on success', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                if (sql.includes('SELECT * FROM users')) return cb(null, []);
+                if (sql.includes('FROM users WHERE')) return cb(null, []);
                 if (sql.includes('INSERT INTO users')) return cb(null, { insertId: 10 });
                 cb(null, []);
             });
@@ -191,7 +191,7 @@ describe('backend/controllers/userController', () => {
 
         it('returns 400 when registration fails (e.g. duplicate username)', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                if (sql.includes('SELECT * FROM users')) {
+                if (sql.includes('FROM users WHERE')) {
                     return cb(null, [{ id: 1, username: 'charlie' }]);
                 }
                 cb(null, []);
@@ -234,7 +234,7 @@ describe('backend/controllers/userController', () => {
                 display_name: 'Alice',
                 role: 'user',
                 avatar: null,
-                xp: 150
+                totalPoints: 150
             };
             mockDb.setQueryHandler((sql, params, cb) => {
                 cb(null, [userRow]);

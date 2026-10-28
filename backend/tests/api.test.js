@@ -156,7 +156,7 @@ describe('backend API integration tests (app & routes)', () => {
 
         it('POST /api/users/register registers user and returns token', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                if (sql.includes('SELECT * FROM users')) return cb(null, []);
+                if (sql.includes('FROM users WHERE')) return cb(null, []);
                 if (sql.includes('INSERT INTO users')) return cb(null, { insertId: 20 });
                 cb(null, []);
             });

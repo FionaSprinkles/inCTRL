@@ -541,7 +541,7 @@ function getLeaderboard(limit = 10) {
                 COALESCE(u.username, a.guest_name, 'Guest') AS username,
                 u.display_name AS displayName,
                 u.avatar,
-                u.xp
+                COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
             FROM quiz_attempts a
             LEFT JOIN users u ON a.user_id = u.id
             ORDER BY a.score DESC, a.time_spent_seconds ASC
@@ -566,7 +566,7 @@ function getUserAttempts(userId) {
     return new Promise((resolve, reject) => {
         const sql = `
             SELECT 
-            qa.id, 
+            qa.id, qa.quiz_id AS quizId,
             qa.format_filter AS formatFilter,
             qa.score,
             qa.max_score AS maxScore,
