@@ -232,7 +232,7 @@ describe('backend/controllers/quizController', () => {
             await quizController.submitAttempt(req, res);
             assert.strictEqual(res.statusCode, 201);
             assert.strictEqual(res.body.success, true);
-            assert.strictEqual(res.body.attempt.score, 1);
+            assert.strictEqual(res.body.attempt.score, 65);
         });
 
         it('returns 400 when validation error occurs in quizService', async () => {

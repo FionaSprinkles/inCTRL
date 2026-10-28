@@ -413,8 +413,15 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 evaluations.push({
                     questionId: qId,
                     isCorrect: evalResult.isCorrect,
-                    score: evalResult.score,
-                    maxScore: evalResult.maxScore,
+                    score: pointResult.points,
+
+
+
+
+
+
+                    maxScore: pointResult.maxPoints,
+                    accuracyScore: evalResult.score,
                     points: pointResult.points,
                     maxPoints: pointResult.maxPoints,
                     timeSpentSeconds: qTime !== null ? Math.round(qTime * 100) / 100 : null,
@@ -465,8 +472,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                         const responseData = {
                             id: attemptId,
                             quizId: quizId || null,
-                            score: computedScore,
-                            maxScore: computedMaxScore,
+                            score: computedPoints,
+                            maxScore: computedMaxPoints,
+
+
+
+
+
+
+                            rawScore: computedScore,
+                            rawMaxScore: computedMaxScore,
                             points: computedPoints,
                             maxPoints: computedMaxPoints,
                             totalAnswered,
@@ -492,7 +507,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                                 ev.questionId,
                                 attemptsCount,
                                 Boolean(ev.isCorrect),
-                                ev.points || 0,
+                                ev.score || 0,
                                 answerStr.slice(0, 500)
                             ];
                         });

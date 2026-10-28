@@ -293,7 +293,7 @@ describe('backend API integration tests (app & routes)', () => {
                     answers: { q1: 'opt1' }
                 });
             assert.strictEqual(guestRes.status, 201);
-            assert.strictEqual(guestRes.body.attempt.score, 1);
+            assert.strictEqual(guestRes.body.attempt.score, 100);
 
             // Authenticated attempt
             const authRes = await request(app)
@@ -303,7 +303,7 @@ describe('backend API integration tests (app & routes)', () => {
                     answers: { q1: 'opt1' }
                 });
             assert.strictEqual(authRes.status, 201);
-            assert.strictEqual(authRes.body.attempt.score, 1);
+            assert.strictEqual(authRes.body.attempt.score, 100);
         });
 
         it('GET /api/quiz/leaderboard and GET /api/quiz/attempts/user/:userId', async () => {

@@ -450,8 +450,10 @@ describe('backend/services/quizService', () => {
             });
 
             assert.strictEqual(result.id, 99);
-            assert.strictEqual(result.score, 1);
-            assert.strictEqual(result.maxScore, 1);
+            assert.strictEqual(result.score, 50);
+
+            assert.strictEqual(result.maxScore, 100);
+            assert.strictEqual(result.rawScore, 1);
             assert.strictEqual(result.points, 50);
             assert.strictEqual(result.maxPoints, 100);
             assert.strictEqual(savedAttemptParams[3], 50);
@@ -485,7 +487,9 @@ describe('backend/services/quizService', () => {
             });
 
             assert.strictEqual(result.id, 100);
-            assert.strictEqual(result.score, 1);
+            assert.strictEqual(result.score, 100);
+
+            assert.strictEqual(result.maxScore, 100);
             assert.strictEqual(committed, true);
         });
 
