@@ -1,5 +1,108 @@
 import { checkShortcutMatch } from '../utils/keyboardUtils.js'
 
+export const BASE_POINTS = 100
+export const GRACE_PERIOD_SECONDS = 3
+export const MAX_DECAY_SECONDS = 20
+export const MIN_TIME_FACTOR = 0.5
+
+const DIFFICULTY_MULTIPLIERS = {
+  beginner: 1.0,
+  easy: 1.0,
+  intermediate: 1.25,
+  advanced: 1.5,
+  hard: 1.5
+}
+
+/**
+ * Returns the difficulty multiplier for a given difficulty level.
+ * Beginner/Easy = 1.0, Intermediate = 1.25, Advanced/Hard = 1.5.
+ * @param {string} [difficulty='Beginner'] - Difficulty label.
+ * @returns {number} Difficulty multiplier.
+ */
+export function getDifficultyMultiplier(difficulty = 'Beginner') {
+  const key = String(difficulty || 'Beginner').trim().toLowerCase()
+  return DIFFICULTY_MULTIPLIERS[key] ?? 1.0
+}
+
+/**
+ * Computes the time decay factor using a grace period and linear decay down to a minimum floor.
+ * Within GRACE_PERIOD_SECONDS (3s): 1.0 (full points).
+ * Between GRACE_PERIOD_SECONDS (3s) and MAX_DECAY_SECONDS (20s): decays linearly from 1.0 to 0.5.
+ * At or above MAX_DECAY_SECONDS (20s): 0.5 (minimum floor).
+ * @param {number|null|undefined} timeSpentSeconds - Seconds spent on the question.
+ * @returns {number} Time multiplier in [0.5, 1.0].
+ */
+export function calculateTimeFactor(timeSpentSeconds) {
+  if (timeSpentSeconds === undefined || timeSpentSeconds === null || typeof timeSpentSeconds !== 'number' || Number.isNaN(timeSpentSeconds)) {
+    return 1.0
+  }
+  const t = Math.max(0, timeSpentSeconds)
+  if (t <= GRACE_PERIOD_SECONDS) {
+    return 1.0
+  }
+  if (t >= MAX_DECAY_SECONDS) {
+    return MIN_TIME_FACTOR
+  }
+  const progress = (t - GRACE_PERIOD_SECONDS) / (MAX_DECAY_SECONDS - GRACE_PERIOD_SECONDS)
+  return 1.0 - (1.0 - MIN_TIME_FACTOR) * progress
+}
+
+/**
+ * Calculates the question score and maximum possible points based on accuracy, difficulty, and time spent.
+ * @param {number} accuracyScore - Raw accuracy ratio in [0, 1].
+ * @param {string} [difficulty='Beginner'] - Difficulty tier of the question or quiz.
+ * @param {number|null} [timeSpentSeconds=null] - Time spent on the question in seconds.
+ * @returns {{ points: number, maxPoints: number, difficultyMultiplier: number, timeFactor: number }}
+ */
+export function calculateQuestionPoints(accuracyScore, difficulty = 'Beginner', timeSpentSeconds = null) {
+  const difficultyMultiplier = getDifficultyMultiplier(difficulty)
+  const maxPoints = Math.round(BASE_POINTS * difficultyMultiplier)
+  const clampedAccuracy = Math.max(0, Math.min(1, Number(accuracyScore) || 0))
+
+  if (clampedAccuracy <= 0) {
+    return {
+      points: 0,
+      maxPoints,
+      difficultyMultiplier,
+      timeFactor: calculateTimeFactor(timeSpentSeconds)
+    }
+  }
+
+  const timeFactor = calculateTimeFactor(timeSpentSeconds)
+  const points = Math.round(maxPoints * clampedAccuracy * timeFactor)
+
+  return {
+    points,
+    maxPoints,
+    difficultyMultiplier,
+    timeFactor
+  }
+}
+
+/**
+ * Evaluates a user's answer and computes time-and-difficulty-scaled points.
+ * @param {object} question - Question definition object.
+ * @param {any} userAnswer - Answer provided by the user.
+ * @param {object} [options={}] - Optional scoring context.
+ * @param {number|null} [options.timeSpentSeconds=null] - Seconds spent on this question.
+ * @param {string|null} [options.difficulty=null] - Difficulty override if question has none.
+ * @returns {{ isCorrect: boolean, feedback: string, score: number, maxScore: number, accuracyScore: number, timeSpentSeconds: number|null }}
+ */
+export function evaluateQuestionWithPoints(question, userAnswer, options = {}) {
+  const baseResult = validateAnswer(question, userAnswer)
+  const difficulty = question?.difficulty || options.difficulty || 'Beginner'
+  const timeSpentSeconds = options.timeSpentSeconds ?? null
+  const { points, maxPoints } = calculateQuestionPoints(baseResult.score, difficulty, timeSpentSeconds)
+
+  return {
+    ...baseResult,
+    accuracyScore: baseResult.score,
+    score: points,
+    maxScore: maxPoints,
+    timeSpentSeconds
+  }
+}
+
 /**
  * Determines whether a given user answer value is non-empty.
  * Returns false for null, undefined, empty/whitespace strings, empty arrays, or empty objects.

@@ -279,7 +279,7 @@ exports.deleteQuestion = async (req, res) => {
  */
 exports.submitAttempt = async (req, res) => {
     try {
-        const { guestName, formatFilter, quizId, answers, timeSpentSeconds } = req.body;
+        const { guestName, formatFilter, quizId, answers, timeSpentSeconds, questionTimes } = req.body;
 
         // Security (CWE-639 IDOR Fix):
         // Derive userId strictly from the authenticated token session (req.user).
@@ -296,6 +296,11 @@ exports.submitAttempt = async (req, res) => {
 
         // Validation: timeSpentSeconds
         const safeTimeSpent = Number.isInteger(timeSpentSeconds) && timeSpentSeconds >= 0 ? timeSpentSeconds : 0;
+
+        // Validation: questionTimes (optional per-question elapsed time in seconds)
+        const safeQuestionTimes = questionTimes && typeof questionTimes === 'object' && !Array.isArray(questionTimes)
+            ? questionTimes
+            : null;
 
         // Validation: quizId
         const safeQuizId = Number.isInteger(quizId) || (typeof quizId === 'string' && /^\d+$/.test(quizId))
@@ -315,7 +320,8 @@ exports.submitAttempt = async (req, res) => {
             formatFilter: safeFormatFilter,
             quizId: safeQuizId,
             answers,
-            timeSpentSeconds: safeTimeSpent
+            timeSpentSeconds: safeTimeSpent,
+            ...(safeQuestionTimes ? { questionTimes: safeQuestionTimes } : {})
         });
 
         const attemptToken = !authenticatedUserId

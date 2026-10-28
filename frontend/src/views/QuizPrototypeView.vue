@@ -2,7 +2,7 @@
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { quizQuestions } from '../data/quizQuestions'
-import { validateAnswer, isAnswerProvided } from '../services/quizValidator'
+import { evaluateQuestionWithPoints, isAnswerProvided } from '../services/quizValidator'
 import QuizHeader from '../components/quiz/QuizHeader.vue'
 import QuizCard from '../components/quiz/QuizCard.vue'
 import QuizResult from '../components/quiz/QuizResult.vue'
@@ -20,15 +20,32 @@ const activeFilter = ref('all')
 const currentIndex = ref(0)
 const userAnswers = ref({})
 const evalResults = ref({})
+const questionTimes = ref({})
 const isCompleted = ref(false)
 const startedAt = ref(Date.now())
+const activeQuestionEnteredAt = ref(Date.now())
 const elapsedSeconds = ref(0)
 const categoryName = ref('')
 let timerInterval = null
 
+function recordCurrentQuestionTime(questionId) {
+  if (isCompleted.value || !activeQuestionEnteredAt.value || !questionId) {
+    return
+  }
+  const delta = Math.max(0, (Date.now() - activeQuestionEnteredAt.value) / 1000)
+  const prev = questionTimes.value[questionId] || 0
+  questionTimes.value = {
+    ...questionTimes.value,
+    [questionId]: Math.round((prev + delta) * 100) / 100,
+  }
+  activeQuestionEnteredAt.value = Date.now()
+}
+
 function startTimer() {
   stopTimer()
-  startedAt.value = Date.now()
+  const now = Date.now()
+  startedAt.value = now
+  activeQuestionEnteredAt.value = now
   elapsedSeconds.value = 0
   timerInterval = setInterval(() => {
     elapsedSeconds.value = Math.floor((Date.now() - startedAt.value) / 1000)
@@ -104,6 +121,16 @@ async function loadCategory() {
 
 watch(() => route.query.categoryId, loadCategory, { immediate: true })
 
+watch(currentIndex, (newIdx, oldIdx) => {
+  if (isCompleted.value) return
+  const prevQuestion = filteredQuestions.value[oldIdx]
+  if (prevQuestion) {
+    recordCurrentQuestionTime(prevQuestion.id)
+  } else {
+    activeQuestionEnteredAt.value = Date.now()
+  }
+})
+
 /**
  * Updates active format filter and resets position.
  * @param {string} format - Selected question type or 'all'.
@@ -114,6 +141,7 @@ function onFilterChanged(format) {
   isCompleted.value = false
   userAnswers.value = {}
   evalResults.value = {}
+  questionTimes.value = {}
   startTimer()
 }
 
@@ -154,14 +182,22 @@ function handleRetry({ questionId }) {
  */
 function finishQuiz() {
   if (timerInterval) {
+    if (currentQuestion.value) {
+      recordCurrentQuestionTime(currentQuestion.value.id)
+    }
     stopTimer()
+    activeQuestionEnteredAt.value = null
     elapsedSeconds.value = Math.max(0, Math.round((Date.now() - startedAt.value) / 1000))
   }
   const results = {}
   filteredQuestions.value.forEach((q) => {
     const raw = userAnswers.value[q.id]
     const normalized = isAnswerProvided(raw) ? raw : null
-    results[q.id] = validateAnswer(q, normalized)
+    const qTime = questionTimes.value[q.id] ?? 0
+    results[q.id] = evaluateQuestionWithPoints(q, normalized, {
+      timeSpentSeconds: qTime,
+      difficulty: q.difficulty || difficultyLabel.value || 'Beginner',
+    })
   })
   evalResults.value = results
   isCompleted.value = true
@@ -190,6 +226,7 @@ function previousQuestion() {
 function restartQuiz() {
   userAnswers.value = {}
   evalResults.value = {}
+  questionTimes.value = {}
   currentIndex.value = 0
   isCompleted.value = false
   startTimer()
