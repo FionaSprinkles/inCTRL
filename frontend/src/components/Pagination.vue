@@ -67,37 +67,9 @@ function setPage(next) {
 }
 
 .pager span {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
   color: var(--color-text-main);
   letter-spacing: 1px;
 }
 
-.pager button {
-  padding: 0.5rem 1.2rem;
-  font-family: var(--font-body), sans-serif;
-  font-size: 0.95rem;
-  letter-spacing: 1px;
-  color: var(--color-text-main);
-  cursor: pointer;
-  border-radius: 40px;
-
-  /* Glassmorphism */
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-.pager button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-}
 </style>

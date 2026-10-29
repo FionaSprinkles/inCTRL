@@ -3,16 +3,15 @@ const { validateAnswer, normalizeAnswers, calculateQuestionPoints } = require('.
 
 /**
  * Normalizes a database row into the format expected by frontend quiz components.
- *
- * @param {object} row Raw MySQL database row object from `quiz_questions`.
+ * @param {object} row - Raw MySQL database row object from `quiz_questions`.
  * @returns {object} Formatted question object with parsed payload.
  */
 function formatQuestionRow(row) {
     let payload = {};
     if (row.payload_json) {
         try {
-            payload = typeof row.payload_json === 'string'
-                ? JSON.parse(row.payload_json)
+            payload = typeof row.payload_json === 'string' 
+                ? JSON.parse(row.payload_json) 
                 : row.payload_json;
         } catch (e) {
             console.error(`Error parsing payload_json for question ${row.id}:`, e);
@@ -36,13 +35,12 @@ function formatQuestionRow(row) {
 
 /**
  * Retrieves all quizzes with category details and question count.
- *
  * @returns {Promise<Array<object>>} Resolves with list of quizzes.
  */
 function getQuizzes() {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT
+            SELECT 
                 q.id,
                 q.title,
                 q.description,
@@ -67,14 +65,13 @@ function getQuizzes() {
 
 /**
  * Retrieves a single quiz by ID, including its associated questions.
- *
- * @param {number|string} id Quiz ID.
+ * @param {number|string} id - Quiz ID.
  * @returns {Promise<object|null>} Resolves with quiz and questions list, or null if not found.
  */
 function getQuizById(id) {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT
+            SELECT 
                 q.id,
                 q.title,
                 q.description,
@@ -105,8 +102,7 @@ function getQuizById(id) {
 
 /**
  * Creates a new quiz.
- *
- * @param {object} data Quiz creation data.
+ * @param {object} data - Quiz creation data.
  * @returns {Promise<object>} Resolves with created quiz.
  */
 function createQuiz(data) {
@@ -122,9 +118,8 @@ function createQuiz(data) {
 
 /**
  * Updates an existing quiz by ID.
- *
- * @param {number|string} id Quiz ID.
- * @param {object} data Updated quiz fields.
+ * @param {number|string} id - Quiz ID.
+ * @param {object} data - Updated quiz fields.
  * @returns {Promise<object>} Resolves with query result.
  */
 function updateQuiz(id, data) {
@@ -157,12 +152,11 @@ function deleteQuiz(id) {
 
 /**
  * Retrieves questions with optional filtering by type, difficulty, category, and quizId.
- *
- * @param {object} [filters={}] Optional filters object.
- * @param {string} [filters.type] Format type filter (e.g. 'single_choice', 'matching', 'all').
- * @param {string} [filters.difficulty] Question difficulty level.
- * @param {number|string} [filters.categoryId] Unique category ID.
- * @param {number|string} [filters.quizId] Unique quiz ID.
+ * @param {object} [filters={}] - Optional filters object.
+ * @param {string} [filters.type] - Format type filter (e.g. 'single_choice', 'matching', 'all').
+ * @param {string} [filters.difficulty] - Question difficulty level.
+ * @param {number|string} [filters.categoryId] - Unique category ID.
+ * @param {number|string} [filters.quizId] - Unique quiz ID.
  * @returns {Promise<Array<object>>} Resolves to list of formatted question objects.
  */
 function getQuestions(filters = {}) {
@@ -202,8 +196,7 @@ function getQuestions(filters = {}) {
 
 /**
  * Retrieves a single question by its unique string identifier.
- *
- * @param {string} id Question ID.
+ * @param {string} id - Question ID.
  * @returns {Promise<object|null>} Resolves to formatted question or null if not found.
  */
 function getQuestionById(id) {
@@ -219,8 +212,7 @@ function getQuestionById(id) {
 
 /**
  * Inserts a new quiz question and serializes its format-specific payload.
- *
- * @param {object} data Question fields and payload.
+ * @param {object} data - Question fields and payload.
  * @returns {Promise<object>} Resolves with created question data.
  */
 function createQuestion(data) {
@@ -240,8 +232,8 @@ function createQuestion(data) {
         const payloadJson = JSON.stringify(restPayload.payload || restPayload);
 
         const sql = `
-            INSERT INTO quiz_questions
-            (id, type, category_id, category_name, difficulty, prompt, hint, explanation, payload_json)
+            INSERT INTO quiz_questions 
+            (id, type, category_id, category_name, difficulty, prompt, hint, explanation, payload_json) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const params = [id, type, categoryId || null, categoryName || 'General', difficulty, prompt, hint, explanation, payloadJson];
@@ -255,9 +247,8 @@ function createQuestion(data) {
 
 /**
  * Updates an existing question, preserving existing payload_json when payload fields are omitted.
- *
- * @param {string} id Question ID.
- * @param {object} data Updated question fields.
+ * @param {string} id - Question ID.
+ * @param {object} data - Updated question fields.
  * @returns {Promise<object>} Resolves with database query result.
  */
 function updateQuestion(id, data) {
@@ -281,7 +272,7 @@ function updateQuestion(id, data) {
             : null;
 
         const sql = `
-            UPDATE quiz_questions
+            UPDATE quiz_questions 
             SET type = ?, category_id = ?, category_name = ?, difficulty = ?, prompt = ?, hint = ?, explanation = ?${hasPayload ? ', payload_json = ?' : ''}
             WHERE id = ?
         `;
@@ -306,8 +297,7 @@ function updateQuestion(id, data) {
 
 /**
  * Deletes a quiz question by ID.
- *
- * @param {string} id Question ID.
+ * @param {string} id - Question ID.
  * @returns {Promise<object>} Resolves with database query result.
  */
 function deleteQuestion(id) {
@@ -325,7 +315,7 @@ function deleteQuestion(id) {
  */
 class ValidationError extends Error {
     /**
-     * @param {string} message Validation failure message.
+     * @param {string} message - Validation failure message.
      */
     constructor(message) {
         super(message);
@@ -365,6 +355,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
         db.query(sql, [questionIds], (err, rows) => {
             if (err) return reject(err);
 
+            // Validate that every submitted question ID exists in the database
             const foundMap = new Map();
             rows.forEach(r => {
                 const question = formatQuestionRow(r);
@@ -377,6 +368,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 return reject(new ValidationError(`Invalid question ID(s): ${invalidIds.join(', ')}`));
             }
 
+            // If formatFilter is specified and not 'all', validate that questions match format
             if (formatFilter && formatFilter !== 'all') {
                 const mismatched = questionIds.filter(id => foundMap.get(id).type !== formatFilter);
                 if (mismatched.length > 0) {
@@ -384,6 +376,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 }
             }
 
+            // Server-side answer validation and score computation
             let rawScore = 0;
             let rawMaxScore = 0;
             let totalPoints = 0;
@@ -420,8 +413,15 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 evaluations.push({
                     questionId: qId,
                     isCorrect: evalResult.isCorrect,
-                    score: evalResult.score,
-                    maxScore: evalResult.maxScore,
+                    score: pointResult.points,
+
+
+
+
+
+
+                    maxScore: pointResult.maxPoints,
+                    accuracyScore: evalResult.score,
                     points: pointResult.points,
                     maxPoints: pointResult.maxPoints,
                     timeSpentSeconds: qTime !== null ? Math.round(qTime * 100) / 100 : null,
@@ -436,7 +436,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
             const totalAnswered = questionIds.length;
 
             const insertSql = `
-                INSERT INTO quiz_attempts
+                INSERT INTO quiz_attempts 
                 (user_id, guest_name, format_filter, score, max_score, total_answered, time_spent_seconds, quiz_id)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
@@ -444,8 +444,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 userId || null,
                 guestName || null,
                 formatFilter || 'all',
-                computedScore,
-                computedMaxScore,
+                computedPoints,
+                computedMaxPoints,
                 totalAnswered,
                 timeSpentSeconds || 0,
                 quizId || null
@@ -472,8 +472,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                         const responseData = {
                             id: attemptId,
                             quizId: quizId || null,
-                            score: computedScore,
-                            maxScore: computedMaxScore,
+                            score: computedPoints,
+                            maxScore: computedMaxPoints,
+
+
+
+
+
+
+                            rawScore: computedScore,
+                            rawMaxScore: computedMaxScore,
                             points: computedPoints,
                             maxPoints: computedMaxPoints,
                             totalAnswered,
@@ -481,8 +489,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                         };
 
                         const resultQuestionsSql = `
-                            INSERT INTO result_questions
-                                (result_id, question_id, attempts, is_correct, score, user_answer)
+                            INSERT INTO result_questions 
+                            (result_id, question_id, attempts, is_correct, score, user_answer) 
                             VALUES ?
                         `;
                         const resultQuestionsValues = evaluations.map(ev => {
@@ -512,40 +520,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                                 });
                             }
 
-                            // Award XP to registered user based strictly on server-computed score (10 XP per point)
-                            if (userId && computedScore > 0) {
-                                const xpGain = computedScore * 10;
-                                connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
-                                    if (xpErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(xpErr);
-                                        });
-                                    }
-
-                                    connection.commit((commitErr) => {
-                                        if (commitErr) {
-                                            return connection.rollback(() => {
-                                                connection.release();
-                                                reject(commitErr);
-                                            });
-                                        }
+                            connection.commit((commitErr) => {
+                                if (commitErr) {
+                                    return connection.rollback(() => {
                                         connection.release();
-                                        resolve(responseData);
+                                        reject(commitErr);
                                     });
-                                });
-                            } else {
-                                connection.commit((commitErr) => {
-                                    if (commitErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(commitErr);
-                                        });
-                                    }
-                                    connection.release();
-                                    resolve(responseData);
-                                });
-                            }
+                                }
+                                connection.release();
+                                resolve(responseData);
+                            });
                         });
                     });
                 });
@@ -556,53 +540,36 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
 
 /**
  * Retrieves global quiz leaderboard sorted by highest score and fastest time.
- *
- * @param {string} [filter='total'] Time filter ('today', 'week', 'total').
- * @param {number|string} [limit=50] Maximum number of leaderboard entries to retrieve.
+ * @param {number|string} [limit=10] - Maximum number of leaderboard entries to retrieve.
  * @returns {Promise<Array<object>>} Resolves with array of leaderboard records.
  */
-function getLeaderboard(filter = 'total', limit = 50) {
+function getLeaderboard(limit = 10) {
     return new Promise((resolve, reject) => {
-        let timeCondition = '';
-        if (filter === 'today') {
-            timeCondition = 'WHERE qa.completed_at >= CURDATE()';
-        } else if (filter === 'week') {
-            timeCondition = 'WHERE qa.completed_at >= (NOW() - INTERVAL 7 DAY)';
-        }
-
-        // Summera poängen multiplicerat med 10 (eller använd tabellens faktiska poängberäkning)
         const sql = `
-            SELECT
-                u.id,
-                u.username AS name,
+            SELECT 
+                a.id, 
+                a.score, 
+                a.max_score AS maxScore, 
+                a.total_answered AS totalAnswered, 
+                a.time_spent_seconds AS timeSpentSeconds, 
+                a.completed_at AS completedAt,
+                COALESCE(u.username, a.guest_name, 'Guest') AS username,
+                u.display_name AS displayName,
                 u.avatar,
-                SUM(qa.score * 10) AS total_points
-            FROM users u
-                     JOIN quiz_attempts qa ON u.id = qa.user_id
-                ${timeCondition}
-            GROUP BY u.id, u.display_name, u.username, u.avatar
-            ORDER BY total_points DESC, u.id ASC
-                LIMIT ?
+                COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
+            FROM quiz_attempts a
+            LEFT JOIN users u ON a.user_id = u.id
+            ORDER BY a.score DESC, a.time_spent_seconds ASC
+            LIMIT ?
         `;
-
-        const n = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 100);
+        const n = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
         db.query(sql, [n], (err, rows) => {
             if (err) return reject(err);
-
-            const formatted = rows.rows || rows.map((row, index) => ({
-                rank: index + 1,
-                name: row.name,
-                initial: row.name ? row.name.charAt(0).toUpperCase() : 'U',
-                points: `${Number(row.total_points || 0).toLocaleString('sv-SE')} p`,
-                avatar: row.avatar,
-                avatarBg: index === 0 ? '#E06D53' : index === 1 ? '#5B8DEF' : '#45B69C',
-                podiumBg: index === 0 ? '#ECC046' : index === 1 ? '#D1D7E3' : '#DC976A'
-            }));
-
-            resolve(formatted);
+            resolve(rows);
         });
     });
 }
+
 /**
  * Retrieves all quiz attempts for a specific user ID.
  * Makes join with "quizzes" to fetch quiz name to frontend
@@ -614,7 +581,7 @@ function getUserAttempts(userId) {
     return new Promise((resolve, reject) => {
         const sql = `
             SELECT 
-            qa.id, 
+            qa.id, qa.quiz_id AS quizId,
             qa.format_filter AS formatFilter,
             qa.score,
             qa.max_score AS maxScore,
@@ -639,30 +606,29 @@ function getUserAttempts(userId) {
 
 /**
  * Retrieves full attempt details including per-question breakdown from result_questions.
- *
- * @param {number|string} attemptId Attempt identifier.
+ * @param {number|string} attemptId - Attempt identifier.
  * @returns {Promise<object|null>} Resolves with attempt object and questions array.
  */
 function getAttemptDetails(attemptId) {
     return new Promise((resolve, reject) => {
         const attemptSql = `
-            SELECT
-                a.id,
-                a.quiz_id AS quizId,
+            SELECT 
+                a.id, 
+                a.quiz_id AS quizId, 
                 q.title AS quizTitle,
-                a.user_id AS userId,
-                u.username,
-                u.display_name AS displayName,
+                a.user_id AS userId, 
+                u.username, 
+                u.display_name AS displayName, 
                 a.guest_name AS guestName,
-                a.format_filter AS formatFilter,
-                a.score,
-                a.max_score AS maxScore,
-                a.total_answered AS totalAnswered,
-                a.time_spent_seconds AS timeSpentSeconds,
+                a.format_filter AS formatFilter, 
+                a.score, 
+                a.max_score AS maxScore, 
+                a.total_answered AS totalAnswered, 
+                a.time_spent_seconds AS timeSpentSeconds, 
                 a.completed_at AS completedAt
             FROM quiz_attempts a
-                     LEFT JOIN users u ON a.user_id = u.id
-                     LEFT JOIN quizzes q ON a.quiz_id = q.id
+            LEFT JOIN users u ON a.user_id = u.id
+            LEFT JOIN quizzes q ON a.quiz_id = q.id
             WHERE a.id = ?
         `;
         db.query(attemptSql, [attemptId], (err, rows) => {
@@ -671,7 +637,7 @@ function getAttemptDetails(attemptId) {
 
             const attempt = rows[0];
             const detailsSql = `
-                SELECT
+                SELECT 
                     rq.id,
                     rq.result_id AS resultId,
                     rq.question_id AS questionId,
@@ -684,7 +650,7 @@ function getAttemptDetails(attemptId) {
                     qq.type,
                     qq.difficulty
                 FROM result_questions rq
-                         LEFT JOIN quiz_questions qq ON rq.question_id = qq.id
+                LEFT JOIN quiz_questions qq ON rq.question_id = qq.id
                 WHERE rq.result_id = ?
                 ORDER BY rq.id ASC
             `;
