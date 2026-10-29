@@ -16,7 +16,7 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
       <div class="nav-links">
 
         <!-- Dropdown component-->
-        <Dropdown label="Browse">
+        <Dropdown label="Browse" side="left">
           <div class="category-section">
             <h2>Courses by category</h2>
 
@@ -69,7 +69,7 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
     <template v-else>
       <div class="nav-right">
         <!-- Dropdown from Dropdown.vue-->
-        <Dropdown :label="username">
+        <Dropdown :label="username" side="right">
           <RouterLink to="/personalPage" class="nav-link">
             Home
           </RouterLink>

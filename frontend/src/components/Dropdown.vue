@@ -17,7 +17,8 @@ This component is responsible for:
       {{ label }}
     </button>
 
-    <div v-if="isOpen" class="dropdown-menu">
+    <div v-if="isOpen" class="dropdown-menu"
+    :class ="`dropdown-menu--${side}`"> <!--dropdown to the "left" or "right"--> 
       <slot />
     </div>
   </div>
@@ -33,6 +34,10 @@ defineProps({ //what the information the component needs from its parent (ex. na
   label: {
     type: String,
     required: true
+  },
+  side: { //which side does dropdown open
+    type: String,
+    default: 'left'
   }
 })
 const isOpen = ref(false) // Is thedropdown open
@@ -70,12 +75,12 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   top: 100%; /* starts right below the Browse button */
-  left: 0;
   z-index: 10; /* stays on top of other elements */
   width: 280px;
   padding: 1rem;
 
-  /* Glass effect for the dropdown */
+
+    /* Glass effect for the dropdown */
   background: rgba(255, 255, 255, 0.12); /* Semi-transparent white background */
   backdrop-filter: blur(16px) saturate(160%); /* Blurs background and boosts color saturation */
   -webkit-backdrop-filter: blur(16px) saturate(160%); /* Safari support for backdrop filter */
@@ -83,6 +88,19 @@ onUnmounted(() => {
   border-radius: 20px; /* Rounded corners */
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* Soft shado% */
 }
+
+
+  .dropdown-menu--left {
+  left: 0;
+  right: auto;
+}
+
+.dropdown-menu--right {
+  right: 0;
+  left: auto;
+}
+
+
 
 
 
