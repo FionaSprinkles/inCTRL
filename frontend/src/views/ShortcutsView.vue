@@ -1,92 +1,25 @@
 <script setup>
-import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import Pagination from '@/components/Pagination.vue'
 
 const shortcuts = ref([])
 const loading = ref(true)
 const error = ref('')
 const q = ref('')
-const showDropdown = ref(false)
-const selectedCategories = ref([])
-const selectedDifficulty = ref('')
-const filterRef = ref(null)
 
-// Toggles the visibility state of the filter dropdown menu
-function toggleDropdown() {
-  showDropdown.value = !showDropdown.value
-}
-
-function handleClickOutside(event) {
-  if (filterRef.value && !filterRef.value.contains(event.target)) {
-    showDropdown.value = false
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('click', handleClickOutside)
-  fetchShortcuts()
-})
-
-onUnmounted(() => {
-  window.removeEventListener('click', handleClickOutside)
-})
-
-// Toggles a category in the multi-select array (adds or removes it)
-function toggleCategory(category) {
-  if (category === '') {
-    selectedCategories.value = []
-    return
-  }
-  const index = selectedCategories.value.indexOf(category)
-  if (index > -1) {
-    selectedCategories.value.splice(index, 1) // Remove if already selected
-  } else {
-    selectedCategories.value.push(category) // Add if not selected
-  }
-}
-
-// Selects a difficulty
-function selectDifficulty(difficulty) {
-  if (selectedDifficulty.value === difficulty) {
-    selectedDifficulty.value = ''
-  } else {
-    selectedDifficulty.value = difficulty
-  }
-}
-
-// Filter for search, categories and difficulty
+// Filter shortcuts based on the search query
 const filteredShortcuts = computed(() => {
   const query = q.value.toLowerCase().trim()
+  if (!query) return shortcuts.value
 
   return shortcuts.value.filter((shortcut) => {
-    // Search query filter
-    const matchesQuery =
-      !query ||
+    return (
       (shortcut.title || '').toLowerCase().includes(query) ||
       (shortcut.keyCombo || '').toLowerCase().includes(query) ||
       (shortcut.description || '').toLowerCase().includes(query) ||
       (shortcut.categoryName || 'Uncategorized').toLowerCase().includes(query) ||
       (shortcut.difficulty || '').toLowerCase().includes(query)
-
-    // Category filter
-    const matchesCategory =
-      selectedCategories.value.length === 0 ||
-      selectedCategories.value.some((cat) => {
-        const target = cat.toLowerCase().trim()
-
-        const sId = String(shortcut.categoryId || '').toLowerCase()
-        const sSlug = String(shortcut.categorySlug || '').toLowerCase()
-        const sName = String(shortcut.categoryName || '').toLowerCase()
-
-        return sId === target || sSlug === target || sName === target
-      })
-
-    // Difficulty filter
-    const matchesDifficulty =
-      !selectedDifficulty.value ||
-      (shortcut.difficulty || '').toLowerCase() === selectedDifficulty.value.toLowerCase()
-
-    return matchesQuery && matchesCategory && matchesDifficulty
+    )
   })
 })
 
@@ -108,169 +41,21 @@ async function fetchShortcuts() {
     loading.value = false
   }
 }
+
+onMounted(fetchShortcuts)
 </script>
 
 <template>
   <main class="shortcuts-page">
     <div class="page-header">
       <h1>Shortcuts</h1>
-      <div class="header-controls">
-        <!-- Filter button -->
-        <div class="filter-wrapper" ref="filterRef">
-          <button class="filter-btn" :aria-expanded="showDropdown" @click="toggleDropdown">
-            Filter
-          </button>
-          <!-- Dropdown -->
-          <div v-if="showDropdown" class="dropdown-menu">
-            <div class="dropdown-section">
-              <!-- Categories -->
-              <p class="dropdown-title">Categories</p>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.length === 0 }"
-                :aria-pressed="selectedCategories.length === 0"
-                @click="toggleCategory('')"
-              >
-                All categories
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Essential Windows Navigation') }"
-                :aria-pressed="selectedCategories.includes('Essential Windows Navigation')"
-                @click="toggleCategory('Essential Windows Navigation')"
-              >
-                Essential Windows Navigation
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('System & Troubleshooting') }"
-                :aria-pressed="selectedCategories.includes('System & Troubleshooting')"
-                @click="toggleCategory('System & Troubleshooting')"
-              >
-                System & Troubleshooting
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('File Explorer & Windows Tools') }"
-                :aria-pressed="selectedCategories.includes('File Explorer & Windows Tools')"
-                @click="toggleCategory('File Explorer & Windows Tools')"
-              >
-                File Explorer & Windows Tools
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Multitasking & Window Management') }"
-                :aria-pressed="selectedCategories.includes('Multitasking & Window Management')"
-                @click="toggleCategory('Multitasking & Window Management')"
-              >
-                Multitasking & Window Management
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Window Snapping & Layout') }"
-                :aria-pressed="selectedCategories.includes('Window Snapping & Layout')"
-                @click="toggleCategory('Window Snapping & Layout')"
-              >
-                Window Snapping & Layout
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Virtual Desktops') }"
-                :aria-pressed="selectedCategories.includes('Virtual Desktops')"
-                @click="toggleCategory('Virtual Desktops')"
-              >
-                Virtual Desktops
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Windows Power Keys') }"
-                :aria-pressed="selectedCategories.includes('Windows Power Keys')"
-                @click="toggleCategory('Windows Power Keys')"
-              >
-                Windows Power Keys
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Interactive Keyboard Practice') }"
-                :aria-pressed="selectedCategories.includes('Interactive Keyboard Practice')"
-                @click="toggleCategory('Interactive Keyboard Practice')"
-              >
-                Interactive Keyboard Practice
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Text Editing & Formatting') }"
-                :aria-pressed="selectedCategories.includes('Text Editing & Formatting')"
-                @click="toggleCategory('Text Editing & Formatting')"
-              >
-                Text Editing & Formatting
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Taskbar & System Tray') }"
-                :aria-pressed="selectedCategories.includes('Taskbar & System Tray')"
-                @click="toggleCategory('Taskbar & System Tray')"
-              >
-                Taskbar & System Tray
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedCategories.includes('Dialog Boxes & Settings') }"
-                :aria-pressed="selectedCategories.includes('Dialog Boxes & Settings')"
-                @click="toggleCategory('Dialog Boxes & Settings')"
-              >
-                Dialog Boxes & Settings
-              </button>
-            </div>
-
-            <div class="dropdown-section">
-              <!-- Difficulty -->
-              <p class="dropdown-title">Difficulty</p>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedDifficulty === '' }"
-                :aria-pressed="selectedDifficulty === ''"
-                @click="selectDifficulty('')"
-              >
-                All difficulties
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedDifficulty === 'beginner' }"
-                :aria-pressed="selectedDifficulty === 'beginner'"
-                @click="selectDifficulty('beginner')"
-              >
-                Beginner
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedDifficulty === 'intermediate' }"
-                :aria-pressed="selectedDifficulty === 'intermediate'"
-                @click="selectDifficulty('intermediate')"
-              >
-                Intermediate
-              </button>
-              <button
-                class="dropdown-item"
-                :class="{ active: selectedDifficulty === 'advanced' }"
-                :aria-pressed="selectedDifficulty === 'advanced'"
-                @click="selectDifficulty('advanced')"
-              >
-                Advanced
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- The search field -->
-        <input
-          v-model="q"
-          type="text"
-          placeholder="Search.."
-          aria-label="Search shortcuts"
-          class="search-input"
-        />
-      </div>
+      <input
+        v-model="q"
+        type="text"
+        placeholder="Search.."
+        aria-label="Search shortcuts"
+        class="search-input"
+      />
     </div>
 
     <p v-if="error" role="alert">{{ error }}</p>
@@ -309,8 +94,8 @@ async function fetchShortcuts() {
 
 <style scoped>
 .shortcuts-page {
+  max-width: 960px;
   width: 100%;
-  max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1.5rem 3rem;
 }
@@ -318,18 +103,10 @@ async function fetchShortcuts() {
 .table-wrap {
   overflow-x: auto;
   background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 table {
@@ -345,7 +122,7 @@ td {
 }
 
 th {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 450;
   letter-spacing: 1px;
@@ -362,7 +139,7 @@ tbody tr:last-child td {
 }
 
 kbd {
-  color: var(--color-text-white);
+  color: var(--color-text-heading);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 6px;
   padding: 0.15rem 0.45rem;
@@ -379,140 +156,24 @@ kbd {
 /* Search bar design */
 .search-input {
   padding: 0.6rem 1rem;
-  font-size: 18px;
-  font-family: var(--font-display), serif;
+  font-size: 14px;
   background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
+  color: var(--color-text-main);
   outline: none;
-  width: 200px;
-  color: var(--color-text-white);
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
+  width: 250px;
+  transition: border-color 0.2s;
+  backdrop-filter: blur(16px) saturate(160%);
 }
 
+/* Search bar text */
 .search-input::placeholder {
-  color: var(--color-text-white);
+  color: var(--color-text-main);
 }
 
+/* Search bar border */
 .search-input:focus {
   border: 1px solid rgba(255, 255, 255, 0.35);
-}
-
-/* Opens the dropdown filter menu */
-.filter-wrapper {
-  position: relative;
-}
-
-/* Filter button position */
-.header-controls {
-  display: flex;
-  gap: 1rem;
-}
-
-/* Filter button design */
-.filter-btn {
-  padding: 0.6rem 1.2rem;
-  font-size: 18px;
-  background: rgba(255, 255, 255, 0.09);
-  color: var(--color-text-white);
-  border-radius: 12px;
-  outline: none;
-  cursor: pointer;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-/* Filter button hover */
-.filter-btn:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-}
-
-/* Dropdown menu styling */
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  width: 280px;
-  max-height: 350px;
-  overflow-y: auto;
-  border-radius: 16px;
-  padding: 1rem;
-  z-index: 100;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* Dropdown title */
-.dropdown-title {
-  font-size: 18px;
-  text-transform: uppercase;
-  color: var(--color-text-white);
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  font-family: var(--font-display), serif;
-}
-
-/* Dropdown buttons */
-.dropdown-item {
-  width: 100%;
-  text-align: left;
-  border: none;
-  color: var(--color-text-main);
-  padding: 0.45rem 0.6rem;
-  background: transparent;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    color 0.2s;
-  font-family: var(--font-body), sans-serif;
-}
-
-/* Dropdown buttons hover */
-.dropdown-item:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-  color: var(--color-dark-accenturate);
-  background: rgba(255, 255, 255, 0.25);
-  font-weight: 600;
-}
-
-/* Dropdown buttons when marked */
-.dropdown-item.active {
-  background: rgba(255, 255, 255, 0.25);
-  font-weight: 600;
-  color: var(--color-dark-accenturate);
 }
 </style>
