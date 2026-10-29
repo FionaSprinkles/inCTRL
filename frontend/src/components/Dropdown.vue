@@ -45,7 +45,8 @@ const dropdown = ref(null)
 
 // Closes the dropdown when clicking outside of it
 function closeDropdown(event) {
-   if (!dropdown.value?.contains(event.target)) { //is clicked element inside the div
+   if (!dropdown.value?.contains(event.target) ||
+    event.target.closest('.dropdown-menu a, .dropdown-menu button')) { // Close dropdown when clicking outside or inside
     isOpen.value = false
   }
 }
