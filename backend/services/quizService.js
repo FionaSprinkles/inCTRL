@@ -562,7 +562,7 @@ function getLeaderboard(filter = 'total', limit = 50) {
             ORDER BY a.score DESC, a.time_spent_seconds ASC
                 LIMIT ?
         `;
-        const n = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+        const n = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 100);
         db.query(sql, [n], (err, rows) => {
             if (err) return reject(err);
             resolve(rows);
