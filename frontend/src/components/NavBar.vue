@@ -46,8 +46,6 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
         <!-- Links for logged in users -->
         <template v-else>
 
-          <RouterLink to="/history" class="nav-link"> History </RouterLink>
-
           <RouterLink to="/shortcuts" class="nav-link"> Shortcuts List </RouterLink>
 
           <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
@@ -70,7 +68,7 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
       <div class="nav-right">
         <!-- Dropdown from Dropdown.vue-->
         <Dropdown :label="username" side="right">
-          <RouterLink to="/personalPage" class="nav-link">
+          <RouterLink to="/" class="nav-link">
             Home
           </RouterLink>
           <RouterLink to="/history" class="nav-link">
@@ -80,8 +78,6 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
             Log out
           </button>
         </Dropdown>
-
-        <button class="nav-link" @click="handleLogout">Log out</button>
       </div>
     </template>
   </nav>
