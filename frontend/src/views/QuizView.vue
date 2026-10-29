@@ -197,7 +197,7 @@ function exitQuiz() {
   activeQuestionEnteredAt.value = null
   questionTimes.value = {}
   activeQuiz.value = null
-  if (route.path !== '/categories') router.push('/categories')
+  if (route.path === '/quiz') router.push('/categories')
   quizQuestions.value = []
   quizError.value = ''
   submitError.value = ''
@@ -341,7 +341,7 @@ function returnToSummary() {
 watch(
   () => route.path,
   (newPath) => {
-    if (newPath !== '/quiz' && activeQuiz.value) exitQuiz()
+    if (newPath === '/categories' && activeQuiz.value) exitQuiz()
   },
 )
 
