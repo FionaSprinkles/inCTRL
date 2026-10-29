@@ -562,11 +562,11 @@ describe('backend/services/quizService', () => {
             ];
             mockDb.setQueryHandler((sql, params, cb) => {
                 assert.match(sql, /SELECT\s+a\.id/);
-                assert.deepStrictEqual(params, [50]);
+                assert.deepStrictEqual(params, [10]);
                 cb(null, leaderboardRows);
             });
 
-            const result = await quizService.getLeaderboard(10);
+            const result = await quizService.getLeaderboard('total', 10);
             assert.deepStrictEqual(result, leaderboardRows);
         });
 
