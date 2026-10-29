@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeViews/HomeView.vue'
 import ShortcutsView from '../views/ShortcutsView.vue'
 import QuizView from '../views/QuizView.vue'
+import CategoriesView from '../views/CategoriesView.vue'
 import SignUpView from '@/views/AuthViews/SignUpView.vue'
 import CategoryViewTemplate from '@/views/categories/categoryViewTemplate.vue'
 import AboutView from '@/views/AboutView.vue'
@@ -29,7 +30,7 @@ const router = createRouter({
     {
       path: '/categories',
       name: 'categories',
-      component: QuizView,
+      component: CategoriesView,
     },
     {
       path: '/quiz',
