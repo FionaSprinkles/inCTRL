@@ -322,15 +322,15 @@ INSERT IGNORE INTO quiz_questions (id, type, category_id, category_name, difficu
 -- SEED DATA: SAMPLE ATTEMPTS (For Leaderboard)
 -- ----------------------------------------------------------
 INSERT IGNORE INTO quiz_attempts (id, quiz_id, user_id, format_filter, score, max_score, total_answered, time_spent_seconds) VALUES
-(1, 1, 2, 'all', 19, 20, 18, 142),
-(3, 2, 3, 'all', 15, 20, 18, 210);
+(1, 1, 2, 'all', 1900, 2000, 18, 142),
+(3, 2, 3, 'all', 1500, 2000, 18, 210);
 
 -- ----------------------------------------------------------
 -- SEED DATA: RESULT QUESTIONS (Per-Question Attempt Breakdown)
 -- ----------------------------------------------------------
 INSERT IGNORE INTO result_questions (id, result_id, question_id, attempts, is_correct, score, user_answer) VALUES
-(1, 1, 'sc-2', 1, TRUE, 1, 'opt-2'),
-(2, 1, 'sc-3', 1, TRUE, 1, 'opt-2'),
-(3, 1, 'fb-1', 1, TRUE, 1, 'Win + L'),
+(1, 1, 'sc-2', 1, TRUE, 100, 'opt-2'),
+(2, 1, 'sc-3', 1, TRUE, 100, 'opt-2'),
+(3, 1, 'fb-1', 1, TRUE, 100, 'Win + L'),
 (4, 3, 'sc-1', 2, FALSE, 0, 'opt-2'),
-(5, 3, 'fb-3', 1, TRUE, 1, 'regedit');
+(5, 3, 'fb-3', 1, TRUE, 100, 'regedit');

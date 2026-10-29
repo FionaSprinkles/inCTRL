@@ -392,38 +392,6 @@ describe('backend/services/quizService', () => {
             assert.strictEqual(rolledBack, true);
         });
 
-        it('rolls back and rejects when XP update query fails for authenticated user', async () => {
-            let rolledBack = false;
-            mockDb.setQueryHandler((sql, params, cb) => {
-                cb(null, [sampleQuestionRow]);
-            });
-            mockDb.setConnectionHandler((cb) => {
-                cb(null, {
-                    beginTransaction: (bCb) => bCb(null),
-                    query: (sql, params, qCb) => {
-                        if (sql.includes('INSERT INTO quiz_attempts')) {
-                            return qCb(null, { insertId: 77 });
-                        }
-                        if (sql.includes('UPDATE users SET xp')) {
-                            return qCb(new Error('XP update failed'));
-                        }
-                        qCb(null, {});
-                    },
-                    rollback: (rCb) => { rolledBack = true; rCb(); },
-                    release: () => {}
-                });
-            });
-
-            await assert.rejects(
-                async () => await quizService.saveAttempt({
-                    userId: 1,
-                    answers: { q1: 'opt1' }
-                }),
-                /XP update failed/
-            );
-            assert.strictEqual(rolledBack, true);
-        });
-
         it('rolls back and rejects when commit fails', async () => {
             let rolledBack = false;
             mockDb.setQueryHandler((sql, params, cb) => {
@@ -446,44 +414,15 @@ describe('backend/services/quizService', () => {
             await assert.rejects(
                 async () => await quizService.saveAttempt({
                     guestName: 'Guest',
-                    answers: { q1: 'opt2' } // Score 0, goes to else commit path
+                    answers: { q1: 'opt2' }
                 }),
                 /Commit failure/
             );
             assert.strictEqual(rolledBack, true);
         });
 
-        it('rolls back when commit fails for authenticated user with XP gain', async () => {
-            let rolledBack = false;
-            mockDb.setQueryHandler((sql, params, cb) => {
-                cb(null, [sampleQuestionRow]);
-            });
-            mockDb.setConnectionHandler((cb) => {
-                cb(null, {
-                    beginTransaction: (bCb) => bCb(null),
-                    query: (sql, params, qCb) => {
-                        qCb(null, { insertId: 88 });
-                    },
-                    commit: (cCb) => {
-                        cCb(new Error('Auth commit failure'));
-                    },
-                    rollback: (rCb) => { rolledBack = true; rCb(); },
-                    release: () => {}
-                });
-            });
-
-            await assert.rejects(
-                async () => await quizService.saveAttempt({
-                    userId: 5,
-                    answers: { q1: 'opt1' }
-                }),
-                /Auth commit failure/
-            );
-            assert.strictEqual(rolledBack, true);
-        });
-
-        it('successfully saves attempt and awards XP to authenticated user', async () => {
-            let xpUpdated = false;
+        it('successfully saves attempt with computed points to quiz_attempts', async () => {
+            let savedAttemptParams = null;
             let committed = false;
 
             mockDb.setQueryHandler((sql, params, cb) => {
@@ -494,12 +433,8 @@ describe('backend/services/quizService', () => {
                     beginTransaction: (bCb) => bCb(null),
                     query: (sql, params, qCb) => {
                         if (sql.includes('INSERT INTO quiz_attempts')) {
+                            savedAttemptParams = params;
                             return qCb(null, { insertId: 99 });
-                        }
-                        if (sql.includes('UPDATE users SET xp = xp + ? WHERE id = ?')) {
-                            assert.deepStrictEqual(params, [10, 5]); // 1 correct answer = 1 point * 10 XP
-                            xpUpdated = true;
-                            return qCb(null, { affectedRows: 1 });
                         }
                         qCb(null, {});
                     },
@@ -515,11 +450,16 @@ describe('backend/services/quizService', () => {
             });
 
             assert.strictEqual(result.id, 99);
-            assert.strictEqual(result.score, 1);
-            assert.strictEqual(result.maxScore, 1);
+            assert.strictEqual(result.score, 50);
+
+            assert.strictEqual(result.maxScore, 100);
+            assert.strictEqual(result.rawScore, 1);
+            assert.strictEqual(result.points, 50);
+            assert.strictEqual(result.maxPoints, 100);
+            assert.strictEqual(savedAttemptParams[3], 50);
+            assert.strictEqual(savedAttemptParams[4], 100);
             assert.strictEqual(result.totalAnswered, 1);
             assert.strictEqual(result.evaluations[0].isCorrect, true);
-            assert.strictEqual(xpUpdated, true);
             assert.strictEqual(committed, true);
         });
 
@@ -547,7 +487,9 @@ describe('backend/services/quizService', () => {
             });
 
             assert.strictEqual(result.id, 100);
-            assert.strictEqual(result.score, 1);
+            assert.strictEqual(result.score, 100);
+
+            assert.strictEqual(result.maxScore, 100);
             assert.strictEqual(committed, true);
         });
 

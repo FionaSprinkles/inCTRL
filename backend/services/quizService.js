@@ -413,8 +413,15 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 evaluations.push({
                     questionId: qId,
                     isCorrect: evalResult.isCorrect,
-                    score: evalResult.score,
-                    maxScore: evalResult.maxScore,
+                    score: pointResult.points,
+
+
+
+
+
+
+                    maxScore: pointResult.maxPoints,
+                    accuracyScore: evalResult.score,
                     points: pointResult.points,
                     maxPoints: pointResult.maxPoints,
                     timeSpentSeconds: qTime !== null ? Math.round(qTime * 100) / 100 : null,
@@ -437,8 +444,8 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 userId || null,
                 guestName || null,
                 formatFilter || 'all',
-                computedScore,
-                computedMaxScore,
+                computedPoints,
+                computedMaxPoints,
                 totalAnswered,
                 timeSpentSeconds || 0,
                 quizId || null
@@ -465,8 +472,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                         const responseData = {
                             id: attemptId,
                             quizId: quizId || null,
-                            score: computedScore,
-                            maxScore: computedMaxScore,
+                            score: computedPoints,
+                            maxScore: computedMaxPoints,
+
+
+
+
+
+
+                            rawScore: computedScore,
+                            rawMaxScore: computedMaxScore,
                             points: computedPoints,
                             maxPoints: computedMaxPoints,
                             totalAnswered,
@@ -505,40 +520,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                                 });
                             }
 
-                            // Award XP to registered user based strictly on server-computed score (10 XP per point)
-                            if (userId && computedScore > 0) {
-                                const xpGain = computedScore * 10;
-                                connection.query('UPDATE users SET xp = xp + ? WHERE id = ?', [xpGain, userId], (xpErr) => {
-                                    if (xpErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(xpErr);
-                                        });
-                                    }
-
-                                    connection.commit((commitErr) => {
-                                        if (commitErr) {
-                                            return connection.rollback(() => {
-                                                connection.release();
-                                                reject(commitErr);
-                                            });
-                                        }
+                            connection.commit((commitErr) => {
+                                if (commitErr) {
+                                    return connection.rollback(() => {
                                         connection.release();
-                                        resolve(responseData);
+                                        reject(commitErr);
                                     });
-                                });
-                            } else {
-                                connection.commit((commitErr) => {
-                                    if (commitErr) {
-                                        return connection.rollback(() => {
-                                            connection.release();
-                                            reject(commitErr);
-                                        });
-                                    }
-                                    connection.release();
-                                    resolve(responseData);
-                                });
-                            }
+                                }
+                                connection.release();
+                                resolve(responseData);
+                            });
                         });
                     });
                 });
@@ -565,7 +556,7 @@ function getLeaderboard(limit = 10) {
                 COALESCE(u.username, a.guest_name, 'Guest') AS username,
                 u.display_name AS displayName,
                 u.avatar,
-                u.xp
+                COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
             FROM quiz_attempts a
             LEFT JOIN users u ON a.user_id = u.id
             ORDER BY a.score DESC, a.time_spent_seconds ASC
@@ -590,7 +581,7 @@ function getUserAttempts(userId) {
     return new Promise((resolve, reject) => {
         const sql = `
             SELECT 
-            qa.id, 
+            qa.id, qa.quiz_id AS quizId,
             qa.format_filter AS formatFilter,
             qa.score,
             qa.max_score AS maxScore,
