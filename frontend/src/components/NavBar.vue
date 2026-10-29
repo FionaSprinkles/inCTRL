@@ -51,10 +51,6 @@
 
         <!-- Links for logged in users -->
         <template v-else>
-          
-
-
-          <RouterLink to="/quiz" class="nav-link"> Quiz </RouterLink>
 
           <RouterLink to="/history" class="nav-link"> History </RouterLink>
 

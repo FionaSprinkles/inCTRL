@@ -1,5 +1,84 @@
 const { checkShortcutMatch } = require('../utils/keyboardUtils');
 
+const BASE_POINTS = 100;
+const GRACE_PERIOD_SECONDS = 3;
+const MAX_DECAY_SECONDS = 20;
+const MIN_TIME_FACTOR = 0.5;
+
+const DIFFICULTY_MULTIPLIERS = {
+    beginner: 1.0,
+    easy: 1.0,
+    intermediate: 1.25,
+    advanced: 1.5,
+    hard: 1.5
+};
+
+/**
+ * Returns the difficulty multiplier for a given difficulty level.
+ * Beginner/Easy = 1.0, Intermediate = 1.25, Advanced/Hard = 1.5.
+ * @param {string} [difficulty='Beginner'] - Difficulty label.
+ * @returns {number} Difficulty multiplier.
+ */
+function getDifficultyMultiplier(difficulty = 'Beginner') {
+    const key = String(difficulty || 'Beginner').trim().toLowerCase();
+    return DIFFICULTY_MULTIPLIERS[key] ?? 1.0;
+}
+
+/**
+ * Computes the time decay factor using a grace period and linear decay down to a minimum floor.
+ * Within GRACE_PERIOD_SECONDS (3s): 1.0 (full points).
+ * Between GRACE_PERIOD_SECONDS (3s) and MAX_DECAY_SECONDS (20s): decays linearly from 1.0 to 0.5.
+ * At or above MAX_DECAY_SECONDS (20s): 0.5 (minimum floor).
+ * @param {number|null|undefined} timeSpentSeconds - Seconds spent on the question.
+ * @returns {number} Time multiplier in [0.5, 1.0].
+ */
+function calculateTimeFactor(timeSpentSeconds) {
+    if (timeSpentSeconds === undefined || timeSpentSeconds === null || typeof timeSpentSeconds !== 'number' || Number.isNaN(timeSpentSeconds)) {
+        return 1.0;
+    }
+    const t = Math.max(0, timeSpentSeconds);
+    if (t <= GRACE_PERIOD_SECONDS) {
+        return 1.0;
+    }
+    if (t >= MAX_DECAY_SECONDS) {
+        return MIN_TIME_FACTOR;
+    }
+    const progress = (t - GRACE_PERIOD_SECONDS) / (MAX_DECAY_SECONDS - GRACE_PERIOD_SECONDS);
+    return 1.0 - (1.0 - MIN_TIME_FACTOR) * progress;
+}
+
+/**
+ * Calculates the question score and maximum possible points based on accuracy, difficulty, and time spent.
+ * @param {number} accuracyScore - Raw accuracy ratio in [0, 1].
+ * @param {string} [difficulty='Beginner'] - Difficulty tier of the question or quiz.
+ * @param {number|null} [timeSpentSeconds=null] - Time spent on the question in seconds.
+ * @returns {{ points: number, maxPoints: number, difficultyMultiplier: number, timeFactor: number }}
+ */
+function calculateQuestionPoints(accuracyScore, difficulty = 'Beginner', timeSpentSeconds = null) {
+    const difficultyMultiplier = getDifficultyMultiplier(difficulty);
+    const maxPoints = Math.round(BASE_POINTS * difficultyMultiplier);
+    const clampedAccuracy = Math.max(0, Math.min(1, Number(accuracyScore) || 0));
+
+    if (clampedAccuracy <= 0) {
+        return {
+            points: 0,
+            maxPoints,
+            difficultyMultiplier,
+            timeFactor: calculateTimeFactor(timeSpentSeconds)
+        };
+    }
+
+    const timeFactor = calculateTimeFactor(timeSpentSeconds);
+    const points = Math.round(maxPoints * clampedAccuracy * timeFactor);
+
+    return {
+        points,
+        maxPoints,
+        difficultyMultiplier,
+        timeFactor
+    };
+}
+
 /**
  * Normalizes client-submitted answers into a { [questionId]: userAnswer } object.
  * @param {object|Array} answers - Raw answers provided by the client.
@@ -241,6 +320,13 @@ function validateAnswer(question, userAnswer) {
 }
 
 module.exports = {
+    BASE_POINTS,
+    GRACE_PERIOD_SECONDS,
+    MAX_DECAY_SECONDS,
+    MIN_TIME_FACTOR,
+    getDifficultyMultiplier,
+    calculateTimeFactor,
+    calculateQuestionPoints,
     normalizeAnswers,
     validateAnswer
 };

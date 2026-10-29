@@ -83,8 +83,9 @@ function toggleOption(id) {
 }
 
 .instruction-note {
-  font-size: 0.9rem;
-  color: #64748b;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
   margin-bottom: 12px;
 }
 
@@ -98,42 +99,51 @@ function toggleOption(id) {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 12px 16px;
-  background: var(--color-background-soft, #f8fafc);
-  border: 2px solid var(--color-border, #e2e8f0);
-  border-radius: 8px;
+  padding: 13px 16px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
   cursor: pointer;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
   transition: all 0.15s ease-in-out;
 }
 
 .option-card:hover {
-  border-color: #3b82f6;
-  background: #f0f7ff;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(15, 76, 92, 0.75);
+  color: var(--color-text-heading);
 }
 
 .option-card.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: var(--color-button);
+  background: rgba(227, 221, 196, 0.22);
+  color: var(--color-text-heading);
 }
 
 .option-card.correct {
   border-color: #10b981;
+  background: rgba(16, 185, 129, 0.25);
+  color: #d1fae5;
 }
 
 .option-card.missed {
   border-color: #f59e0b;
-  background: #fffbeb;
+  background: rgba(245, 158, 11, 0.22);
+  color: #fef3c7;
 }
 
 .option-card.incorrect {
   border-color: #ef4444;
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.25);
+  color: #fee2e2;
 }
 
 .checkbox-box input {
   width: 18px;
   height: 18px;
   cursor: pointer;
+  accent-color: var(--color-button);
 }
 
 .option-details {
@@ -141,22 +151,25 @@ function toggleOption(id) {
 }
 
 .option-text {
-  font-size: 0.98rem;
+  font-size: 1rem;
   font-weight: 500;
+  color: inherit;
 }
 
 .status-indicator {
-  font-size: 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .badge-success {
-  color: #10b981;
+  color: #6ee7b7;
 }
 .badge-missed {
-  color: #d97706;
+  color: #fde68a;
 }
 .badge-wrong {
-  color: #ef4444;
+  color: #fca5a5;
 }
 </style>

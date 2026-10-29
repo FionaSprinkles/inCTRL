@@ -1,7 +1,14 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import fs from 'node:fs'
-import { validateAnswer, isAnswerProvided } from '../src/services/quizValidator.js'
+import {
+  validateAnswer,
+  isAnswerProvided,
+  getDifficultyMultiplier,
+  calculateTimeFactor,
+  calculateQuestionPoints,
+  evaluateQuestionWithPoints
+} from '../src/services/quizValidator.js'
 
 describe('frontend/src/services/quizValidator', () => {
   describe('isAnswerProvided', () => {
@@ -354,6 +361,56 @@ describe('frontend/src/services/quizValidator', () => {
       assert.strictEqual(res.isCorrect, false)
       assert.strictEqual(res.score, 0)
       assert.ok(res.feedback.includes('Incorrect. The odd one out is: Ctrl+P'))
+    })
+  })
+
+  describe('point system - difficulty & time decay', () => {
+    it('computes difficulty multipliers for Beginner/Easy, Intermediate, and Advanced/Hard', () => {
+      assert.strictEqual(getDifficultyMultiplier('Beginner'), 1.0)
+      assert.strictEqual(getDifficultyMultiplier('easy'), 1.0)
+      assert.strictEqual(getDifficultyMultiplier('Intermediate'), 1.25)
+      assert.strictEqual(getDifficultyMultiplier('Advanced'), 1.5)
+      assert.strictEqual(getDifficultyMultiplier('hard'), 1.5)
+      assert.strictEqual(getDifficultyMultiplier('unknown'), 1.0)
+      assert.strictEqual(getDifficultyMultiplier(), 1.0)
+    })
+
+    it('computes time factor with 3s grace period and linear decay up to 20s', () => {
+      assert.strictEqual(calculateTimeFactor(null), 1.0)
+      assert.strictEqual(calculateTimeFactor(undefined), 1.0)
+      assert.strictEqual(calculateTimeFactor(NaN), 1.0)
+      assert.strictEqual(calculateTimeFactor(0), 1.0)
+      assert.strictEqual(calculateTimeFactor(3), 1.0)
+      assert.strictEqual(calculateTimeFactor(11.5), 0.75)
+      assert.strictEqual(calculateTimeFactor(20), 0.5)
+      assert.strictEqual(calculateTimeFactor(45), 0.5)
+    })
+
+    it('calculates question points and evaluates questions with points', () => {
+      assert.strictEqual(calculateQuestionPoints(1, 'Beginner', 2).points, 100)
+      assert.strictEqual(calculateQuestionPoints(1, 'Intermediate', 2).points, 125)
+      assert.strictEqual(calculateQuestionPoints(1, 'Advanced', 2).points, 150)
+      assert.strictEqual(calculateQuestionPoints(0, 'Advanced', 2).points, 0)
+
+      const q = {
+        type: 'single_choice',
+        difficulty: 'Intermediate',
+        options: [{ id: 'opt1', text: 'Ctrl+C', isCorrect: true }]
+      }
+
+      const fastEval = evaluateQuestionWithPoints(q, 'opt1', { timeSpentSeconds: 2 })
+      assert.strictEqual(fastEval.isCorrect, true)
+      assert.strictEqual(fastEval.score, 125)
+      assert.strictEqual(fastEval.maxScore, 125)
+      assert.strictEqual(fastEval.accuracyScore, 1)
+
+      const slowEval = evaluateQuestionWithPoints(q, 'opt1', { timeSpentSeconds: 20 })
+      assert.strictEqual(slowEval.score, 63)
+      assert.strictEqual(slowEval.maxScore, 125)
+
+      const fallbackEval = evaluateQuestionWithPoints({ type: 'true_false', correctAnswer: true }, true)
+      assert.strictEqual(fallbackEval.score, 100)
+      assert.strictEqual(fallbackEval.maxScore, 100)
     })
   })
 })

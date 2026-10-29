@@ -67,34 +67,39 @@ function selectOption(id) {
   align-items: center;
   gap: 14px;
   padding: 14px 18px;
-  background: var(--color-background-soft, #f7f9fa);
-  border: 2px solid var(--color-border, #e2e8f0);
-  border-radius: 10px;
+  background: rgba(15, 76, 92, 0.5);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease-in-out;
-  color: inherit;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
   font-size: 1rem;
 }
 
 .option-card:hover:not(:disabled) {
-  border-color: #3b82f6;
-  background: #f0f7ff;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(15, 76, 92, 0.75);
+  color: var(--color-text-heading);
 }
 
 .option-card.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: var(--color-button);
+  background: rgba(227, 221, 196, 0.22);
+  color: var(--color-text-heading);
 }
 
 .option-card.correct {
   border-color: #10b981 !important;
-  background: #ecfdf5 !important;
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #d1fae5 !important;
 }
 
 .option-card.incorrect {
   border-color: #ef4444 !important;
-  background: #fef2f2 !important;
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #fee2e2 !important;
 }
 
 .option-indicator .radio-circle {
@@ -102,41 +107,41 @@ function selectOption(id) {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2px solid #94a3b8;
+  border: 2px solid var(--color-text-muted);
   position: relative;
   transition: all 0.15s;
 }
 
 .option-card.selected .radio-circle {
-  border-color: #2563eb;
-  background: #2563eb;
-  box-shadow: inset 0 0 0 3px #ffffff;
+  border-color: var(--color-button);
+  background: var(--color-button);
+  box-shadow: inset 0 0 0 3px var(--color-dark-teal);
 }
 
 .option-card.correct .radio-circle {
   border-color: #10b981;
   background: #10b981;
-  box-shadow: inset 0 0 0 3px #ffffff;
+  box-shadow: inset 0 0 0 3px var(--color-dark-teal);
 }
 
 .option-card.incorrect .radio-circle {
   border-color: #ef4444;
   background: #ef4444;
-  box-shadow: inset 0 0 0 3px #ffffff;
+  box-shadow: inset 0 0 0 3px var(--color-dark-teal);
 }
 
 .shortcut-badge {
   display: inline-block;
-  padding: 4px 10px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
+  padding: 5px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 6px;
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.5px;
-  color: #1e293b;
+  color: var(--color-button);
 }
 
 :disabled {
