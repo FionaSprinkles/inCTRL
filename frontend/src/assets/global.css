@@ -105,6 +105,24 @@ button {
     border: none;
 }
 
+.nav-link {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 450;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
+  background: transparent;
+  border: none;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--color-text-muted);
+}
+
 /* ===== Quiz ===== */
 /* Keyboard keys */
 kbd {

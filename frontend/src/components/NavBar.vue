@@ -190,21 +190,7 @@ onMounted(() => {
   gap: 1rem; /* space between each link */
 }
 
-.nav-link {
-  color: var(--color-text-main);
-  background-color: transparent; /* removes the default grey button background */
-  border: none; /* removes the default button border */
-  padding: 0.8rem 1rem;
-  font-size: 19px;
-  text-decoration: none;
-  cursor: pointer; /* hand cursor, buttons don't get this by default */
-  transition: text-shadow 0.2s ease; /* Smooth hover transition for glow effect */
-}
 
-.nav-link:hover {
-  color: var(--color-text-muted);
-  transition: color 0.2s ease; /* Smooth hover transition */
-}
 
 /* Dropdown heading */
 .browse-menu h2 {
