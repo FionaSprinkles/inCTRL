@@ -8,9 +8,9 @@ const bcrypt = require('bcryptjs');
 function getAllUsers() {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT id, username, display_name AS displayName, role, avatar, xp, created_at AS createdAt
+            SELECT id, username, display_name AS displayName, role, avatar, COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = users.id), 0) AS totalPoints, created_at AS createdAt
             FROM users 
-            ORDER BY xp DESC, created_at ASC
+            ORDER BY totalPoints DESC, created_at ASC
         `;
         db.query(sql, (err, rows) => {
             if (err) return reject(err);
@@ -27,7 +27,7 @@ function getAllUsers() {
 function getUserById(id) {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT id, username, display_name AS displayName, role, avatar, xp, created_at AS createdAt
+            SELECT id, username, display_name AS displayName, role, avatar, COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = users.id), 0) AS totalPoints, created_at AS createdAt
             FROM users 
             WHERE id = ?
         `;
@@ -47,7 +47,7 @@ function getUserById(id) {
 function getUserProfileById(id) {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT id, username, email, first_name AS firstName, last_name AS lastName, display_name AS displayName, role, avatar, xp, created_at AS createdAt
+            SELECT id, username, email, first_name AS firstName, last_name AS lastName, display_name AS displayName, role, avatar, COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = users.id), 0) AS totalPoints, created_at AS createdAt
             FROM users 
             WHERE id = ?
         `;
@@ -66,7 +66,7 @@ function getUserProfileById(id) {
  */
 function getUserByUsernameOrEmail(identifier) {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM users WHERE username = ? OR email = ?';
+        const sql = 'SELECT users.*, COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = users.id), 0) AS totalPoints FROM users WHERE username = ? OR email = ?';
         db.query(sql, [identifier, identifier], (err, rows) => {
             if (err) return reject(err);
             if (!rows || rows.length === 0) return resolve(null);
@@ -123,7 +123,7 @@ async function register({ username, email, firstName, lastName, password, displa
                 lastName: lastName.trim(),
                 displayName: displayName || username.trim(),
                 role: 'user',
-                xp: 0
+                totalPoints: 0
             });
         });
     });
@@ -157,7 +157,7 @@ async function login({ email, password }) {
         displayName: user.display_name,
         role: user.role,
         avatar: user.avatar,
-        xp: user.xp
+        totalPoints: user.totalPoints || 0
     };
 }
 

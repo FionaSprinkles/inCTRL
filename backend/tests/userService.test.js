@@ -14,8 +14,8 @@ describe('backend/services/userService', () => {
     describe('getAllUsers', () => {
         it('resolves with public user list', async () => {
             const users = [
-                { id: 1, username: 'alice', displayName: 'Alice', xp: 100 },
-                { id: 2, username: 'bob', displayName: 'Bob', xp: 50 }
+                { id: 1, username: 'alice', displayName: 'Alice', totalPoints: 100 },
+                { id: 2, username: 'bob', displayName: 'Bob', totalPoints: 50 }
             ];
             mockDb.setQueryHandler((sql, params, cb) => {
                 assert.ok(sql.includes('SELECT id, username, display_name'));
@@ -140,7 +140,7 @@ describe('backend/services/userService', () => {
     describe('register', () => {
         it('successfully registers a new user with password hashing', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                if (sql.includes('SELECT * FROM users WHERE')) {
+                if (sql.includes('FROM users WHERE')) {
                     // No existing user
                     return cb(null, []);
                 }
@@ -172,13 +172,13 @@ describe('backend/services/userService', () => {
                 firstName: 'Test',
                 lastName: 'Testsson',
                 role: 'user',
-                xp: 0
+                totalPoints: 0
             });
         });
 
         it('throws an error if username or email is already taken', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                if (sql.includes('SELECT * FROM users WHERE')) {
+                if (sql.includes('FROM users WHERE')) {
                     return cb(null, [{ id: 1, username: 'existing' }]);
                 }
                 cb(null, []);
@@ -196,7 +196,7 @@ describe('backend/services/userService', () => {
 
         it('rejects if database insertion fails', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                if (sql.includes('SELECT * FROM users WHERE')) {
+                if (sql.includes('FROM users WHERE')) {
                     return cb(null, []);
                 }
                 if (sql.includes('INSERT INTO users')) {
@@ -231,7 +231,7 @@ describe('backend/services/userService', () => {
                 last_name: 'User',
                 role: 'user',
                 avatar: 'avatar1.png',
-                xp: 250
+                totalPoints: 250
             };
 
             mockDb.setQueryHandler((sql, params, cb) => {
@@ -252,7 +252,7 @@ describe('backend/services/userService', () => {
                 displayName: 'Login User',
                 role: 'user',
                 avatar: 'avatar1.png',
-                xp: 250
+                totalPoints: 250
             });
         });
 
