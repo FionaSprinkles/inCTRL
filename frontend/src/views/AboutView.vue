@@ -3,7 +3,7 @@
   <main>
     <!-- Hero Section: Introduction at the top of the page -->
     <section class="hero-section">
-      <p class="eyebrow">ABOUT US</p>
+      <p class="about">ABOUT US</p>
       <h1>Small shortcuts. Big time savings.</h1>
       <p class="description">
         InCtrl helps you learn Windows keyboard shortcuts by practicing them, not by memorizing a
@@ -15,7 +15,7 @@
     <section class="story-section">
       <!-- Left column with title and highlights -->
       <div class="left-column">
-        <span class="eyebrow">OUR STORY</span>
+        <span class="story">OUR STORY</span>
         <h2 class="title">Why we built InCtrl</h2>
         <p class="highlight-text">The fastest way to learn a shortcut is to use it.</p>
       </div>
@@ -39,7 +39,7 @@
     <section class="features-section">
       <div class="white-card">
         <div class="card-left">
-          <span class="eyebrow">A TASTE OF WHAT YOU LEARN</span>
+          <span class="taste">A TASTE OF WHAT YOU LEARN</span>
           <h2>Three seconds saved, a thousand times.</h2>
           <p>
             A shortcut only saves a moment. But you use the same ones over and over, and those
@@ -110,33 +110,20 @@
 </template>
 
 <style scoped>
-/* HERO SECTION*/
-/* Layout */
+/* Hero section styling */
 .hero-section {
   padding: 60px 20px 60px 80px;
 }
 
-/* Title */
-.hero-section .eyebrow {
-  color: var(--color-light-accenturate);
-  font-weight: 600;
-  font-size: 12px;
-}
-
-/* Title */
 .hero-section h1 {
   font-size: 50px;
 }
 
-/* Description */
 .hero-section .description {
-  color: var(--color-text-main);
-  letter-spacing: 3px;
-  font-size: 1.1rem;
+  color: var(--color-text-white);
 }
 
-/* STORY SECTION*/
-/* Layout */
+/* Story section layout and columns */
 .story-section {
   background-color: #fffcf9;
   padding: 60px 20px;
@@ -144,13 +131,6 @@
   margin: 0 auto;
 }
 
-.story-section .eyebrow {
-  color: var(--color-dark-accenturate);
-  font-weight: 600;
-  font-size: 12px;
-}
-
-/* Left-column layout */
 .story-section .left-column {
   flex: 2;
   padding-left: 70px;
@@ -159,46 +139,21 @@
   align-items: flex-start;
 }
 
-/* Right-column layout */
 .story-section .right-column {
   flex: 1.5;
   padding-right: 70px;
 }
 
-/* Left-column title */
-.title {
-  font-size: 40px;
-  font-weight: 600;
-  color: var(--color-text-black);
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--color-dark-teal);
-  margin-bottom: -10px;
-  display: inline-block;
-  text-transform: none;
-  letter-spacing: 1px;
-}
-
-/* Left-column highlight text */
-.left-column .highlight-text {
-  font-family: var(--font-display), sans-serif;
-  color: var(--color-dark-teal);
-  font-size: 25px;
-  font-weight: 500;
-}
-
-/* Right-column text */
 .right-column p {
   color: var(--color-text-black);
 }
 
-/* FEATURES SECTION*/
-/* Layout */
+/* Features section and white card layout */
 .features-section {
   background-color: #fffcf9;
   padding: 20px 20px 60px 20px;
 }
 
-/* Card layout */
 .white-card {
   background-color: #ffffff;
   border-radius: 16px;
@@ -211,28 +166,54 @@
   gap: 40px;
 }
 
-/* Left-side layout */
-.card-left {
-  flex: 2;
-}
-
-/* Right-side layout */
-.card-right {
-  padding-top: 20px;
-  flex: 1.5;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* Card layout */
-.features-section .eyebrow {
-  color: var(--color-dark-accenturate);
+/* Typography and common text elements */
+.about {
+  color: var(--color-text-muted);
   font-weight: 600;
   font-size: 12px;
 }
 
-/* Title */
+.story {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.taste {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.title {
+  font-size: 40px;
+  font-family: Georgia, serif;
+  color: var(--color-dark-teal);
+  padding-bottom: 12px;
+  border-bottom: 2px solid #5d827c;
+  margin-bottom: -10px;
+  display: inline-block;
+}
+
+.left-column h2 {
+  color: var(--color-text-black);
+  text-transform: none;
+  letter-spacing: 1px;
+  font-size: 40px;
+}
+
+.left-column .highlight-text {
+  font-family: var(--font-display), sans-serif;
+  color: var(--color-dark-teal);
+  font-size: 25px;
+  font-weight: 500;
+}
+
+/* Card left and right content styling */
+.card-left {
+  flex: 2;
+}
+
 .card-left h2 {
   color: var(--color-dark-teal);
   text-transform: none;
@@ -241,9 +222,16 @@
   font-weight: 500;
 }
 
-/* Description */
 .card-left p {
   color: var(--color-text-black);
+}
+
+.card-right {
+  padding-top: 20px;
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* Shortcut rows and keyboard keys styling */
@@ -262,13 +250,18 @@
   gap: 8px;
 }
 
+.plus {
+  color: #888;
+  font-size: 0.9rem;
+}
+
 kbd {
   background-color: #ffffff;
   border: 1px solid #dcdcdc;
   border-bottom-width: 2px;
   border-radius: 6px;
   padding: 6px 10px;
-  font-family: var(--font-body), sans-serif;
+  font-family: inherit;
   font-size: 0.85rem;
   font-weight: 500;
   color: #333;
@@ -277,20 +270,12 @@ kbd {
   text-align: center;
 }
 
-/* Shortcut description */
 .shortcut-description {
   color: var(--color-text-black);
   font-size: 0.95rem;
 }
 
-/* Plus design */
-.plus {
-  color: #888;
-  font-size: 0.9rem;
-}
-
-/* TEAM SECTION*/
-/* Layout */
+/* Team section styling */
 .team-section {
   background-color: #fcfbfa;
   padding: 40px 20px 80px 20px;
@@ -298,11 +283,11 @@ kbd {
   width: 100%;
 }
 
-/* Title */
+/* Styles the heading inside the team section */
 .team-section h2 {
   font-size: 30px;
   font-family: var(--font-display), sans-serif;
-  color: var(--color-dark-accenturate);
+  color: var(--color-dark-teal);
   margin-bottom: 50px;
 }
 
@@ -323,7 +308,7 @@ kbd {
   text-align: center;
 }
 
-/* Circular avatar and the team member's initials */
+/* Styles the circular avatar containing the team member's initials */
 .avatar-initials {
   width: 80px;
   height: 80px;
@@ -339,7 +324,7 @@ kbd {
   margin-top: 16px;
 }
 
-/* Team members name */
+/* Styles the text descriptions or names under the team members */
 .team-member p {
   font-size: 20px;
   color: var(--color-dark-teal);

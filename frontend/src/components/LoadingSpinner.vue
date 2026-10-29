@@ -36,7 +36,7 @@ defineProps({
   border-radius: 50%;
   border-style: solid;
   border-color: rgba(255, 255, 255, 0.15);
-  border-top-color: var(--color-light-accenturate, #85b4be);
+  border-top-color: var(--color-text-muted, #85b4be);
   animation: spin 0.85s linear infinite;
 }
 
@@ -59,7 +59,7 @@ defineProps({
 }
 
 .spinner-label {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
   font-size: 0.95rem;
   color: var(--color-text-main, #e6d5b8);
   letter-spacing: 0.5px;

@@ -99,12 +99,12 @@ const timeLabel = computed(() => (props.seconds === 1 ? '1 second' : `${props.se
 
 .tally {
   margin: 0 0 1.75rem;
-  font-family: var(--font-heading), serif;
+  font-family: var(--font-heading);
   font-size: 4.25rem;
   font-weight: 370;
   line-height: 1;
   letter-spacing: 0;
-  color: var(--color-light-accenturate);
+  color: var(--color-text-muted);
 }
 
 .sheet {
@@ -132,8 +132,8 @@ const timeLabel = computed(() => (props.seconds === 1 ? '1 second' : `${props.se
 
 dt {
   margin: 0;
-  color: var(--color-light-accenturate);
-  font-family: var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: 400;
   letter-spacing: 0;
@@ -141,8 +141,8 @@ dt {
 
 dd {
   margin: 0;
-  color: var(--color-text-white);
-  font-family: var(--font-body), sans-serif;
+  color: var(--color-text-heading);
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0;

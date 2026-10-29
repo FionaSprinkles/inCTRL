@@ -117,17 +117,12 @@ function submit() {
   text-align: center;
   color: var(--color-text-main);
 
-
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
+  background: rgba(29, 120, 116, 0.67);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 /* Close button in the top right corner */
@@ -154,7 +149,7 @@ h1 {
 }
 
 .member a:hover {
-  color: var(--color-light-accenturate);
+  color: var(--color-text-muted);
 }
 
 /* Form layout */
@@ -162,7 +157,7 @@ form {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
 }
 
 /* Input fields */
@@ -173,7 +168,7 @@ input {
   border-bottom: 1px solid rgba(255, 255, 255, 0.6);
   color: white;
   outline: none;
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
 }
 
 /* Color of the placeholder text */
@@ -188,34 +183,21 @@ input:focus {
 
 /* Log in button */
 .btn-primary {
-  background: var(--color-dark-teal);
-  color: var(--color-text-white);
-  letter-spacing: 5px;
   margin-top: 0.5rem;
   padding: 10px;
-
+  background: var(--color-button);
+  color: var(--color-button-text);
   font-weight: 500;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 40px;
-
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
 }
 
 /* Log in button hover */
 .btn-primary:hover {
-  color: var(--color-text-main);
+  background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.25s ease;
 }
 
 /* Divider with "or log in with" text */
@@ -225,7 +207,7 @@ input:focus {
   gap: 10px;
   margin: 1.5rem 0 1rem;
   font-size: 0.8rem;
-  color: var(--color-text-white);
+  color: var(--color-text-heading);
 }
 
 /* Two lines beside the "or log in with" text */
@@ -247,28 +229,19 @@ input:focus {
 /* Social buttons design*/
 .btn-social {
   padding: 8px 16px;
-  background-color: var(--color-dark-teal);
+  background-color: #1d7874;
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 40px;
   cursor: pointer;
-
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 /* Social buttons hover */
 .btn-social:hover {
-  color: var(--color-text-main);
+  background-color: var(--color-button-hover);
+  color: var(--color-button-text);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.25s ease;
 }
 </style>

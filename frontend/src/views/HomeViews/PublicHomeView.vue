@@ -5,11 +5,9 @@ import './assets/global.css'
     <section class="hero">
       <p class="eyebrow">MASTER WINDOWS SHORTCUTS</p>
 
-      <h1>Take control of your keyboard</h1>
+      <h1>Take control of your keyboard.</h1>
 
-      <p class="hero-text">
-        Learn practical Windows shortcuts through focused, challenging quizzes.
-      </p>
+      <p>Learn practical Windows shortcuts through focused, challenging quizzes.</p>
 
       <div class="buttons">
         <RouterLink to="/signup" class="btn-hero"> Get started </RouterLink>
@@ -18,24 +16,8 @@ import './assets/global.css'
       </div>
     </section>
 
-    <section class="member">
-      <div class="left-side">
-        <h1>Join the community!</h1>
-        <p>
-          Save your quiz results, track your progress, and climb the leaderboards as you earn
-          points.
-        </p>
-        <p class="ps">
-          Psst! You'll need an account to save your progress and join the competition.
-        </p>
-      </div>
-      <div class="right-side">
-        <PodiumLeaderboard podium-only />
-      </div>
-    </section>
-
     <section class="how-it-works">
-      <p class="how">HOW INCTRL WORKS</p>
+      <p class="eyebrow">HOW INCTRL WORKS</p>
 
       <h2>Learn. Practice. Improve.</h2>
 
@@ -69,7 +51,6 @@ import './assets/global.css'
 
 <script setup>
 import { RouterLink } from 'vue-router'
-import PodiumLeaderboard from '@/components/PodiumLeaderboard.vue'
 </script>
 
 <style scoped>
@@ -81,153 +62,52 @@ import PodiumLeaderboard from '@/components/PodiumLeaderboard.vue'
   text-align: center;
 }
 
-.hero-text {
-  letter-spacing: 3px;
-  font-size: 1.1rem;
+.eyebrow {
+  color: #85b4be;
+  font-size: 0.9rem;
+  font-weight: bold; /* makes the font bold */
+  margin-top: -10px;
 }
 
 h1 {
-  font-size: 4rem;
-}
-
-.eyebrow {
-  color: var(--color-light-accenturate);
-  font-size: 0.9rem;
-  font-weight: bold;
-  letter-spacing: 0.15em;
-  margin-top: -10px;
-  padding-bottom: 10px;
-}
-
-.how {
-  color: var(--color-light-accenturate);
-  font-size: 0.9rem;
-  font-weight: bold;
-  letter-spacing: 0.15em;
-  margin-top: -10px;
-}
-
-.how-it-works h2 {
-  color: var(--color-text-white);
+  font-size: 4rem; /* makes the font 4x bigger than standard h1 */
 }
 
 /* HERO SECTION BUTTONS */
 .buttons {
   display: flex;
   justify-content: center; /* Help buttons to be in center of the page */
-  gap: 1.5rem; /* Makes space between elements */
+  gap: 1rem; /* Makes space of 1rem between elements */
   margin-top: 2rem; /* Makes space above the element */
 }
 
-/* Hero buttons */
 .buttons a {
-  position: relative;
-  padding: 0.9rem 2.2rem;
+  padding: 0.7rem 1.2rem;
   text-decoration: none;
-  color: var(--color-text-white);
-  font-size: 17px;
+  background-color: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid #85b4be;
+  transition: all 0.25s ease;
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  border-radius: 12px;
-
-  /* Glassmorphism */
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
 }
 
-/* Silver light on buttons bottom */
-.buttons a::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 18%;
-  width: 64%;
-  height: 2px;
-  border-radius: 50%;
-  background: rgba(245, 247, 250, 0.95);
-  box-shadow:
-    0 0 10px 3px rgba(197, 204, 214, 0.6),
-    0 0 22px 6px rgba(197, 204, 214, 0.3);
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-
-/* Hero button hover */
 .buttons a:hover {
-  color: #ffffff;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.08) 100%);
-  border-color: rgba(230, 234, 240, 0.85);
-  transform: translateY(-3px);
-  box-shadow:
-    8px 16px 32px rgba(0, 0, 0, 0.55),
-    0 0 30px rgba(197, 204, 214, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background-color: var(--color-button-hover);
+  color: var(--color-button-text);
+  border-color: #fdfbf7;
+  box-shadow: 0 0 30px rgba(45, 212, 191, 0.3);
 }
 
-/* Silver light on buttons bottom hover */
-.buttons a:hover::after {
-  left: 10%;
-  width: 80%;
-  box-shadow:
-    0 0 14px 4px rgba(230, 234, 240, 0.8),
-    0 0 30px 8px rgba(197, 204, 214, 0.4);
-}
-
-/* MEMBER SECTION */
-/* Layout */
-.member {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 3rem;
-  max-width: 950px;
-  margin: 0 auto;
-  padding: 5rem 2rem;
-}
-
-/* Podium layout */
-.member .right-side {
-  display: flex;
-  justify-content: center;
-}
-
-/* Left-side title */
-.member h1 {
-  font-size: 40px;
-}
-
-/* Left-side description */
-.member p {
-  font-size: 20px;
-}
-
-/* Left-side note */
-.member .ps {
-  font-size: 14px;
-  font-style: italic;
-  color: var(--color-light-accenturate);
-}
-
-/* HOW IT WORKS SECTION */
-/* Layout */
+/* HOW IT WORKS SECTION*/
 .how-it-works {
   padding: 5rem 2rem;
 }
 
-/* Title */
 .how-it-works h2 {
+  font-size: 2.5rem;
 }
 
-/* Feature cards layout */
 .features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -235,48 +115,27 @@ h1 {
   margin: 3rem auto;
 }
 
-/* Feature cards title */
-.features h3 {
-  color: var(--color-text-white);
-}
-
-/* Feature cards design */
 .features article {
   padding: 2rem;
+  background-color: rgba(4, 47, 46, 0.4);
+  border-color: #2dd4bf;
   text-align: center;
-
-  /* Glassmorphism */
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  border-radius: 20px;
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
-/* Feature cards number */
 .features span {
-  color: var(--color-light-accenturate);
+  color: var(--color-text-muted);
   font-weight: bold;
 }
 
-/* Feature cards hover */
 .features article:hover {
-  box-shadow: 0 0 40px 6px rgba(197, 204, 214, 0.35);
+  box-shadow: 0 0 50px 10px rgba(230, 213, 184, 0.7);
 }
 
-/* Feature cards description */
 .features article p {
   font-style: italic;
 }
 
-/* Description */
 .section-lead {
   font-style: italic;
 }
