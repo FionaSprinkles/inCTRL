@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import {
   fetchQuizzes,
   fetchCategories,
@@ -15,6 +15,7 @@ import QuizLoading from '@/components/quiz/QuizLoading.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const quizzes = ref([])
 const categories = ref([])
@@ -120,6 +121,7 @@ async function loadData() {
     const qDiff = route.query.difficulty
     if (qDiff) selectedDifficulty.value = qDiff
     const qQuizId = route.query.id || route.query.quizId
+    if (!qQuizId && route.path === '/quiz') router.replace('/categories')
     if (qQuizId) {
       const target = qData.find((q) => String(q.id) === String(qQuizId))
       if (target) {
@@ -150,6 +152,7 @@ async function startQuiz(quiz) {
   }
   attemptId++
   const requestId = ++quizRequestId
+  if (route.path !== '/quiz') router.push('/quiz')
   activeQuiz.value = quiz
   loadingQuestions.value = true
   quizError.value = ''
@@ -194,6 +197,7 @@ function exitQuiz() {
   activeQuestionEnteredAt.value = null
   questionTimes.value = {}
   activeQuiz.value = null
+  if (route.path !== '/categories') router.push('/categories')
   quizQuestions.value = []
   quizError.value = ''
   submitError.value = ''
@@ -333,6 +337,13 @@ function returnToSummary() {
   isReviewMode.value = false
   isCompleted.value = true
 }
+
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath !== '/quiz' && activeQuiz.value) exitQuiz()
+  },
+)
 
 onMounted(loadData)
 onUnmounted(stopTimer)
