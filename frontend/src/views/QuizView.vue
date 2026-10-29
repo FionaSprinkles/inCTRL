@@ -152,7 +152,7 @@ function exitQuiz() {
   attemptId++
   quizRequestId++
   stopTimer()
-  router.push('/categories')
+  router.replace('/categories')
 }
 
 function handleAnswered({ questionId, userAnswer, result }) {
