@@ -561,8 +561,8 @@ describe('backend/services/quizService', () => {
                 { id: 1, username: 'Pro', score: 10, timeSpentSeconds: 60 }
             ];
             mockDb.setQueryHandler((sql, params, cb) => {
-                assert.ok(sql.includes('SELECT \n                a.id'));
-                assert.deepStrictEqual(params, [10]);
+                assert.match(sql, /SELECT\s+a\.id/);
+                assert.deepStrictEqual(params, [50]);
                 cb(null, leaderboardRows);
             });
 
@@ -731,9 +731,9 @@ describe('backend/services/quizService', () => {
             );
         });
 
-        it('deletes a quiz and returns result', async () => {
+        it('deactivates a quiz (soft delete) and returns result', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                assert.ok(sql.includes('DELETE FROM quizzes'));
+                assert.ok(sql.includes('UPDATE quizzes SET is_active = FALSE'));
                 assert.strictEqual(params[0], 5);
                 cb(null, { affectedRows: 1 });
             });
