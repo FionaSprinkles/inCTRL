@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchQuizzes, fetchCategories, filterQuizzes } from '@/services/quizService'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
@@ -36,10 +36,10 @@ async function loadData() {
     quizzes.value = qData
     categories.value = cData
 
-    const qCat = route.query.category || route.query.categoryId
-    if (qCat) selectedCategory.value = qCat
-    const qDiff = route.query.difficulty
-    if (qDiff) selectedDifficulty.value = qDiff
+
+
+
+
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -56,6 +56,15 @@ function startQuiz(quiz) {
   if (!quiz || !quiz.id) return
   router.push({ path: '/quiz', query: { id: quiz.id } })
 }
+
+watch(
+  () => route.query,
+  (q) => {
+    selectedCategory.value = q.category || q.categoryId || 'all'
+    selectedDifficulty.value = q.difficulty || 'all'
+  },
+  { immediate: true },
+)
 
 onMounted(loadData)
 </script>
