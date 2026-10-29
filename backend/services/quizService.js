@@ -543,26 +543,26 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
  * @param {number|string} [limit=10] - Maximum number of leaderboard entries to retrieve.
  * @returns {Promise<Array<object>>} Resolves with array of leaderboard records.
  */
-function getLeaderboard(limit = 10) {
+function getLeaderboard(filter = 'total', limit = 50) {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT 
-                a.id, 
-                a.score, 
-                a.max_score AS maxScore, 
-                a.total_answered AS totalAnswered, 
-                a.time_spent_seconds AS timeSpentSeconds, 
+            SELECT
+                a.id,
+                a.score,
+                a.max_score AS maxScore,
+                a.total_answered AS totalAnswered,
+                a.time_spent_seconds AS timeSpentSeconds,
                 a.completed_at AS completedAt,
-                COALESCE(u.username, a.guest_name, 'Guest') AS username,
+                u.username,
                 u.display_name AS displayName,
                 u.avatar,
-                COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
+                (SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
             FROM quiz_attempts a
-            LEFT JOIN users u ON a.user_id = u.id
+                INNER JOIN users u ON a.user_id = u.id
             ORDER BY a.score DESC, a.time_spent_seconds ASC
-            LIMIT ?
+                LIMIT ?
         `;
-        const n = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+        const n = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 100);
         db.query(sql, [n], (err, rows) => {
             if (err) return reject(err);
             resolve(rows);
