@@ -76,7 +76,10 @@ onUnmounted(() => {
   flex-direction: column;
   top: 100%; /* starts right below the Browse button */
   z-index: 10; /* stays on top of other elements */
-  width: 280px;
+  width: max-content; 
+  min-width: 140px;
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
   padding: 1rem;
 
 
