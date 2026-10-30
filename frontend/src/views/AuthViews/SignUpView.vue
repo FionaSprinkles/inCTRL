@@ -130,47 +130,50 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
+/* Page layout */
 .signup-page {
-  min-height: 85vh;
   display: flex;
   align-items: center; /* Centers the card vertically */
   justify-content: center; /* Centers the card horizontally */
-  padding: 2rem;
 }
 
-/* Glass-card */
+/* Card layout */
 .glass-card {
-  width: 100%; /* Takes the full available width on small screens */
-  max-width: 380px; /* Never gets wider than 380px on large screens */
+  width: 100%; /* Takes the full available width */
+  max-width: 380px; /* Never gets wider than 380px */
   padding: 1rem 2rem;
   text-align: center;
+  border-radius: 40px;
 
-  background: rgba(255, 255, 255, 0.09); /* Makes background more transparent */
-  backdrop-filter: blur(16px) saturate(160%); /* Blurs the background */
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25); /* Thin light border */
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  /* Border */
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+
+  /* Glassmorphism */
+  backdrop-filter: saturate(120%);
+  -webkit-backdrop-filter: saturate(120%);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
-/* Heading spacing */
-h1 {
-  margin-bottom: 0.5rem;
-}
-
+/* Log in link */
 .link-button {
   background: none;
   border: none;
-  padding: 0;
   font-size: 18px;
-  font-family: inherit;
-  color: inherit;
+  font-family: var(--font-body), sans-serif;
+  color: var(--color-text-main);
   text-decoration: underline;
   cursor: pointer;
 }
 
+/* Log in link hover */
 .link-button:hover {
-  color: var(--color-button-text);
+  color: var(--color-light-accenturate);
 }
 
 /* Form layout */
@@ -178,7 +181,7 @@ form {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 /* Input fields */
@@ -189,7 +192,7 @@ input {
   border-bottom: 1px solid rgba(255, 255, 255, 0.6); /* Underline for each field */
   color: white;
   outline: none; /* Removes the browser's default focus outline */
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 /* Color of the placeholder text */
@@ -204,21 +207,33 @@ input:focus {
 
 /* Sign up button */
 .btn-primary {
+  background: var(--color-dark-teal);
+  color: var(--color-text-white);
+  letter-spacing: 5px;
   margin-top: 0.5rem;
   padding: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
   font-weight: 500;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
+  border-radius: 40px;
+
+  /* Glassmorphism */
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 /* Sign up button hover */
 .btn-primary:hover {
-  background: var(--color-button-hover);
+  color: var(--color-text-main);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: box-shadow 0.25s ease;
+  transition: all 0.3s ease;
 }
 
 /* Divider with "or sign up with" text */
@@ -228,7 +243,7 @@ input:focus {
   gap: 10px;
   margin: 1.5rem 0 1rem;
   font-size: 0.8rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 /* Two lines beside the "or sign up with" text */
@@ -240,30 +255,39 @@ input:focus {
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* Social buttons layout*/
+/* Social buttons layout */
 .social {
   display: flex;
   justify-content: center;
   gap: 12px;
 }
 
-/* Social buttons design*/
+/* Social buttons design */
 .btn-social {
   padding: 8px 16px;
-  background-color: #1d7874;
+  background-color: var(--color-dark-teal);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 40px;
   cursor: pointer;
-  transition: all 0.25s ease; /* Smooth hover transition */
+
+  /* Glassmorphism */
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 /* Social buttons hover */
 .btn-social:hover {
-  background-color: var(--color-button-hover);
-  color: var(--color-button-text);
+  color: var(--color-text-main);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: box-shadow 0.25s ease;
+  transition: all 0.3s ease;
 }
 
 /* Back to home link */
@@ -275,7 +299,7 @@ input:focus {
 
 /* Back to home link hover */
 .back-link:hover {
-  color: var(--color-button-text);
+  color: var(--color-light-accenturate);
 }
 
 .error {

@@ -553,12 +553,12 @@ function getLeaderboard(limit = 10) {
                 a.total_answered AS totalAnswered, 
                 a.time_spent_seconds AS timeSpentSeconds, 
                 a.completed_at AS completedAt,
-                COALESCE(u.username, a.guest_name, 'Guest') AS username,
+                u.username,
                 u.display_name AS displayName,
                 u.avatar,
-                COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
+                (SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id) AS totalPoints
             FROM quiz_attempts a
-            LEFT JOIN users u ON a.user_id = u.id
+            INNER JOIN users u ON a.user_id = u.id
             ORDER BY a.score DESC, a.time_spent_seconds ASC
             LIMIT ?
         `;
