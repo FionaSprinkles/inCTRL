@@ -556,7 +556,7 @@ function getLeaderboard(limit = 10) {
                 u.username,
                 u.display_name AS displayName,
                 u.avatar,
-                (SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
+                (SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id) AS totalPoints
             FROM quiz_attempts a
             INNER JOIN users u ON a.user_id = u.id
             ORDER BY a.score DESC, a.time_spent_seconds ASC
