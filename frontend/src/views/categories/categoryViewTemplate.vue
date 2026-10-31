@@ -1,5 +1,7 @@
 /**
 This is a template for all different quiz-category startpages. 
+Shows name, description and fetches relevant quizzes  of that category.
+
 It should be connected to backend -> data -> categoriesSeed.json to read slug.
 
 Flow:
@@ -18,6 +20,16 @@ categoryViewTemplate.vue
   <main v-if="category">
     <h1>{{ category.name }}</h1>
     <p>{{ category.description }}</p>
+
+    <section>
+      <h2>Available quizzes</h2>
+
+      <article v-for="quiz in quizzes" :key="quiz.id">
+        <h3>{{ quiz.title }}</h3>
+        <p>{{ quiz.description }}</p>
+      </article>
+    </section>
+
   </main>
 
   <p v-else-if="loading">Loading category...</p>
@@ -30,10 +42,12 @@ categoryViewTemplate.vue
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { fetchQuizzes, filterQuizzes } from '@/services/quizService'
 
 const route = useRoute()
 
 const category = ref(null) // gets information of what the category contains, like id, name, slug and description
+const quizzes = ref([]) // this will sort and show only quizzes relevant for that category
 const loading = ref(true) // knows if we are trying to load info from backend
 const error = ref('') // gets error message
 
@@ -43,6 +57,7 @@ async function fetchCategory() {
   loading.value = true
   error.value = '' 
   category.value = null
+  quizzes.value = []
 
   const slug = route.params.slug //get category slug
   try {
@@ -65,6 +80,14 @@ async function fetchCategory() {
     if (route.params.slug !== slug) return // if slug in url doesnt match slug request - return
 
     category.value = data.category
+
+
+    const allQuizzes = await fetchQuizzes()// Fetch all quizzes from backend
+
+    quizzes.value = filterQuizzes(allQuizzes, {    // Filter quizzes belonging to current category
+      categoryId: category.value.id
+    })
+
   } catch (err) {
 
     if (route.params.slug !== slug) return// if slug in url doesnt match slug request - return
