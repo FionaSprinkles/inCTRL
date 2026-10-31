@@ -63,7 +63,7 @@ onUnmounted(() => {
 </script>
 
 
-<style sheet>
+<style scoped>
 
 
 .dropdown {
@@ -109,9 +109,11 @@ onUnmounted(() => {
 
 
 /* Smaller font for links inside the dropdown */
-.dropdown-menu a {
+.dropdown-menu :slotted(.nav-link),
+.dropdown-menu :slotted(.category-section) .nav-link {
   font-family: var(--font-body), sans-serif;
   font-size: 16px;
+  text-align: left;
 }
 
 

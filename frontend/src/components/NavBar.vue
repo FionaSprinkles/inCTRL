@@ -189,7 +189,7 @@ onMounted(() => {
 
 
 /* Dropdown heading */
-.browse-menu h2 {
+.category-section h2 {
   font-size: 20px;
   letter-spacing: 2px;
   text-align: center;
