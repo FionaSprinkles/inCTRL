@@ -40,17 +40,41 @@ export async function fetchQuizById(id) {
   return data.quiz
 }
 
-/**
- * Submits a completed quiz attempt to the backend.
- * @param {object} payload - Submission payload
- * @returns {Promise<object>}
- */
-export async function submitQuizAttempt(payload) {
+function authHeaders() {
   const token = typeof getToken === 'function' ? getToken() : null
   const headers = { 'Content-Type': 'application/json' }
   if (token) {
     headers.Authorization = `Bearer ${token}`
   }
+  return headers
+}
+
+/**
+ * Opens a server-timed run for one play of a quiz.
+ * @param {number|string} quizId
+ * @returns {Promise<{id: string, quizId: number, startedAt: string, expiresAt: string}>}
+ */
+export async function startQuizRun(quizId) {
+  const res = await fetch('/api/quiz/runs', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ quizId }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(data.error || `Failed to start quiz (${res.status})`)
+  }
+  return data.run
+}
+
+/**
+ * Submits a completed quiz attempt to the backend.
+ * Timing is measured by the server from the quiz run. Do not send client clocks.
+ * @param {object} payload - Submission payload
+ * @returns {Promise<object>}
+ */
+export async function submitQuizAttempt(payload) {
+  const headers = authHeaders()
 
   const res = await fetch('/api/quiz/attempts', {
     method: 'POST',

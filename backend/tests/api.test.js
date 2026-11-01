@@ -281,25 +281,41 @@ describe('backend API integration tests (app & routes)', () => {
         });
 
         it('POST /api/quiz/attempts submits attempt for guest and authenticated user', async () => {
+            const runId = '11111111-1111-4111-8111-111111111111';
             mockDb.setQueryHandler((sql, params, cb) => {
-                cb(null, [questionRow]);
+                if (sql.includes('CREATE TABLE IF NOT EXISTS quiz_runs')) return cb(null, {});
+                if (sql.includes('UPDATE quiz_runs')) return cb(null, { affectedRows: 1 });
+                if (sql.includes('INSERT INTO quiz_attempts')) return cb(null, { insertId: 55 });
+                if (sql.includes('INSERT INTO result_questions')) return cb(null, {});
+                if (sql.includes('FROM quiz_runs')) {
+                    return cb(null, [{
+                        id: runId,
+                        quizId: 1,
+                        userId: null,
+                        startedAt: new Date(),
+                        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+                        status: 'open'
+                    }]);
+                }
+                if (sql.includes('FROM quiz_questions')) return cb(null, [questionRow]);
+                cb(null, []);
             });
 
-            // Guest attempt
             const guestRes = await request(app)
                 .post('/api/quiz/attempts')
                 .send({
                     guestName: 'Guest1',
+                    runId,
                     answers: { q1: 'opt1' }
                 });
             assert.strictEqual(guestRes.status, 201);
             assert.strictEqual(guestRes.body.attempt.score, 100);
 
-            // Authenticated attempt
             const authRes = await request(app)
                 .post('/api/quiz/attempts')
                 .set('Authorization', `Bearer ${userToken}`)
                 .send({
+                    runId,
                     answers: { q1: 'opt1' }
                 });
             assert.strictEqual(authRes.status, 201);

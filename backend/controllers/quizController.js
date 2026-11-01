@@ -270,58 +270,104 @@ exports.deleteQuestion = async (req, res) => {
     }
 };
 
+const RUN_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function sendServiceError(res, error) {
+    const status = Number.isInteger(error.statusCode) && error.statusCode >= 400 && error.statusCode < 500
+        ? error.statusCode
+        : 500;
+    res.status(status).json({
+        success: false,
+        error: error.message
+    });
+}
+
+/**
+ * Handles POST /api/quiz/runs.
+ * Opens a server-timed run for one play of a quiz.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+exports.createQuizRun = async (req, res) => {
+    try {
+        const quizId = req.body && req.body.quizId;
+        const parsedQuizId = typeof quizId === 'number' && Number.isInteger(quizId)
+            ? quizId
+            : (typeof quizId === 'string' && /^\d+$/.test(quizId) ? parseInt(quizId, 10) : null);
+        if (!parsedQuizId || parsedQuizId <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'quizId is required'
+            });
+        }
+
+        const run = await quizService.createQuizRun({
+            quizId: parsedQuizId,
+            userId: req.user ? req.user.id : null
+        });
+        res.status(201).json({
+            success: true,
+            run
+        });
+    } catch (error) {
+        console.error('Error creating quiz run:', error);
+        sendServiceError(res, error);
+    }
+};
+
 /**
  * Handles POST /api/quiz/attempts.
- * Submits and securely evaluates quiz answers server-side, records attempt and awards XP.
+ * Grades an open quiz run. Duration is the server clock from run start to submit.
+ * Client timeSpentSeconds and questionTimes are rejected.
  * @param {import('express').Request} req - Express request object with answer submission.
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
  */
 exports.submitAttempt = async (req, res) => {
     try {
-        const { guestName, formatFilter, quizId, answers, timeSpentSeconds, questionTimes } = req.body;
+        const body = req.body || {};
+        const { guestName, formatFilter, runId, answers } = body;
 
-        // Security (CWE-639 IDOR Fix):
-        // Derive userId strictly from the authenticated token session (req.user).
-        // Never accept or trust client-supplied userId from req.body.
-        const authenticatedUserId = req.user ? req.user.id : null;
+        if (Object.prototype.hasOwnProperty.call(body, 'timeSpentSeconds')
+            || Object.prototype.hasOwnProperty.call(body, 'questionTimes')) {
+            return res.status(400).json({
+                success: false,
+                error: 'timeSpentSeconds and questionTimes are not accepted. The server measures quiz time.'
+            });
+        }
 
-        // Validation: answers is required and must be an object or array
-        if (!answers || (typeof answers !== 'object' && typeof answers !== 'string')) {
+        if (!answers || typeof answers !== 'object') {
             return res.status(400).json({
                 success: false,
                 error: 'answers is required and must be an object or array'
             });
         }
 
-        // Validation: timeSpentSeconds
-        const safeTimeSpent = Number.isInteger(timeSpentSeconds) && timeSpentSeconds >= 0 ? timeSpentSeconds : 0;
+        if (formatFilter !== undefined && formatFilter !== 'all') {
+            return res.status(400).json({
+                success: false,
+                error: 'formatFilter must be "all"'
+            });
+        }
 
-        // Validation: questionTimes (optional per-question elapsed time in seconds)
-        const safeQuestionTimes = questionTimes && typeof questionTimes === 'object' && !Array.isArray(questionTimes)
-            ? questionTimes
-            : null;
+        if (typeof runId !== 'string' || !RUN_ID_PATTERN.test(runId)) {
+            return res.status(400).json({
+                success: false,
+                error: 'runId is required'
+            });
+        }
 
-        // Validation: quizId
-        const safeQuizId = Number.isInteger(quizId) || (typeof quizId === 'string' && /^\d+$/.test(quizId))
-            ? parseInt(quizId, 10)
-            : null;
-
-        // Sanitization: guestName
+        const authenticatedUserId = req.user ? req.user.id : null;
         const safeGuestName = !authenticatedUserId && typeof guestName === 'string'
             ? guestName.trim().slice(0, 50)
             : null;
 
-        const safeFormatFilter = typeof formatFilter === 'string' ? formatFilter.slice(0, 50) : 'all';
-
-        const attempt = await quizService.saveAttempt({
+        const attempt = await quizService.submitQuizRun({
+            runId: runId.toLowerCase(),
             userId: authenticatedUserId,
             guestName: safeGuestName,
-            formatFilter: safeFormatFilter,
-            quizId: safeQuizId,
-            answers,
-            timeSpentSeconds: safeTimeSpent,
-            ...(safeQuestionTimes ? { questionTimes: safeQuestionTimes } : {})
+            answers
         });
 
         const attemptToken = !authenticatedUserId
@@ -336,12 +382,7 @@ exports.submitAttempt = async (req, res) => {
         });
     } catch (error) {
         console.error('Error submitting attempt:', error);
-        const isClientError = Boolean(error.isClientError || error.statusCode === 400);
-
-        res.status(isClientError ? 400 : 500).json({
-            success: false,
-            error: error.message
-        });
+        sendServiceError(res, error);
     }
 };
 

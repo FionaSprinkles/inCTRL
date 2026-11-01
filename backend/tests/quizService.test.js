@@ -52,7 +52,7 @@ describe('backend/services/quizService', () => {
             assert.strictEqual(result.length, 3);
             assert.strictEqual(result[0].id, 'q1');
             assert.strictEqual(result[0].options[0].text, 'Alt+F4');
-            assert.strictEqual(result[1].canonicalAnswer, 'Win + L');
+            assert.strictEqual(result[1].canonicalAnswer, undefined);
             assert.strictEqual(result[2].id, 'q3');
         });
 
@@ -812,5 +812,56 @@ describe('backend/services/quizService', () => {
                 /Breakdown fetch error/
             );
         });
+    });
+
+    it('withholds the answer key and scores the run from the server clock', async () => {
+        const leakedRow = {
+            id: 'q1',
+            type: 'single_choice',
+            prompt: 'Lock the PC',
+            explanation: 'Win+L locks the PC',
+            payload_json: JSON.stringify({
+                canonicalAnswer: 'Win + L',
+                options: [{ id: 'opt1', text: 'Win+L', isCorrect: true }]
+            })
+        };
+        mockDb.setQueryHandler((sql, params, cb) => {
+            cb(null, [leakedRow]);
+        });
+
+        const [question] = await quizService.getQuestions();
+        assert.strictEqual(question.options[0].isCorrect, undefined);
+        assert.strictEqual(question.canonicalAnswer, undefined);
+        assert.strictEqual(question.explanation, undefined);
+        assert.strictEqual(question.options[0].text, 'Win+L');
+
+        const runId = '11111111-1111-4111-8111-111111111111';
+        const startedAt = new Date(Date.now() - 40000);
+        mockDb.setQueryHandler((sql, params, cb) => {
+            if (sql.includes('CREATE TABLE IF NOT EXISTS quiz_runs')) return cb(null, {});
+            if (sql.includes('UPDATE quiz_runs')) return cb(null, { affectedRows: 1 });
+            if (sql.includes('INSERT INTO quiz_attempts')) return cb(null, { insertId: 77 });
+            if (sql.includes('INSERT INTO result_questions')) return cb(null, {});
+            if (sql.includes('FROM quiz_runs')) {
+                return cb(null, [{
+                    id: runId,
+                    quizId: 1,
+                    userId: null,
+                    startedAt,
+                    expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+                    status: 'open'
+                }]);
+            }
+            if (sql.includes('FROM quiz_questions')) return cb(null, [leakedRow]);
+            cb(null, []);
+        });
+
+        const attempt = await quizService.submitQuizRun({
+            runId,
+            answers: { q1: 'opt1' }
+        });
+        assert.strictEqual(attempt.points, 50);
+        assert.ok(attempt.timeSpentSeconds >= 40);
+        assert.strictEqual(attempt.evaluations[0].reveal.correctOptionIds[0], 'opt1');
     });
 });
