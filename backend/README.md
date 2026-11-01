@@ -31,13 +31,21 @@ npm start
 - Users: `GET http://localhost:3000/api/users`
 - Categories: `GET http://localhost:3000/api/categories`
 - Leaderboard: `GET http://localhost:3000/api/quiz/leaderboard`
-- Submit answers/result: `POST http://localhost:3000/api/quiz/attempts`
+- Start a timed quiz run: `POST http://localhost:3000/api/quiz/runs`
+
+  Body: `{ "quizId": 1 }`
+
+  The response `run.id` is required to submit. The server records the start time.
+
+- Submit answers: `POST http://localhost:3000/api/quiz/attempts`
 
   Body:
 
 ```json
-  { "answers": { "sc-1": "opt-1" }, "formatFilter": "all", "timeSpentSeconds": 30 }
+  { "runId": "uuid-from-quiz-run", "answers": { "sc-1": "opt-1" } }
 ```
+
+  Do not send `timeSpentSeconds` or `questionTimes`. The server scores the run from its own clock, and the quiz payload does not include answer keys.
 
 ## 5. Troubleshooting in Windows PowerShell
 

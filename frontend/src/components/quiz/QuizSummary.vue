@@ -182,7 +182,7 @@ function formatUserAnswer(question, answer) {
       const parts = []
       pairs.forEach((pair) => {
         const matchedRightId = answer[pair.id]
-        const matchedRight = pairs.find((p) => p.id === matchedRightId)
+        const matchedRight = pairs.find((p) => p.id === matchedRightId || p.rightId === matchedRightId)
         if (matchedRight) {
           parts.push(`${pair.left} ➔ ${matchedRight.right}`)
         }

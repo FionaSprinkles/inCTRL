@@ -22,6 +22,7 @@ router.put('/api/questions/:id', authenticateToken, requireAdmin, quizController
 router.delete('/api/questions/:id', authenticateToken, requireAdmin, quizController.deleteQuestion);
 
 // Quiz attempt routes: optionalAuth verifies JWT if supplied, ensuring authenticated userId is safely extracted
+router.post('/api/quiz/runs', optionalAuth, quizController.createQuizRun);
 router.post('/api/quiz/attempts', optionalAuth, quizController.submitAttempt);
 router.get('/api/quiz/leaderboard', quizController.getLeaderboard);
 router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);

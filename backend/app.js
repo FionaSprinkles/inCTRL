@@ -4,6 +4,7 @@ const cors = require('cors');
 const db = require('./connectionMySQL');
 
 const quizRoutes = require('./routes/quizRoutes');
+const quizService = require('./services/quizService');
 const categoryRoutes = require('./routes/categoryRoutes');
 const shortcutRoutes = require('./routes/shortcutRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -56,6 +57,7 @@ app.use((req, res) => {
 
 async function startServer() {
     await seedDatabase.seedDatabase();// run database seed before start
+    await quizService.ensureQuizRunsTable();
 
 
         app.listen(port, () => {

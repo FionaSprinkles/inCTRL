@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchQuizById, submitQuizAttempt } from '@/services/quizService'
-import { evaluateQuestionWithPoints, isAnswerProvided } from '@/services/quizValidator'
+import { fetchQuizById, startQuizRun, submitQuizAttempt } from '@/services/quizService'
+import { isAnswerProvided } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 import QuizLoading from '@/components/quiz/QuizLoading.vue'
@@ -18,34 +18,19 @@ const submitError = ref('')
 const currentIndex = ref(0)
 const userAnswers = ref({})
 const evalResults = ref({})
-const questionTimes = ref({})
 const isCompleted = ref(false)
 const isSubmitted = ref(false)
+const submitting = ref(false)
+const runId = ref(null)
 
 const elapsedSeconds = ref(0)
 const startedAt = ref(null)
-const activeQuestionEnteredAt = ref(null)
 let timerInterval = null
 const isReviewMode = ref(false)
 
-function recordCurrentQuestionTime(questionId) {
-  if (isCompleted.value || isReviewMode.value || !activeQuestionEnteredAt.value || !questionId) {
-    return
-  }
-  const delta = Math.max(0, (Date.now() - activeQuestionEnteredAt.value) / 1000)
-  const prev = questionTimes.value[questionId] || 0
-  questionTimes.value = {
-    ...questionTimes.value,
-    [questionId]: Math.round((prev + delta) * 100) / 100,
-  }
-  activeQuestionEnteredAt.value = Date.now()
-}
-
 function startTimer() {
   stopTimer()
-  const now = Date.now()
-  startedAt.value = now
-  activeQuestionEnteredAt.value = now
+  startedAt.value = Date.now()
   elapsedSeconds.value = 0
   timerInterval = setInterval(() => {
     if (startedAt.value) {
@@ -76,16 +61,6 @@ const answeredCount = computed(
   () => quizQuestions.value.filter((q) => isQuestionAnswered(q.id)).length,
 )
 
-watch(currentIndex, (newIdx, oldIdx) => {
-  if (isCompleted.value || isReviewMode.value) return
-  const prevQuestion = quizQuestions.value[oldIdx]
-  if (prevQuestion) {
-    recordCurrentQuestionTime(prevQuestion.id)
-  } else {
-    activeQuestionEnteredAt.value = Date.now()
-  }
-})
-
 let quizRequestId = 0
 let attemptId = 0
 
@@ -104,18 +79,21 @@ async function startQuiz(quiz) {
   currentIndex.value = 0
   userAnswers.value = {}
   evalResults.value = {}
-  questionTimes.value = {}
   isCompleted.value = false
   isSubmitted.value = false
   isReviewMode.value = false
+  submitting.value = false
+  runId.value = null
   stopTimer()
   elapsedSeconds.value = 0
-  activeQuestionEnteredAt.value = null
 
   try {
     const data = await fetchQuizById(quiz.id)
     if (requestId !== quizRequestId) return
     if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
+    const run = await startQuizRun(quiz.id)
+    if (requestId !== quizRequestId) return
+    runId.value = run.id
     if (activeQuiz.value) {
       if (data.title) activeQuiz.value.title = data.title
       if (data.difficulty) activeQuiz.value.difficulty = data.difficulty
@@ -178,68 +156,100 @@ function getFinalAnswers() {
   return finalAnswers
 }
 
-async function finishQuiz() {
-  const myAttempt = attemptId
-  if (currentQuestion.value) {
-    recordCurrentQuestionTime(currentQuestion.value.id)
-  }
-  stopTimer()
-  activeQuestionEnteredAt.value = null
-  if (startedAt.value) {
-    elapsedSeconds.value = Math.max(0, Math.floor((Date.now() - startedAt.value) / 1000))
-  }
-  isCompleted.value = true
-  isReviewMode.value = false
-
-  const finalAnswers = getFinalAnswers()
-
-  const results = {}
-  quizQuestions.value.forEach((q) => {
-    const qTime = questionTimes.value[q.id] ?? 0
-    results[q.id] = evaluateQuestionWithPoints(q, finalAnswers[q.id], {
-      timeSpentSeconds: qTime,
-      difficulty: q.difficulty || activeQuiz.value?.difficulty || 'Beginner',
+function mergeReveal(question, reveal) {
+  if (!reveal) return question
+  const next = { ...question }
+  if (reveal.explanation) next.explanation = reveal.explanation
+  if (reveal.keyCombination) next.keyCombination = reveal.keyCombination
+  if (reveal.canonicalAnswer) next.canonicalAnswer = reveal.canonicalAnswer
+  if (reveal.acceptedAnswers) next.acceptedAnswers = reveal.acceptedAnswers
+  if (reveal.targetCombo) next.targetCombo = reveal.targetCombo
+  if (reveal.targetKeys) next.targetKeys = reveal.targetKeys
+  if (reveal.displayCombo) next.displayCombo = reveal.displayCombo
+  if (reveal.correctAnswer !== undefined) next.correctAnswer = reveal.correctAnswer
+  if (reveal.imposterId !== undefined && reveal.imposterId !== null) next.imposterId = reveal.imposterId
+  if (reveal.imposterReason) next.imposterReason = reveal.imposterReason
+  if (reveal.correctOrder) next.correctOrder = reveal.correctOrder
+  if (reveal.pairs) next.pairs = reveal.pairs
+  if (Array.isArray(next.options)) {
+    const details = new Map((reveal.optionDetails || []).map((detail) => [String(detail.id), detail]))
+    const correctIds = new Set((reveal.correctOptionIds || []).map((id) => String(id)))
+    next.options = next.options.map((option) => {
+      const extra = details.get(String(option.id))
+      const withDetail = extra ? { ...option, description: extra.description } : { ...option }
+      if (reveal.correctOptionIds) withDetail.isCorrect = correctIds.has(String(option.id))
+      return withDetail
     })
+  }
+  return next
+}
+
+function applyServerAttempt(attempt) {
+  const byId = new Map((attempt?.evaluations || []).map((ev) => [ev.questionId, ev]))
+  const results = {}
+  quizQuestions.value = quizQuestions.value.map((question) => {
+    const evaluation = byId.get(question.id)
+    if (!evaluation) return question
+    results[question.id] = {
+      isCorrect: evaluation.isCorrect,
+      score: evaluation.score,
+      maxScore: evaluation.maxScore,
+      feedback: evaluation.feedback,
+      correctRightByLeft: evaluation.correctRightByLeft || null,
+    }
+    return mergeReveal(question, evaluation.reveal)
   })
   evalResults.value = results
+  if (Number.isFinite(attempt?.timeSpentSeconds)) {
+    elapsedSeconds.value = attempt.timeSpentSeconds
+  }
+}
 
-  if (!isSubmitted.value) {
-    try {
-      await submitQuizAttempt({
-        quizId: activeQuiz.value?.id,
-        answers: finalAnswers,
-        formatFilter: 'all',
-        timeSpentSeconds: elapsedSeconds.value,
-        questionTimes: questionTimes.value,
-      })
-      if (myAttempt !== attemptId) return
-      isSubmitted.value = true
-      submitError.value = ''
-    } catch (err) {
-      if (myAttempt !== attemptId) return
-      submitError.value = err.message || 'Could not submit quiz attempt.'
-    }
+async function finishQuiz() {
+  const myAttempt = attemptId
+  stopTimer()
+  isCompleted.value = true
+  isReviewMode.value = false
+  submitError.value = ''
+  submitting.value = true
+
+  const finalAnswers = getFinalAnswers()
+  try {
+    const data = await submitQuizAttempt({
+      runId: runId.value,
+      answers: finalAnswers,
+    })
+    if (myAttempt !== attemptId) return
+    applyServerAttempt(data.attempt)
+    isSubmitted.value = true
+    submitError.value = ''
+  } catch (err) {
+    if (myAttempt !== attemptId) return
+    submitError.value = err.message || 'Could not submit quiz attempt.'
+  } finally {
+    if (myAttempt === attemptId) submitting.value = false
   }
 }
 
 async function retrySubmit() {
-  if (isSubmitted.value) return
+  if (isSubmitted.value || submitting.value) return
   const myAttempt = attemptId
   submitError.value = ''
+  submitting.value = true
   const finalAnswers = getFinalAnswers()
   try {
-    await submitQuizAttempt({
-      quizId: activeQuiz.value?.id,
+    const data = await submitQuizAttempt({
+      runId: runId.value,
       answers: finalAnswers,
-      formatFilter: 'all',
-      timeSpentSeconds: elapsedSeconds.value,
-      questionTimes: questionTimes.value,
     })
     if (myAttempt !== attemptId) return
+    applyServerAttempt(data.attempt)
     isSubmitted.value = true
   } catch (err) {
     if (myAttempt !== attemptId) return
     submitError.value = err.message || 'Could not submit quiz attempt.'
+  } finally {
+    if (myAttempt === attemptId) submitting.value = false
   }
 }
 
@@ -248,17 +258,7 @@ function previousQuestion() {
 }
 
 function restartQuiz() {
-  attemptId++
-  userAnswers.value = {}
-  evalResults.value = {}
-  questionTimes.value = {}
-  currentIndex.value = 0
-  isCompleted.value = false
-  isSubmitted.value = false
-  isReviewMode.value = false
-  quizError.value = ''
-  submitError.value = ''
-  startTimer()
+  startQuiz(activeQuiz.value)
 }
 
 function reviewQuestion(index) {
@@ -382,6 +382,12 @@ onUnmounted(stopTimer)
       </template>
 
       <div v-else-if="isCompleted" class="summary-wrapper">
+        <QuizLoading
+          v-if="submitting"
+          :title="activeQuiz?.title"
+          message="Scoring your quiz..."
+        />
+        <template v-else>
         <div v-if="submitError" class="status-box error-box summary-error" role="alert">
           <div class="error-icon" aria-hidden="true">⚠️</div>
 
@@ -391,6 +397,7 @@ onUnmounted(stopTimer)
           </div>
         </div>
         <QuizSummary
+          v-if="isSubmitted"
           :questions="quizQuestions"
           :answers="userAnswers"
           :results="evalResults"
@@ -398,6 +405,7 @@ onUnmounted(stopTimer)
           @restart="restartQuiz"
           @review-question="reviewQuestion"
         />
+        </template>
         <div class="summary-exit-bar">
           <button type="button" class="btn-secondary" @click="exitQuiz">
             ← Choose Another Quiz

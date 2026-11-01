@@ -201,6 +201,25 @@ describe('backend/controllers/quizController', () => {
     });
 
     describe('submitAttempt', () => {
+        const runId = '11111111-1111-4111-8111-111111111111';
+        const sampleQ = {
+            id: 'q1',
+            quiz_id: 1,
+            type: 'single_choice',
+            payload_json: JSON.stringify({ options: [{ id: 'opt1', isCorrect: true }] })
+        };
+
+        function routeAttempt(sql, cb, { run, questions = [sampleQ], fail } = {}) {
+            if (fail) return cb(new Error(fail));
+            if (sql.includes('CREATE TABLE IF NOT EXISTS quiz_runs')) return cb(null, {});
+            if (sql.includes('UPDATE quiz_runs')) return cb(null, { affectedRows: 1 });
+            if (sql.includes('INSERT INTO quiz_attempts')) return cb(null, { insertId: 55 });
+            if (sql.includes('INSERT INTO result_questions')) return cb(null, {});
+            if (sql.includes('FROM quiz_runs')) return cb(null, run ? [run] : []);
+            if (sql.includes('FROM quiz_questions')) return cb(null, questions);
+            return cb(null, []);
+        }
+
         it('returns 400 when answers is missing or invalid type', async () => {
             const req = { body: { answers: null } };
             const res = createMockResponse();
@@ -211,20 +230,23 @@ describe('backend/controllers/quizController', () => {
         });
 
         it('returns 201 on valid submission by guest user', async () => {
-            const sampleQ = {
-                id: 'q1',
-                type: 'single_choice',
-                payload_json: JSON.stringify({ options: [{ id: 'opt1', isCorrect: true }] })
+            const run = {
+                id: runId,
+                quizId: 1,
+                userId: null,
+                startedAt: new Date(),
+                expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+                status: 'open'
             };
             mockDb.setQueryHandler((sql, params, cb) => {
-                cb(null, [sampleQ]);
+                routeAttempt(sql, cb, { run });
             });
 
             const req = {
                 body: {
                     guestName: 'GuestMaster',
-                    answers: { q1: 'opt1' },
-                    timeSpentSeconds: 15
+                    runId,
+                    answers: { q1: 'opt1' }
                 }
             };
             const res = createMockResponse();
@@ -232,16 +254,25 @@ describe('backend/controllers/quizController', () => {
             await quizController.submitAttempt(req, res);
             assert.strictEqual(res.statusCode, 201);
             assert.strictEqual(res.body.success, true);
-            assert.strictEqual(res.body.attempt.score, 65);
+            assert.strictEqual(res.body.attempt.score, 100);
         });
 
         it('returns 400 when validation error occurs in quizService', async () => {
+            const run = {
+                id: runId,
+                quizId: 1,
+                userId: null,
+                startedAt: new Date(),
+                expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+                status: 'open'
+            };
             mockDb.setQueryHandler((sql, params, cb) => {
-                cb(null, []); // No questions found -> ValidationError
+                routeAttempt(sql, cb, { run, questions: [sampleQ] });
             });
 
             const req = {
                 body: {
+                    runId,
                     answers: { invalid_q: 'answer' }
                 }
             };
@@ -255,11 +286,12 @@ describe('backend/controllers/quizController', () => {
 
         it('returns 500 on unexpected server error', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
-                cb(new Error('Fatal database crash'));
+                routeAttempt(sql, cb, { fail: 'Fatal database crash' });
             });
 
             const req = {
                 body: {
+                    runId,
                     answers: { q1: 'opt1' }
                 }
             };
