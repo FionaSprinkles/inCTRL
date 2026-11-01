@@ -1,9 +1,11 @@
+<script setup>
+import PodiumLeaderboard from '@/components/PodiumLeaderboard.vue'
+</script>
+
 <template>
   <main>
-    <h1>LEADERBOARDS</h1>
-
-    <section>
-      <h2>Different leaderboards will soon be available here</h2>
-    </section>
+    <PodiumLeaderboard />
   </main>
 </template>
+
+<style scoped></style>

@@ -1,5 +1,171 @@
+const crypto = require('crypto');
 const db = require('../connectionMySQL');
 const { validateAnswer, normalizeAnswers, calculateQuestionPoints } = require('./quizValidator');
+
+const QUIZ_RUN_TTL_MS = 2 * 60 * 60 * 1000;
+
+function query(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        db.query(sql, params, (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows);
+        });
+    });
+}
+
+function httpError(statusCode, message) {
+    const err = new Error(message);
+    err.statusCode = statusCode;
+    err.isClientError = statusCode >= 400 && statusCode < 500;
+    return err;
+}
+
+function matchKey() {
+    return process.env.JWT_SECRET || 'inctrl-quiz-match-key';
+}
+
+function publicMatchId(questionId, pairId) {
+    return crypto
+        .createHmac('sha256', matchKey())
+        .update(`match:${questionId}:${pairId}`)
+        .digest('hex')
+        .slice(0, 16);
+}
+
+function shuffle(items) {
+    const copy = [...items];
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = crypto.randomInt(0, i + 1);
+        const swap = copy[i];
+        copy[i] = copy[j];
+        copy[j] = swap;
+    }
+    return copy;
+}
+
+function canonicalizeMatchingAnswer(question, userAnswer) {
+    if (userAnswer == null || typeof userAnswer !== 'object' || Array.isArray(userAnswer)) {
+        return userAnswer;
+    }
+    const tokenToPairId = new Map();
+    for (const pair of question.pairs || []) {
+        tokenToPairId.set(publicMatchId(question.id, pair.id), String(pair.id));
+    }
+    const translated = {};
+    for (const [leftId, rightValue] of Object.entries(userAnswer)) {
+        const pairId = tokenToPairId.get(String(rightValue));
+        if (pairId !== undefined) translated[leftId] = pairId;
+    }
+    return translated;
+}
+
+function buildReveal(question) {
+    const reveal = {};
+    if (question.explanation) reveal.explanation = question.explanation;
+    if (question.keyCombination) reveal.keyCombination = question.keyCombination;
+    if (question.canonicalAnswer) reveal.canonicalAnswer = question.canonicalAnswer;
+    if (Array.isArray(question.acceptedAnswers)) reveal.acceptedAnswers = question.acceptedAnswers;
+    if (Array.isArray(question.targetCombo)) reveal.targetCombo = question.targetCombo;
+    if (Array.isArray(question.targetKeys)) reveal.targetKeys = question.targetKeys;
+    if (question.displayCombo) reveal.displayCombo = question.displayCombo;
+    if (typeof question.correctAnswer === 'boolean') reveal.correctAnswer = question.correctAnswer;
+    if (question.imposterId !== undefined && question.imposterId !== null) reveal.imposterId = question.imposterId;
+    if (question.imposterReason) reveal.imposterReason = question.imposterReason;
+    if (Array.isArray(question.correctOrder)) reveal.correctOrder = question.correctOrder;
+    if (Array.isArray(question.options)) {
+        const correctOptionIds = question.options.filter((option) => option.isCorrect).map((option) => option.id);
+        if (correctOptionIds.length > 0) reveal.correctOptionIds = correctOptionIds;
+        const optionDetails = question.options
+            .filter((option) => option.description)
+            .map((option) => ({ id: option.id, description: option.description }));
+        if (optionDetails.length > 0) reveal.optionDetails = optionDetails;
+    }
+    if (Array.isArray(question.pairs)) {
+        reveal.pairs = question.pairs.map((pair) => ({
+            id: String(pair.id),
+            left: pair.left,
+            right: pair.right,
+            rightId: publicMatchId(question.id, pair.id)
+        }));
+    }
+    return reveal;
+}
+
+function matchingKey(question) {
+    const map = {};
+    for (const pair of question.pairs || []) {
+        map[String(pair.id)] = publicMatchId(question.id, pair.id);
+    }
+    return map;
+}
+
+// Play payloads are an allowlist. Answer keys stay on the server until the attempt is graded.
+function toPublicQuestion(full) {
+    const pub = {
+        id: full.id,
+        type: full.type,
+        prompt: full.prompt,
+        difficulty: full.difficulty,
+        category: full.category,
+        categoryId: full.categoryId,
+        hint: full.hint
+    };
+    if (full.quizId !== undefined && full.quizId !== null) pub.quizId = full.quizId;
+
+    switch (full.type) {
+        case 'single_choice':
+        case 'multiple_choice':
+            if (full.instruction) pub.instruction = full.instruction;
+            pub.options = (full.options || []).map((option) => ({
+                id: option.id,
+                text: option.text,
+                label: option.label
+            }));
+            break;
+        case 'fill_blank':
+            if (full.placeholder) pub.placeholder = full.placeholder;
+            break;
+        case 'key_builder':
+            pub.keyBank = Array.isArray(full.keyBank) ? full.keyBank : [];
+            break;
+        case 'live_press':
+            if (full.description) pub.description = full.description;
+            pub.virtualKeys = Array.isArray(full.virtualKeys) ? full.virtualKeys : [];
+            break;
+        case 'true_false':
+            pub.statement = full.statement || '';
+            break;
+        case 'odd_one_out':
+            if (full.theme) pub.theme = full.theme;
+            pub.options = (full.options || []).map((option) => ({
+                id: option.id,
+                text: option.text
+            }));
+            break;
+        case 'ordering':
+            pub.items = (full.items || []).map((item) => ({
+                id: item.id,
+                text: item.text
+            }));
+            break;
+        case 'matching': {
+            const pairs = Array.isArray(full.pairs) ? full.pairs : [];
+            pub.leftItems = pairs.map((pair) => ({
+                id: String(pair.id),
+                text: pair.left
+            }));
+            pub.rightItems = shuffle(pairs.map((pair) => ({
+                id: publicMatchId(full.id, pair.id),
+                text: pair.right
+            })));
+            break;
+        }
+        default:
+            break;
+    }
+
+    return pub;
+}
 
 /**
  * Normalizes a database row into the format expected by frontend quiz components.
@@ -188,7 +354,7 @@ function getQuestions(filters = {}) {
 
         db.query(sql, params, (err, rows) => {
             if (err) return reject(err);
-            const formatted = rows.map(formatQuestionRow);
+            const formatted = rows.map((row) => toPublicQuestion(formatQuestionRow(row)));
             resolve(formatted);
         });
     });
@@ -205,7 +371,7 @@ function getQuestionById(id) {
         db.query(sql, [id], (err, rows) => {
             if (err) return reject(err);
             if (!rows || rows.length === 0) return resolve(null);
-            resolve(formatQuestionRow(rows[0]));
+            resolve(toPublicQuestion(formatQuestionRow(rows[0])));
         });
     });
 }
@@ -332,11 +498,11 @@ class ValidationError extends Error {
  * @param {string|null} [params.guestName=null] - Optional guest screen name.
  * @param {string} [params.formatFilter='all'] - Format filter applied during the quiz.
  * @param {object|Array} params.answers - Submitted question answers.
- * @param {number} [params.timeSpentSeconds=0] - Total seconds spent taking quiz.
- * @param {Record<string, number>|null} [params.questionTimes=null] - Optional per-question time spent in seconds.
+ * @param {number} [params.timeSpentSeconds=0] - Server-measured seconds for the whole quiz. Split evenly across its questions. Client clocks are ignored.
+ * @param {string|null} [params.runId=null] - Open quiz run to close in the same transaction.
  * @returns {Promise<object>} Resolves with attempt evaluation details and generated attempt ID.
  */
-function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', quizId = null, answers, timeSpentSeconds = 0, questionTimes = null }) {
+function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', quizId = null, answers, timeSpentSeconds = 0, runId = null }) {
     return new Promise((resolve, reject) => {
         const normalizedAnswers = normalizeAnswers(answers);
         const questionIds = Object.keys(normalizedAnswers);
@@ -368,6 +534,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 return reject(new ValidationError(`Invalid question ID(s): ${invalidIds.join(', ')}`));
             }
 
+            if (quizId != null) {
+                const outsideQuiz = questionIds.filter((id) => {
+                    const questionQuizId = foundMap.get(id).quizId;
+                    return questionQuizId != null && Number(questionQuizId) !== Number(quizId);
+                });
+                if (outsideQuiz.length > 0) {
+                    return reject(new ValidationError(`Invalid question ID(s): ${outsideQuiz.join(', ')}`));
+                }
+            }
+
             // If formatFilter is specified and not 'all', validate that questions match format
             if (formatFilter && formatFilter !== 'all') {
                 const mismatched = questionIds.filter(id => foundMap.get(id).type !== formatFilter);
@@ -383,21 +559,21 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
             let maxPossiblePoints = 0;
             const evaluations = [];
 
-            const fallbackAvgTime = timeSpentSeconds > 0 && questionIds.length > 0
-                ? timeSpentSeconds / questionIds.length
+            const measuredSeconds = Number(timeSpentSeconds);
+            const hasMeasuredTime = Number.isFinite(measuredSeconds) && measuredSeconds >= 0;
+            const perQuestionSeconds = hasMeasuredTime && questionIds.length > 0
+                ? measuredSeconds / questionIds.length
                 : null;
+            const storedSeconds = Math.max(0, Math.round(hasMeasuredTime ? measuredSeconds : 0));
 
             for (const qId of questionIds) {
                 const question = foundMap.get(qId);
-                const userAnswer = normalizedAnswers[qId];
+                const rawUserAnswer = normalizedAnswers[qId];
+                const userAnswer = question.type === 'matching'
+                    ? canonicalizeMatchingAnswer(question, rawUserAnswer)
+                    : rawUserAnswer;
                 const evalResult = validateAnswer(question, userAnswer);
-
-                const rawQuestionTime = questionTimes && typeof questionTimes === 'object' && questionTimes[qId] !== undefined
-                    ? Number(questionTimes[qId])
-                    : null;
-                const qTime = (rawQuestionTime !== null && Number.isFinite(rawQuestionTime) && rawQuestionTime >= 0)
-                    ? rawQuestionTime
-                    : fallbackAvgTime;
+                const qTime = perQuestionSeconds;
 
                 const pointResult = calculateQuestionPoints(
                     evalResult.score || 0,
@@ -425,7 +601,9 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                     points: pointResult.points,
                     maxPoints: pointResult.maxPoints,
                     timeSpentSeconds: qTime !== null ? Math.round(qTime * 100) / 100 : null,
-                    feedback: evalResult.feedback
+                    feedback: evalResult.feedback,
+                    reveal: buildReveal(question),
+                    ...(question.type === 'matching' ? { correctRightByLeft: matchingKey(question) } : {})
                 });
             }
 
@@ -433,7 +611,13 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
             const computedMaxScore = Math.round(rawMaxScore);
             const computedPoints = Math.min(maxPossiblePoints, Math.max(0, Math.round(totalPoints)));
             const computedMaxPoints = Math.round(maxPossiblePoints);
-            const totalAnswered = questionIds.length;
+            const totalAnswered = questionIds.filter((id) => {
+                const value = normalizedAnswers[id];
+                if (value === undefined || value === null || value === '') return false;
+                if (Array.isArray(value) && value.length === 0) return false;
+                if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return false;
+                return true;
+            }).length;
 
             const insertSql = `
                 INSERT INTO quiz_attempts 
@@ -447,7 +631,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 computedPoints,
                 computedMaxPoints,
                 totalAnswered,
-                timeSpentSeconds || 0,
+                storedSeconds,
                 quizId || null
             ];
 
@@ -460,6 +644,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                         return reject(beginErr);
                     }
 
+                    const runInsert = () => {
                     connection.query(insertSql, params, (insertErr, result) => {
                         if (insertErr) {
                             return connection.rollback(() => {
@@ -485,6 +670,7 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                             points: computedPoints,
                             maxPoints: computedMaxPoints,
                             totalAnswered,
+                            timeSpentSeconds: storedSeconds,
                             evaluations
                         };
 
@@ -532,6 +718,29 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                             });
                         });
                     });
+                    };
+
+                    if (!runId) return runInsert();
+
+                    connection.query(
+                        'UPDATE quiz_runs SET status = ?, submitted_at = ? WHERE id = ? AND status = ?',
+                        ['submitted', new Date(), runId, 'open'],
+                        (claimErr, claimResult) => {
+                            if (claimErr) {
+                                return connection.rollback(() => {
+                                    connection.release();
+                                    reject(claimErr);
+                                });
+                            }
+                            if (!claimResult || claimResult.affectedRows !== 1) {
+                                return connection.rollback(() => {
+                                    connection.release();
+                                    reject(httpError(409, 'Quiz run already submitted'));
+                                });
+                            }
+                            runInsert();
+                        }
+                    );
                 });
             });
         });
@@ -540,32 +749,48 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
 
 /**
  * Retrieves global quiz leaderboard sorted by highest score and fastest time.
+ * @param {string} [filter='total'] Time filter ('today', 'week', 'total').
  * @param {number|string} [limit=10] - Maximum number of leaderboard entries to retrieve.
  * @returns {Promise<Array<object>>} Resolves with array of leaderboard records.
  */
-function getLeaderboard(limit = 10) {
+function getLeaderboard(filter = 'total', limit=50) {
     return new Promise((resolve, reject) => {
+        let timeCondition = '';
+        if (filter === 'today') {
+            timeCondition = 'WHERE qa.completed_at >= CURDATE()';
+        } else if (filter === 'week') {
+            timeCondition = 'WHERE qa.completed_at >= (NOW() - INTERVAL 7 DAY)';
+        }
+
         const sql = `
-            SELECT 
-                a.id, 
-                a.score, 
-                a.max_score AS maxScore, 
-                a.total_answered AS totalAnswered, 
-                a.time_spent_seconds AS timeSpentSeconds, 
-                a.completed_at AS completedAt,
-                COALESCE(u.username, a.guest_name, 'Guest') AS username,
-                u.display_name AS displayName,
+            SELECT
+                u.id,
+                u.username AS name,
                 u.avatar,
-                COALESCE((SELECT SUM(score) FROM quiz_attempts WHERE user_id = u.id), 0) AS totalPoints
-            FROM quiz_attempts a
-            LEFT JOIN users u ON a.user_id = u.id
-            ORDER BY a.score DESC, a.time_spent_seconds ASC
-            LIMIT ?
+                SUM(qa.score) AS total_points
+            FROM users u
+                     JOIN quiz_attempts qa ON u.id = qa.user_id
+                ${timeCondition}
+            GROUP BY u.id, u.display_name, u.username, u.avatar
+            ORDER BY total_points DESC
+                LIMIT ?
         `;
-        const n = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+
+        const n = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 100);
         db.query(sql, [n], (err, rows) => {
             if (err) return reject(err);
-            resolve(rows);
+
+            const formatted = rows.rows || rows.map((row, index) => ({
+                rank: index + 1,
+                name: row.name,
+                initial: row.name ? row.name.charAt(0).toUpperCase() : 'U',
+                points: `${Number(row.total_points || 0).toLocaleString('sv-SE')} p`,
+                avatar: row.avatar,
+                avatarBg: index === 0 ? '#E06D53' : index === 1 ? '#5B8DEF' : '#45B69C',
+                podiumBg: index === 0 ? '#ECC046' : index === 1 ? '#D1D7E3' : '#DC976A'
+            }));
+
+            resolve(formatted);
         });
     });
 }
@@ -665,6 +890,137 @@ function getAttemptDetails(attemptId) {
     });
 }
 
+let quizRunsReady = null;
+
+function ensureQuizRunsTable() {
+    if (!quizRunsReady) {
+        quizRunsReady = query(`
+            CREATE TABLE IF NOT EXISTS quiz_runs (
+                id CHAR(36) NOT NULL,
+                quiz_id INT NOT NULL,
+                user_id INT NULL,
+                started_at DATETIME(3) NOT NULL,
+                expires_at DATETIME(3) NOT NULL,
+                submitted_at DATETIME(3) NULL,
+                status ENUM('open', 'submitted') NOT NULL DEFAULT 'open',
+                PRIMARY KEY (id),
+                KEY idx_quiz_runs_quiz (quiz_id),
+                CONSTRAINT fk_quiz_runs_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE,
+                CONSTRAINT fk_quiz_runs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `).catch((err) => {
+            quizRunsReady = null;
+            throw err;
+        });
+    }
+    return quizRunsReady;
+}
+
+async function createQuizRun({ quizId, userId = null }) {
+    await ensureQuizRunsTable();
+    const idNum = Number(quizId);
+    if (!Number.isInteger(idNum) || idNum <= 0) {
+        throw new ValidationError('quizId is required');
+    }
+
+    const quizzes = await query(
+        'SELECT id FROM quizzes WHERE id = ? AND is_active = TRUE',
+        [idNum]
+    );
+    if (!quizzes || quizzes.length === 0) {
+        throw httpError(404, 'Quiz not found');
+    }
+
+    const id = crypto.randomUUID();
+    const started = new Date();
+    const expires = new Date(started.getTime() + QUIZ_RUN_TTL_MS);
+    await query(
+        'INSERT INTO quiz_runs (id, quiz_id, user_id, started_at, expires_at, status) VALUES (?, ?, ?, ?, ?, ?)',
+        [id, idNum, userId == null ? null : Number(userId), started, expires, 'open']
+    );
+
+    return {
+        id,
+        quizId: idNum,
+        startedAt: started.toISOString(),
+        expiresAt: expires.toISOString()
+    };
+}
+
+async function submitQuizRun({ runId, userId = null, guestName = null, answers }) {
+    await ensureQuizRunsTable();
+    const runs = await query(
+        `SELECT id, quiz_id AS quizId, user_id AS userId,
+                started_at AS startedAt, expires_at AS expiresAt, status
+         FROM quiz_runs
+         WHERE id = ?`,
+        [runId]
+    );
+    const run = runs && runs[0];
+    if (!run) throw httpError(404, 'Quiz run not found');
+    if (run.status !== 'open') throw httpError(409, 'Quiz run already submitted');
+
+    const expiresAt = new Date(run.expiresAt);
+    if (Number.isNaN(expiresAt.getTime()) || expiresAt.getTime() <= Date.now()) {
+        throw httpError(400, 'Quiz run expired. Start the quiz again.');
+    }
+
+    if (run.userId != null) {
+        if (userId == null) {
+            throw httpError(401, 'Authentication required to submit this quiz run');
+        }
+        if (Number(userId) !== Number(run.userId)) {
+            throw httpError(403, 'You cannot submit this quiz run');
+        }
+    }
+
+    const startedAt = new Date(run.startedAt);
+    if (Number.isNaN(startedAt.getTime())) {
+        throw httpError(400, 'Quiz run expired. Start the quiz again.');
+    }
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startedAt.getTime()) / 1000));
+
+    const questionRows = await query(
+        `SELECT qq.*, q.difficulty AS quiz_difficulty
+         FROM quiz_questions qq
+         LEFT JOIN quizzes q ON q.id = qq.quiz_id
+         WHERE qq.quiz_id = ?
+         ORDER BY qq.created_at ASC`,
+        [run.quizId]
+    );
+    if (!questionRows || questionRows.length === 0) {
+        throw new ValidationError('No questions found for this quiz');
+    }
+
+    const submitted = normalizeAnswers(answers);
+    const allowedIds = new Set(questionRows.map((row) => String(row.id)));
+    const outsideQuiz = Object.keys(submitted).filter((id) => !allowedIds.has(String(id)));
+    if (outsideQuiz.length > 0) {
+        throw new ValidationError(`Invalid question ID(s): ${outsideQuiz.join(', ')}`);
+    }
+
+    const gradedAnswers = {};
+    for (const row of questionRows) {
+        gradedAnswers[row.id] = Object.prototype.hasOwnProperty.call(submitted, row.id)
+            ? submitted[row.id]
+            : null;
+    }
+
+    const attemptUserId = run.userId != null
+        ? Number(run.userId)
+        : (userId == null ? null : Number(userId));
+
+    return saveAttempt({
+        userId: attemptUserId,
+        guestName: attemptUserId == null ? guestName : null,
+        formatFilter: 'all',
+        quizId: run.quizId,
+        answers: gradedAnswers,
+        timeSpentSeconds: elapsedSeconds,
+        runId: run.id
+    });
+}
+
 module.exports = {
     getQuizzes,
     getQuizById,
@@ -677,6 +1033,9 @@ module.exports = {
     updateQuestion,
     deleteQuestion,
     saveAttempt,
+    ensureQuizRunsTable,
+    createQuizRun,
+    submitQuizRun,
     getAttemptDetails,
     getLeaderboard,
     getUserAttempts
