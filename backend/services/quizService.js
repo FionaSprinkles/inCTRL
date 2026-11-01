@@ -534,6 +534,16 @@ function saveAttempt({ userId = null, guestName = null, formatFilter = 'all', qu
                 return reject(new ValidationError(`Invalid question ID(s): ${invalidIds.join(', ')}`));
             }
 
+            if (quizId != null) {
+                const outsideQuiz = questionIds.filter((id) => {
+                    const questionQuizId = foundMap.get(id).quizId;
+                    return questionQuizId != null && Number(questionQuizId) !== Number(quizId);
+                });
+                if (outsideQuiz.length > 0) {
+                    return reject(new ValidationError(`Invalid question ID(s): ${outsideQuiz.join(', ')}`));
+                }
+            }
+
             // If formatFilter is specified and not 'all', validate that questions match format
             if (formatFilter && formatFilter !== 'all') {
                 const mismatched = questionIds.filter(id => foundMap.get(id).type !== formatFilter);
@@ -982,11 +992,18 @@ async function submitQuizRun({ runId, userId = null, guestName = null, answers }
         throw new ValidationError('No questions found for this quiz');
     }
 
-    const gradedAnswers = { ...(normalizeAnswers(answers)) };
+    const submitted = normalizeAnswers(answers);
+    const allowedIds = new Set(questionRows.map((row) => String(row.id)));
+    const outsideQuiz = Object.keys(submitted).filter((id) => !allowedIds.has(String(id)));
+    if (outsideQuiz.length > 0) {
+        throw new ValidationError(`Invalid question ID(s): ${outsideQuiz.join(', ')}`);
+    }
+
+    const gradedAnswers = {};
     for (const row of questionRows) {
-        if (!Object.prototype.hasOwnProperty.call(gradedAnswers, row.id)) {
-            gradedAnswers[row.id] = null;
-        }
+        gradedAnswers[row.id] = Object.prototype.hasOwnProperty.call(submitted, row.id)
+            ? submitted[row.id]
+            : null;
     }
 
     const attemptUserId = run.userId != null
