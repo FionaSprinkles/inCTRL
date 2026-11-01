@@ -24,10 +24,10 @@ categoryViewTemplate.vue
     <section>
       <h2>Available quizzes</h2>
 
-      <article v-for="quiz in quizzes" :key="quiz.id">
-        <h3>{{ quiz.title }}</h3>
-        <p>{{ quiz.description }}</p>
-      </article>
+      <ListQuizzesCard
+        :quizzes="quizzes"
+        @start-quiz="startQuiz"
+      />
     </section>
 
   </main>
@@ -43,6 +43,7 @@ categoryViewTemplate.vue
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchQuizzes, filterQuizzes } from '@/services/quizService'
+import ListQuizzesCard from '@/components/ListQuizzesCard.vue'
 
 const route = useRoute()
 
