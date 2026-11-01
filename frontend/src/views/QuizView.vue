@@ -1,28 +1,14 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
-import {
-  fetchQuizzes,
-  fetchCategories,
-  fetchQuizById,
-  filterQuizzes,
-  submitQuizAttempt,
-} from '@/services/quizService'
+import { ref, computed, watch, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { fetchQuizById, submitQuizAttempt } from '@/services/quizService'
 import { evaluateQuestionWithPoints, isAnswerProvided } from '@/services/quizValidator'
 import QuizCard from '@/components/quiz/QuizCard.vue'
 import QuizSummary from '@/components/quiz/QuizSummary.vue'
 import QuizLoading from '@/components/quiz/QuizLoading.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
-
-const quizzes = ref([])
-const categories = ref([])
-const loading = ref(true)
-const error = ref('')
-
-const selectedCategory = ref('all')
-const selectedDifficulty = ref('all')
+const router = useRouter()
 
 const activeQuiz = ref(null)
 const quizQuestions = ref([])
@@ -82,13 +68,6 @@ const formattedTimer = computed(() => {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
 })
 
-const filteredQuizzes = computed(() => {
-  return filterQuizzes(quizzes.value, {
-    categoryId: selectedCategory.value,
-    difficulty: selectedDifficulty.value,
-  })
-})
-
 const currentQuestion = computed(() => quizQuestions.value[currentIndex.value] || null)
 const totalScore = computed(() =>
   Object.values(evalResults.value).reduce((s, r) => s + (r?.score || 0), 0),
@@ -106,39 +85,6 @@ watch(currentIndex, (newIdx, oldIdx) => {
     activeQuestionEnteredAt.value = Date.now()
   }
 })
-
-async function loadData() {
-  loading.value = true
-  error.value = ''
-  try {
-    const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories().catch(() => [])])
-    quizzes.value = qData
-    categories.value = cData
-
-    const qCat = route.query.category || route.query.categoryId
-    if (qCat) selectedCategory.value = qCat
-    const qDiff = route.query.difficulty
-    if (qDiff) selectedDifficulty.value = qDiff
-    const qQuizId = route.query.id || route.query.quizId
-    if (qQuizId) {
-      const target = qData.find((q) => String(q.id) === String(qQuizId))
-      if (target) {
-        startQuiz(target)
-      } else {
-        startQuiz({ id: qQuizId, title: `Quiz #${qQuizId}` })
-      }
-    }
-  } catch (err) {
-    error.value = err.message || 'Failed to load quizzes from backend.'
-  } finally {
-    loading.value = false
-  }
-}
-
-function resetFilters() {
-  selectedCategory.value = 'all'
-  selectedDifficulty.value = 'all'
-}
 
 let quizRequestId = 0
 let attemptId = 0
@@ -170,8 +116,9 @@ async function startQuiz(quiz) {
     const data = await fetchQuizById(quiz.id)
     if (requestId !== quizRequestId) return
     if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
-    if (data.title && activeQuiz.value) {
-      activeQuiz.value.title = data.title
+    if (activeQuiz.value) {
+      if (data.title) activeQuiz.value.title = data.title
+      if (data.difficulty) activeQuiz.value.difficulty = data.difficulty
     }
     quizQuestions.value = data.questions
     startTimer()
@@ -189,16 +136,7 @@ function exitQuiz() {
   attemptId++
   quizRequestId++
   stopTimer()
-  isReviewMode.value = false
-  elapsedSeconds.value = 0
-  activeQuestionEnteredAt.value = null
-  questionTimes.value = {}
-  activeQuiz.value = null
-  quizQuestions.value = []
-  quizError.value = ''
-  submitError.value = ''
-  isCompleted.value = false
-  isSubmitted.value = false
+  router.replace('/categories')
 }
 
 function handleAnswered({ questionId, userAnswer, result }) {
@@ -233,7 +171,9 @@ function nextQuestion() {
 function getFinalAnswers() {
   const finalAnswers = {}
   quizQuestions.value.forEach((q) => {
-    finalAnswers[q.id] = isQuestionAnswered(q.id) ? userAnswers.value[q.id] : null
+    finalAnswers[q.id] = isQuestionAnswered(q.id)
+      ? userAnswers.value[q.id]
+      : null
   })
   return finalAnswers
 }
@@ -332,83 +272,24 @@ function returnToSummary() {
   isCompleted.value = true
 }
 
-onMounted(loadData)
+watch(
+  () => route.query.id || route.query.quizId,
+  (quizId) => {
+    if (!quizId) {
+      router.replace('/categories')
+      return
+    }
+    startQuiz({ id: quizId, title: `Quiz #${quizId}` })
+  },
+  { immediate: true },
+)
+
 onUnmounted(stopTimer)
 </script>
 
 <template>
   <div class="quiz-page">
-    <!-- View 1: Quiz Selection & Filter Screen -->
-    <div v-if="!activeQuiz" class="quiz-selection-view">
-      <header class="quiz-page-header">
-        <h1>Windows Shortcut Quizzes</h1>
-        <p class="subtitle">Choose a category, a difficulty, or both to start practicing.</p>
-      </header>
-
-      <section class="filters-bar" aria-label="Quiz Filters">
-        <div class="filter-group">
-          <label for="category-filter">Category</label>
-          <select id="category-filter" v-model="selectedCategory" class="filter-select">
-            <option value="all">All Categories</option>
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="difficulty-filter">Difficulty</label>
-          <select id="difficulty-filter" v-model="selectedDifficulty" class="filter-select">
-            <option value="all">All Difficulties</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-          </select>
-        </div>
-
-        <button
-          v-if="selectedCategory !== 'all' || selectedDifficulty !== 'all'"
-          type="button"
-          class="btn-reset"
-          @click="resetFilters"
-        >
-          Reset Filters
-        </button>
-      </section>
-
-      <div v-if="loading" class="status-box">
-        <LoadingSpinner size="md" text="Loading quizzes from backend..." />
-      </div>
-
-      <div v-else-if="error" class="status-box error-box" role="alert">
-        <p>{{ error }}</p>
-        <button type="button" class="btn-retry" @click="loadData">Retry</button>
-      </div>
-
-      <div v-else-if="filteredQuizzes.length === 0" class="status-box empty-box" role="status">
-        <p class="no-quizzes-message">No quizzes fit the selected parameters.</p>
-        <p class="empty-hint">Try selecting a different category or difficulty level.</p>
-        <button type="button" class="btn-clear" @click="resetFilters">Show All Quizzes</button>
-      </div>
-
-      <div v-else class="quiz-grid">
-        <article v-for="quiz in filteredQuizzes" :key="quiz.id" class="quiz-card">
-          <div class="quiz-tags">
-            <span class="badge category-badge">{{ quiz.categoryName || 'General' }}</span>
-            <span class="badge diff-badge" :class="quiz.difficulty?.toLowerCase()">{{
-              quiz.difficulty
-            }}</span>
-          </div>
-          <h2 class="quiz-title">{{ quiz.title }}</h2>
-          <p class="quiz-description">{{ quiz.description }}</p>
-          <div class="quiz-footer">
-            <span class="question-count">{{ quiz.questionCount || 0 }} questions</span>
-            <button type="button" class="btn-start" @click="startQuiz(quiz)">Start Quiz</button>
-          </div>
-        </article>
-      </div>
-    </div>
-
-    <!-- View 2: Active Quiz Runner -->
-    <div v-else class="quiz-runner-view">
+    <div v-if="activeQuiz" class="quiz-runner-view">
       <header v-if="!isCompleted || isReviewMode" class="runner-bar">
         <div class="runner-header-top">
           <div class="runner-left">
@@ -473,11 +354,7 @@ onUnmounted(stopTimer)
         message="Fetching quiz questions from backend..."
       />
 
-      <div
-        v-else-if="quizError && !isCompleted && !isReviewMode"
-        class="status-box error-box"
-        role="alert"
-      >
+      <div v-else-if="quizError && !isCompleted && !isReviewMode" class="status-box error-box" role="alert">
         <div class="error-icon" aria-hidden="true">⚠️</div>
 
         <p class="error-message">{{ quizError }}</p>
@@ -532,272 +409,31 @@ onUnmounted(stopTimer)
 </template>
 
 <style scoped>
-/* Page layout */
 .quiz-page {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
-  font-family: var(--font-body), sans-serif;
+  box-sizing: border-box;
+  font-family: var(--font-body);
 }
 
-/* Header layout */
-.quiz-page-header {
-  margin-bottom: 2rem;
-  text-align: center;
+.quiz-runner-view {
+  width: 100%;
 }
 
-/* Header style */
-.quiz-page-header h1 {
-  font-family: var(--font-heading), serif;
-  font-size: 38px;
-  font-weight: 370;
-  color: var(--color-text-white);
-  margin-top: 10px;
-  margin-bottom: 8px;
-}
-
-/* Description style */
-.subtitle {
-  font-family: var(--font-body), sans-serif;
-  color: var(--color-text-main);
-  margin-top: 0;
-  letter-spacing: 2px;
-  font-size: 1.1rem;
-}
-
-/* Filters bar layout */
-.filters-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 1.25rem;
-  margin-bottom: 2rem;
-  padding: 1.1rem 1.4rem;
-  background: rgba(255, 255, 255, 0.09);
-  border-radius: 20px;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  flex: 1;
-  min-width: 180px;
-}
-
-/* Filters label style */
-.filter-group label {
-  font-family: var(--font-display), serif;
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  color: var(--color-text-heading);
-}
-
-/* Filters button style */
-.filter-select {
-  font-family: var(--font-display), serif;
-  padding: 0.6rem 1.2rem;
-  font-size: 18px;
-  background: rgba(255, 255, 255, 0.09);
-  color: var(--color-text-white);
-  border-radius: 12px;
-  outline: none;
-  cursor: pointer;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-@supports (appearance: base-select) {
-  .filter-select,
-  .filter-select::picker(select) {
-    appearance: base-select;
-  }
-
-  /* Dropdown menu styling */
-  .filter-select::picker(select) {
-    width: 280px;
-    max-height: 350px;
-    margin-top: 0.5rem;
-    overflow-y: auto;
-    border-radius: 16px;
-    padding: 1rem;
-
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.14) 0%,
-      rgba(255, 255, 255, 0.04) 100%
-    );
-    backdrop-filter: blur(14px) saturate(140%);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border: 1px solid rgba(197, 204, 214, 0.55);
-    border-top-color: rgba(245, 247, 250, 0.9);
-    box-shadow:
-      6px 12px 26px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.45),
-      inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Dropdown buttons */
-  .filter-select option {
-    width: 100%;
-    text-align: left;
-    border: none;
-    color: var(--color-text-main);
-    padding: 0.45rem 0.6rem;
-    background: transparent;
-    border-radius: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    transition:
-      background 0.2s,
-      color 0.2s;
-    font-family: var(--font-body), sans-serif;
-  }
-
-  /* Dropdown buttons hover */
-  .filter-select option:hover {
-    box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-    transition: all 0.3s ease;
-    color: var(--color-dark-accenturate);
-    background: rgba(255, 255, 255, 0.25);
-    font-weight: 600;
-  }
-
-  /* Dropdown buttons when marked */
-  .filter-select option:checked {
-    background: rgba(255, 255, 255, 0.25);
-    font-weight: 600;
-    color: var(--color-dark-accenturate);
-  }
-
-  .filter-select option::checkmark {
-    display: none;
-  }
-}
-
-/* Reset filters button */
-.btn-reset {
-  padding: 0.6rem 1.2rem;
-  font-size: 18px;
-  background: rgba(255, 255, 255, 0.09);
-  color: var(--color-text-white);
-  border-radius: 12px;
-  outline: none;
-  cursor: pointer;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-/* Reset filters button hover */
-.btn-reset:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-}
-
-/* Box style for when no quiz is showing */
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(18, 86, 98, 0.5);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
   margin-bottom: 2rem;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
-/* No quizzez header */
-.empty-box .no-quizzes-message {
-  font-family: var(--font-display), serif;
-  font-size: 1.3rem;
-  color: var(--color-text-white);
-  margin-bottom: 0.5rem;
-}
-
-/* No quizzez description */
-.empty-hint {
-  font-family: var(--font-body), sans-serif;
-  color: var(--color-light-accenturate);
-  margin-bottom: 1.25rem;
-}
-
-.btn-clear {
-  padding: 0.6rem 1.2rem;
-  font-size: 18px;
-  background: rgba(255, 255, 255, 0.09);
-  color: var(--color-text-white);
-  border-radius: 12px;
-  outline: none;
-  cursor: pointer;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-.btn-clear:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-}
-
-/* Error */
 .error-box {
   border-color: #ef4444;
   color: #fecaca;
@@ -810,33 +446,23 @@ onUnmounted(stopTimer)
 }
 
 .error-message {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   color: #fecaca;
   margin-bottom: 1rem;
 }
 
 .btn-retry {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display);
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.55rem 1.15rem;
   border-radius: 10px;
-  color: var(--color-text-white);
+  background: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
+  font-weight: 600;
   cursor: pointer;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
 }
 
 .summary-error {
@@ -844,182 +470,21 @@ onUnmounted(stopTimer)
   padding: 1rem 1.25rem;
 }
 
-.quiz-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-
-@media (max-width: 900px) {
-  .quiz-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 600px) {
-  .quiz-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Quiz card style */
-.quiz-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.4rem;
-  border-radius: 20px;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-/* Quiz card hover */
-.quiz-card:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24);
-}
-
-/* Quiz tags layout */
-.quiz-tags {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-}
-
-/* Quiz tags text */
-.badge {
-  font-family: var(--font-display), serif;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.category-badge {
-  background: rgba(133, 180, 190, 0.28);
-  color: var(--color-text-heading);
-  border: 1px solid rgba(133, 180, 190, 0.45);
-}
-
-.diff-badge.beginner {
-  background: rgba(16, 185, 129, 0.28);
-  color: #a7f3d0;
-  border: 1px solid rgba(16, 185, 129, 0.45);
-}
-
-.diff-badge.intermediate {
-  background: rgba(245, 158, 11, 0.28);
-  color: #fde68a;
-  border: 1px solid rgba(245, 158, 11, 0.45);
-}
-
-.diff-badge.advanced {
-  background: rgba(239, 68, 68, 0.28);
-  color: #fecaca;
-  border: 1px solid rgba(239, 68, 68, 0.45);
-}
-
-/* Quiz title */
-.quiz-title {
-  font-family: var(--font-display), serif;
-  font-weight: 600;
-  margin: 0 0 0.5rem;
-  color: var(--color-text-white);
-  letter-spacing: 1px;
-  text-transform: none;
-}
-
-/* Quiz description */
-.quiz-description {
-  font-family: var(--font-body), sans-serif;
-  font-size: 0.95rem;
-  color: var(--color-text-main);
-  margin-bottom: 1.25rem;
-  flex-grow: 1;
-}
-
-/* Quiz footer */
-.quiz-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Quiz footer count */
-.question-count {
-  font-family: var(--font-display), serif;
-  color: var(--color-text-main);
-}
-
-/* Start button */
-.btn-start {
-  font-family: var(--font-display), serif;
-  font-size: 14px;
-  letter-spacing: 1px;
-  padding: 0.5rem 1.1rem;
-  border-radius: 20px;
-  color: var(--color-text-main);
-  font-weight: 500;
-  cursor: pointer;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-/* Start button hover */
-.btn-start:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-}
-
 /* Unified top runner bar: stationary width & centered page numbers aligned with NavBar */
 .runner-bar {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(18, 86, 98, 0.52);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
   padding: 1.1rem 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
+  gap: 0.9rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
 .runner-header-top {
@@ -1035,19 +500,22 @@ onUnmounted(stopTimer)
   justify-content: flex-start;
 }
 
-.runner-info h2 {
-  font-family: var(--font-display), serif;
-  font-size: 1.4rem;
-  color: var(--color-text-white);
+.runner-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 400;
+  color: var(--color-text-heading);
   margin: 0;
-  letter-spacing: 2px;
+  letter-spacing: 0.5px;
   text-transform: none;
+  text-align: center;
 }
 
 .runner-stats {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: flex-end;
+  gap: 0.85rem;
   flex-wrap: wrap;
 }
 
@@ -1064,10 +532,11 @@ onUnmounted(stopTimer)
 }
 
 .timer-display {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--color-text-main);
+  color: var(--color-button);
   background: rgba(227, 221, 196, 0.15);
   border: 1px solid rgba(227, 221, 196, 0.35);
   padding: 0.25rem 0.75rem;
@@ -1075,28 +544,27 @@ onUnmounted(stopTimer)
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-left: 130px;
 }
 
 .timer-display strong {
   font-weight: 600;
-  color: var(--color-text-white);
+  color: var(--color-text-heading);
 }
 
 .progress-display {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
   font-size: 0.92rem;
   color: var(--color-text-main);
 }
 
 .progress-display strong {
-  color: var(--color-text-main);
+  color: var(--color-text-heading);
 }
 
-/* Button back */
 .btn-back {
-  font-family: var(--font-display), serif;
-  font-size: 14px;
+  font-family: var(--font-display);
+  font-size: 16px;
   letter-spacing: 1px;
   color: var(--color-text-main);
   background: rgba(255, 255, 255, 0.1);
@@ -1108,10 +576,10 @@ onUnmounted(stopTimer)
   white-space: nowrap;
 }
 
-/* Button back hover */
 .btn-back:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 /* Navigation page numbers centered with the NavBar and stationary */
@@ -1133,7 +601,7 @@ onUnmounted(stopTimer)
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(15, 76, 92, 0.45);
   color: var(--color-text-main);
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0;
@@ -1145,20 +613,22 @@ onUnmounted(stopTimer)
 }
 
 .dot-btn:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .dot-btn.current {
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.25);
-  color: var(--color-dark-accenturate);
+  border-color: var(--color-button-border);
+  background: var(--color-button);
+  color: var(--color-button-text);
+  font-weight: 700;
 }
 
 .dot-btn.answered:not(.current):not(.correct):not(.wrong) {
-  border-color: rgba(227, 221, 196, 0.4);
-  background: rgba(227, 221, 196, 0.18);
-  color: var(--color-text-white);
+  border-color: rgba(227, 221, 196, 0.5);
+  background: rgba(227, 221, 196, 0.22);
+  color: var(--color-text-heading);
 }
 
 .dot-btn.correct {
@@ -1190,31 +660,22 @@ onUnmounted(stopTimer)
 }
 
 .summary-exit-bar .btn-secondary {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display);
   font-size: 17px;
   letter-spacing: 1px;
   padding: 0.65rem 1.4rem;
   border-radius: 12px;
+  background: rgba(18, 86, 98, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   color: var(--color-text-main);
   cursor: pointer;
-
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .summary-exit-bar .btn-secondary:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
+  background: rgba(18, 86, 98, 0.75);
+  color: var(--color-text-heading);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .error-actions {
