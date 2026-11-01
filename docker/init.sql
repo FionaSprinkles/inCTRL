@@ -88,7 +88,26 @@ CREATE TABLE IF NOT EXISTS quiz_questions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------
--- 6. QUIZ ATTEMPTS (SCORES & LEADERBOARD)
+-- 6. QUIZ RUNS
+-- One open run per play. The server clock starts here and is the
+-- only time used when the attempt is scored.
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS quiz_runs (
+    id CHAR(36) NOT NULL,
+    quiz_id INT NOT NULL,
+    user_id INT NULL,
+    started_at DATETIME(3) NOT NULL,
+    expires_at DATETIME(3) NOT NULL,
+    submitted_at DATETIME(3) NULL,
+    status ENUM('open', 'submitted') NOT NULL DEFAULT 'open',
+    PRIMARY KEY (id),
+    KEY idx_quiz_runs_quiz (quiz_id),
+    CONSTRAINT fk_quiz_runs_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE,
+    CONSTRAINT fk_quiz_runs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------
+-- 7. QUIZ ATTEMPTS (SCORES & LEADERBOARD)
 -- ----------------------------------------------------------
 CREATE TABLE IF NOT EXISTS quiz_attempts (
     id INT NOT NULL AUTO_INCREMENT,
@@ -107,7 +126,7 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------
--- 7. RESULT QUESTIONS (Per-Question Attempt Breakdown)
+-- 8. RESULT QUESTIONS (Per-Question Attempt Breakdown)
 -- ----------------------------------------------------------
 CREATE TABLE IF NOT EXISTS result_questions (
     id INT NOT NULL AUTO_INCREMENT,

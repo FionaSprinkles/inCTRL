@@ -24,14 +24,24 @@ const emit = defineEmits(['update:modelValue'])
 
 const selectedLeftId = ref(null)
 
-// Deterministically shuffle or stabilize right side so user has to match
-const rightItems = computed(() => {
-  const items = (props.question.pairs || []).map(p => ({
-    id: p.id,
-    right: p.right
+const leftItems = computed(() => {
+  if (Array.isArray(props.question.leftItems) && props.question.leftItems.length > 0) {
+    return props.question.leftItems
+  }
+  return (props.question.pairs || []).map((pair) => ({
+    id: pair.id,
+    text: pair.left
   }))
-  // Reverse or simple pseudo-shuffle so they are not directly across from each other
-  return [...items].reverse()
+})
+
+const rightItems = computed(() => {
+  if (Array.isArray(props.question.rightItems) && props.question.rightItems.length > 0) {
+    return props.question.rightItems
+  }
+  return [...(props.question.pairs || [])].reverse().map((pair) => ({
+    id: pair.id,
+    text: pair.right
+  }))
 })
 
 const currentMatches = computed(() => props.modelValue || {})
@@ -109,15 +119,36 @@ const colorClasses = ['badge-blue', 'badge-purple', 'badge-orange', 'badge-teal'
  * @returns {string} CSS class string for badge styling.
  */
 function getPairBadge(pairId) {
-  const index = (props.question.pairs || []).findIndex(p => p.id === pairId)
-  return colorClasses[index % colorClasses.length]
+  const index = leftItems.value.findIndex((item) => String(item.id) === String(pairId))
+  const safeIndex = index < 0 ? 0 : index
+  return colorClasses[safeIndex % colorClasses.length]
 }
 
 function getRightMatchedLeft(rightId) {
   const leftId = Object.keys(currentMatches.value).find(
-    lId => currentMatches.value[lId] === rightId
+    (lId) => currentMatches.value[lId] === rightId
   )
-  return leftId ? Number(leftId) : null
+  return leftId ?? null
+}
+
+function expectedRightId(leftId) {
+  const key = props.result?.correctRightByLeft
+  if (key && Object.prototype.hasOwnProperty.call(key, String(leftId))) {
+    return key[String(leftId)]
+  }
+  return leftId
+}
+
+function leftIsCorrect(leftId) {
+  if (!props.result) return false
+  return currentMatches.value[leftId] === expectedRightId(leftId)
+}
+
+function rightIsCorrect(rightId) {
+  if (!props.result) return false
+  const matchedLeft = getRightMatchedLeft(rightId)
+  if (matchedLeft == null) return false
+  return expectedRightId(matchedLeft) === rightId
 }
 </script>
 
@@ -140,39 +171,39 @@ function getRightMatchedLeft(rightId) {
       <div class="column left-column">
         <div class="column-header">Shortcuts</div>
         <div
-          v-for="pair in question.pairs"
-          :key="'left-' + pair.id"
+          v-for="item in leftItems"
+          :key="'left-' + item.id"
           class="match-row"
         >
           <button
             type="button"
             class="match-card left-card"
             :class="{
-              active: selectedLeftId === pair.id,
-              paired: currentMatches[pair.id] !== undefined,
-              correct: result && currentMatches[pair.id] === pair.id,
-              incorrect: result && currentMatches[pair.id] !== undefined && currentMatches[pair.id] !== pair.id
+              active: selectedLeftId === item.id,
+              paired: currentMatches[item.id] !== undefined,
+              correct: leftIsCorrect(item.id),
+              incorrect: result && currentMatches[item.id] !== undefined && !leftIsCorrect(item.id)
             }"
             :disabled="disabled"
-            @click="onSelectLeft(pair.id)"
+            @click="onSelectLeft(item.id)"
           >
-            <kbd class="shortcut-text">{{ pair.left }}</kbd>
+            <kbd class="shortcut-text">{{ item.text }}</kbd>
             <span
-              v-if="currentMatches[pair.id] !== undefined"
+              v-if="currentMatches[item.id] !== undefined"
               class="match-pill"
-              :class="getPairBadge(pair.id)"
+              :class="getPairBadge(item.id)"
             >
               Linked
             </span>
           </button>
           <button
-            v-if="currentMatches[pair.id] !== undefined"
+            v-if="currentMatches[item.id] !== undefined"
             type="button"
             class="unlink-btn"
             :disabled="disabled"
             title="Click to disconnect"
-            :aria-label="`Disconnect ${pair.left}`"
-            @click="unpair(pair.id)"
+            :aria-label="`Disconnect ${item.text}`"
+            @click="unpair(item.id)"
           >
             ✕
           </button>
@@ -190,13 +221,13 @@ function getRightMatchedLeft(rightId) {
           :class="{
             paired: getRightMatchedLeft(item.id) !== null,
             'can-link': selectedLeftId !== null,
-            correct: result && getRightMatchedLeft(item.id) === item.id,
-            incorrect: result && getRightMatchedLeft(item.id) !== null && getRightMatchedLeft(item.id) !== item.id
+            correct: rightIsCorrect(item.id),
+            incorrect: result && getRightMatchedLeft(item.id) !== null && !rightIsCorrect(item.id)
           }"
           :disabled="disabled"
           @click="onSelectRight(item.id)"
         >
-          <span class="action-text">{{ item.right }}</span>
+          <span class="action-text">{{ item.text }}</span>
           <span
             v-if="getRightMatchedLeft(item.id) !== null"
             class="match-pill"
