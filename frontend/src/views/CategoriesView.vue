@@ -35,11 +35,6 @@ async function loadData() {
     const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories().catch(() => [])])
     quizzes.value = qData
     categories.value = cData
-
-
-
-
-
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -50,6 +45,14 @@ async function loadData() {
 function resetFilters() {
   selectedCategory.value = 'all'
   selectedDifficulty.value = 'all'
+  if (route.params.slug || route.query.category || route.query.categoryId || route.query.difficulty) {
+    router.replace('/categories')
+  }
+}
+
+function onCategoryChange() {
+  const cat = categories.value.find((c) => c.id === selectedCategory.value)
+  router.replace(cat?.slug ? `/categories/${cat.slug}` : '/categories')
 }
 
 function startQuiz(quiz) {
@@ -58,10 +61,20 @@ function startQuiz(quiz) {
 }
 
 watch(
-  () => route.query,
-  (q) => {
-    selectedCategory.value = q.category || q.categoryId || 'all'
-    selectedDifficulty.value = q.difficulty || 'all'
+  [() => route.params.slug, () => route.query.category, () => route.query.categoryId, categories],
+  ([slug, cat, catId]) => {
+    const raw = slug || cat || catId
+    const matched =
+      raw && categories.value.find((c) => c.slug === raw || String(c.id) === String(raw))
+    selectedCategory.value = matched ? matched.id : raw || 'all'
+  },
+  { immediate: true },
+)
+
+watch(
+  () => route.query.difficulty,
+  (diff) => {
+    selectedDifficulty.value = diff || 'all'
   },
   { immediate: true },
 )
@@ -80,7 +93,12 @@ onMounted(loadData)
       <section class="filters-bar" aria-label="Quiz Filters">
         <div class="filter-group">
           <label for="category-filter">Category</label>
-          <select id="category-filter" v-model="selectedCategory" class="filter-select">
+          <select
+            id="category-filter"
+            v-model="selectedCategory"
+            class="filter-select"
+            @change="onCategoryChange"
+          >
             <option value="all">All Categories</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
           </select>
