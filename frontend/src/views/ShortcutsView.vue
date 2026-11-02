@@ -454,14 +454,14 @@ kbd {
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 0.5rem);
-  width: 280px;
+  width: 300px;
   max-height: 350px;
   overflow-y: auto;
   border-radius: 16px;
   padding: 1rem;
   z-index: 100;
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -471,16 +471,18 @@ kbd {
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Dropdown title */
 .dropdown-title {
-  font-size: 18px;
   text-transform: uppercase;
-  color: var(--color-text-white);
   margin-bottom: 0.5rem;
   font-weight: bold;
   font-family: var(--font-display), serif;
+  font-size: 20px;
+  letter-spacing: 2px;
 }
 
 /* Dropdown buttons */
@@ -492,12 +494,13 @@ kbd {
   padding: 0.45rem 0.6rem;
   background: transparent;
   border-radius: 10px;
-  font-size: 14px;
   cursor: pointer;
   transition:
     background 0.2s,
     color 0.2s;
   font-family: var(--font-body), sans-serif;
+  font-size: 14px;
+  font-weight: 340;
 }
 
 /* Dropdown buttons hover */
@@ -505,13 +508,13 @@ kbd {
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
   transition: all 0.3s ease;
   color: var(--color-dark-accenturate);
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-light-accenturate);
   font-weight: 600;
 }
 
 /* Dropdown buttons when marked */
 .dropdown-item.active {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-light-accenturate);
   font-weight: 600;
   color: var(--color-dark-accenturate);
 }
