@@ -223,7 +223,7 @@ onMounted(() => {
 }
 
 .user {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 20px;
 }
 </style>
