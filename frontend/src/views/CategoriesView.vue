@@ -35,11 +35,6 @@ async function loadData() {
     const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories().catch(() => [])])
     quizzes.value = qData
     categories.value = cData
-
-
-
-
-
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -148,7 +143,7 @@ onMounted(loadData)
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
   box-sizing: border-box;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 .quiz-selection-view {
@@ -161,7 +156,7 @@ onMounted(loadData)
 }
 
 .quiz-page-header h1 {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), serif;
   font-size: 38px;
   font-weight: 370;
   color: var(--color-text-heading);
@@ -170,7 +165,7 @@ onMounted(loadData)
 }
 
 .subtitle {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   color: var(--color-text-main);
   font-size: 17px;
   letter-spacing: 0.5px;
@@ -201,7 +196,7 @@ onMounted(loadData)
 }
 
 .filter-group label {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 17px;
   font-weight: 500;
   letter-spacing: 1.5px;
@@ -216,7 +211,7 @@ onMounted(loadData)
   color: var(--color-text-heading);
   font-size: 0.95rem;
   outline: none;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   transition: border-color 0.2s ease;
 }
 
@@ -230,7 +225,7 @@ onMounted(loadData)
 }
 
 .btn-reset {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   color: var(--color-text-main);
   font-size: 16px;
   letter-spacing: 1px;
@@ -261,20 +256,20 @@ onMounted(loadData)
 }
 
 .empty-box .no-quizzes-message {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 1.35rem;
   color: var(--color-text-heading);
   margin-bottom: 0.5rem;
 }
 
 .empty-hint {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   color: var(--color-text-main);
   margin-bottom: 1.25rem;
 }
 
 .btn-clear {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.6rem 1.25rem;
@@ -298,7 +293,7 @@ onMounted(loadData)
 }
 
 .btn-retry {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.55rem 1.15rem;
@@ -327,7 +322,10 @@ onMounted(loadData)
   -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .quiz-card:hover {
@@ -344,7 +342,7 @@ onMounted(loadData)
 }
 
 .badge {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 0.8rem;
   padding: 0.2rem 0.65rem;
   border-radius: 8px;
@@ -378,7 +376,7 @@ onMounted(loadData)
 }
 
 .quiz-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), serif;
   font-size: 1.4rem;
   font-weight: 450;
   margin: 0 0 0.5rem;
@@ -388,7 +386,7 @@ onMounted(loadData)
 }
 
 .quiz-description {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   color: var(--color-text-main);
   margin-bottom: 1.25rem;
@@ -404,13 +402,13 @@ onMounted(loadData)
 }
 
 .question-count {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.9rem;
   color: var(--color-text-main);
 }
 
 .btn-start {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.5rem 1.15rem;
