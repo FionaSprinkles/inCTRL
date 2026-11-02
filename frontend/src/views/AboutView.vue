@@ -296,6 +296,7 @@ kbd {
   padding: 40px 20px 80px 20px;
   text-align: center;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Title */
@@ -309,14 +310,16 @@ kbd {
 /* Creates a flex container to align team members horizontally */
 .team-grid {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 /* Defines layout and alignment for individual team members */
 .team-member {
-  flex: 1.5;
+  flex: 1 1 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -343,5 +346,43 @@ kbd {
 .team-member p {
   font-size: 20px;
   color: var(--color-dark-teal);
+}
+
+@media (max-width: 850px) {
+  .hero-section {
+    padding: 40px 20px;
+  }
+
+  .hero-section h1 {
+    font-size: 36px;
+  }
+
+  .story-section {
+    flex-direction: column;
+    padding: 40px 20px;
+    gap: 20px;
+  }
+
+  .story-section .left-column,
+  .story-section .right-column {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .white-card {
+    flex-direction: column;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .title,
+  .card-left h2 {
+    font-size: 30px;
+  }
+
+  .shortcut-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 </style>
