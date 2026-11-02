@@ -129,4 +129,34 @@ import { RouterLink } from 'vue-router'
 .footer-top > .footer-col:nth-child(2) {
   margin-right: 1.5rem;
 }
+
+@media (max-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .courses-links {
+    column-count: 2;
+  }
+
+  .footer-top > .footer-col:nth-child(2) {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 2rem 1.25rem 1.25rem;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .courses-links {
+    column-count: 1;
+  }
+}
 </style>
