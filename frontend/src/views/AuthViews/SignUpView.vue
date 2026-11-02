@@ -122,6 +122,9 @@ async function handleSubmit() {
 <style scoped>
 /* Page layout */
 .signup-page {
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
   display: flex;
   align-items: center; /* Centers the card vertically */
   justify-content: center; /* Centers the card horizontally */
@@ -133,6 +136,7 @@ async function handleSubmit() {
 .glass-card {
   width: 100%; /* Takes the full available width */
   max-width: 380px; /* Never gets wider than 380px */
+  box-sizing: border-box;
   padding: 1rem 2rem;
   text-align: center;
   border-radius: 40px;

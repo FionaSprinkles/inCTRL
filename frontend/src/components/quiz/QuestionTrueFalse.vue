@@ -162,4 +162,10 @@ function setAnswer(val) {
 .tf-icon {
   font-size: 1.3rem;
 }
+
+@media (max-width: 480px) {
+  .tf-actions {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

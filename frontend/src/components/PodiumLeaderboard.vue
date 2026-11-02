@@ -72,7 +72,7 @@ onMounted(fetchLeaderboard)
 
           <!-- Player details -->
           <div class="player-info">
-            <span class="player-name">{{ player.name }}</span>
+            <span class="player-name" :title="player.name">{{ player.name }}</span>
             <span class="player-points">{{ player.points }}</span>
           </div>
 
@@ -110,7 +110,9 @@ onMounted(fetchLeaderboard)
 /* Main container and layout */
 .leaderboard-container {
   padding: 24px;
+  width: 100%;
   max-width: 800px;
+  box-sizing: border-box;
   margin: 0 auto;
   border-radius: 16px;
   color: white;
@@ -119,8 +121,10 @@ onMounted(fetchLeaderboard)
 /* Header section with title and time filter tabs */
 .header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
@@ -214,6 +218,7 @@ onMounted(fetchLeaderboard)
   flex-direction: column;
   align-items: center;
   flex: 1;
+  min-width: 0;
   max-width: 140px;
   position: relative;
   transition: transform 0.2s;
@@ -302,6 +307,7 @@ onMounted(fetchLeaderboard)
 .player-info {
   display: flex;
   flex-direction: column;
+  width: 100%;
   align-items: center;
   margin: 8px 0;
   text-align: center;
@@ -311,6 +317,7 @@ onMounted(fetchLeaderboard)
   font-weight: bold;
   font-family: var(--font-display), serif;
   font-size: 0.95rem;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -397,11 +404,13 @@ onMounted(fetchLeaderboard)
   align-items: center;
   gap: 10px;
   flex: 1;
+  min-width: 0;
 }
 
 .list-avatar {
   width: 32px;
   height: 32px;
+  flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -414,6 +423,7 @@ onMounted(fetchLeaderboard)
 .list-name {
   font-weight: 500;
   font-size: 0.95rem;
+  overflow-wrap: anywhere;
 }
 
 .list-points {
@@ -468,5 +478,21 @@ onMounted(fetchLeaderboard)
     inset -8px 0 14px rgba(0, 0, 0, 0.18),
     0 10px 24px rgba(0, 0, 0, 0.35);
   transition: box-shadow 0.3s ease;
+}
+</style>
+@media (max-width: 600px) {
+  .leaderboard-container {
+    padding: 16px;
+  }
+
+  .podium-card {
+    padding: 12px;
+  }
+
+  .player-name {
+    font-size: 0.85rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 </style>

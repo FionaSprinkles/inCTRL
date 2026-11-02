@@ -32,6 +32,8 @@ const { username } = useAuth()
 <style scoped>
 .personal-home {
   text-align: center;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 .continue {
   justify-content: center; /* Help buttons to be in center of the page */
@@ -52,6 +54,7 @@ const { username } = useAuth()
 .continue article {
   width: 100%;
   max-width: 500px;
+  box-sizing: border-box;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #275d69;
