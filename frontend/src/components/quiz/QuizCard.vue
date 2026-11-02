@@ -419,6 +419,7 @@ function handleNext() {
 
 .card-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
@@ -472,6 +473,16 @@ function handleNext() {
 .btn-secondary:hover {
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
   transition: all 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .quiz-card {
+    padding: 18px;
+  }
+
+  .question-prompt {
+    font-size: 1.25rem;
+  }
 }
 
 /* Deep stylings for child question format components */

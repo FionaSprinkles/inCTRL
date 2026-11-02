@@ -623,6 +623,7 @@ function formatCorrectAnswer(question) {
 
 .card-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
@@ -845,5 +846,11 @@ function formatCorrectAnswer(question) {
 .btn-primary:hover {
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+}
+
+@media (max-width: 600px) {
+  .summary-container {
+    padding: 18px;
+  }
 }
 </style>
