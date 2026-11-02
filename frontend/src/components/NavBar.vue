@@ -1,11 +1,6 @@
-/** The navbar is always visible from any page. It changes depending on if a user is logged in or not. 
-
-The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsible for:
-- Labeling and content inside Dropdown
-- Fetching from backend
-
-*/
-
+/** The navbar is always visible from any page. It changes depending on if a user is logged in or
+not. The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsible for: -
+Labeling and content inside Dropdown - Fetching from backend */
 
 <template>
   <nav class="navbar">
@@ -14,15 +9,12 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
     <!-- Left side of the navbar -->
     <div class="nav-left">
       <div class="nav-links">
-
         <!-- Dropdown component-->
         <Dropdown label="Browse" side="left">
           <div class="category-section">
             <h2>Courses by category</h2>
 
-            <RouterLink to="/categories" class="nav-link">
-              All Courses
-            </RouterLink>
+            <RouterLink to="/categories" class="nav-link"> All Courses </RouterLink>
 
             <RouterLink
               v-for="category in categories"
@@ -37,7 +29,6 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
 
         <!-- Links for logged out users -->
         <template v-if="!isLoggedIn">
-
           <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
 
           <RouterLink to="/about" class="nav-link"> About </RouterLink>
@@ -45,7 +36,6 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
 
         <!-- Links for logged in users -->
         <template v-else>
-
           <RouterLink to="/shortcuts" class="nav-link"> Shortcuts List </RouterLink>
 
           <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
@@ -68,15 +58,9 @@ The navbar uses dropdown menus from Dropdown.vue component. Navbar is responsibl
       <div class="nav-right">
         <!-- Dropdown from Dropdown.vue-->
         <Dropdown :label="username" side="right">
-          <RouterLink to="/" class="nav-link">
-            Home
-          </RouterLink>
-          <RouterLink to="/history" class="nav-link">
-            History
-          </RouterLink>
-          <button class="nav-link" @click="handleLogout">
-            Log out
-          </button>
+          <RouterLink to="/" class="nav-link"> Home </RouterLink>
+          <RouterLink to="/history" class="nav-link"> History </RouterLink>
+          <button class="nav-link" @click="handleLogout">Log out</button>
         </Dropdown>
       </div>
     </template>
@@ -121,7 +105,7 @@ function handleLogout() {
   router.push('/')
 }
 
-// This function fetches categories from backend. 
+// This function fetches categories from backend.
 // Right now categories are displayed in drop down menu.
 const categories = ref([])
 
@@ -196,8 +180,6 @@ onMounted(() => {
   gap: 1rem; /* space between each link */
 }
 
-
-
 /* Dropdown heading */
 .category-section h2 {
   font-size: 20px;
@@ -217,16 +199,27 @@ onMounted(() => {
   border: 1px solid #fdfbf7;
   padding: 0.3rem 0.9rem;
   font-size: 16px;
-  transition: all 0.25s ease; /* Smooth hover transition */
   border-radius: 40px;
-  background-color: #1d7874;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Hover for log in / sign up buttons */
 .btn-auth:hover {
-  background-color: var(--color-button-hover);
-  color: var(--color-button-text);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  transition: all 0.3s ease;
+  color: var(--color-text-main);
 }
 
 .user {
