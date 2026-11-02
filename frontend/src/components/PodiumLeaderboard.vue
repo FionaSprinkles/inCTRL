@@ -69,7 +69,7 @@ onMounted(fetchLeaderboard)
 
           <!-- Player details -->
           <div class="player-info">
-            <span class="player-name">{{ player.name }}</span>
+            <span class="player-name" :title="player.name">{{ player.name }}</span>
             <span class="player-points">{{ player.points }}</span>
           </div>
 
@@ -349,9 +349,7 @@ onMounted(fetchLeaderboard)
 .list-name {
   font-weight: 500;
   font-size: 0.95rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .list-points {
@@ -370,8 +368,9 @@ onMounted(fetchLeaderboard)
   }
 
   .player-name {
-    max-width: 80px;
     font-size: 0.85rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }
 </style>
