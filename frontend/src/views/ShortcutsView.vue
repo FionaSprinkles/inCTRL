@@ -313,6 +313,7 @@ async function fetchShortcuts() {
   max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1.5rem 3rem;
+  box-sizing: border-box;
 }
 
 .table-wrap {
@@ -371,8 +372,10 @@ kbd {
 
 .page-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
@@ -385,6 +388,7 @@ kbd {
   border-radius: 12px;
   outline: none;
   width: 200px;
+  box-sizing: border-box;
   color: var(--color-text-white);
 
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
@@ -417,6 +421,7 @@ kbd {
 /* Filter button position */
 .header-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -455,6 +460,8 @@ kbd {
   position: absolute;
   top: calc(100% + 0.5rem);
   width: 280px;
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
   max-height: 350px;
   overflow-y: auto;
   border-radius: 16px;
@@ -514,5 +521,21 @@ kbd {
   background: rgba(255, 255, 255, 0.25);
   font-weight: 600;
   color: var(--color-dark-accenturate);
+}
+
+@media (max-width: 600px) {
+  .shortcuts-page {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .header-controls {
+    width: 100%;
+  }
+
+  .search-input {
+    flex: 1;
+    width: auto;
+    min-width: 140px;
+  }
 }
 </style>
