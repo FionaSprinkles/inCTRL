@@ -61,9 +61,32 @@ function setPage(next) {
   margin-top: 1rem;
 }
 
-.pager button:disabled {
+.pager button {
   color: var(--color-text-main);
-  cursor: default;
+  cursor: pointer;
+  text-align: center;
+  min-width: 110px;
+  margin-top: 0.5rem;
+  padding: 8px;
+  font-weight: 700;
+  border-radius: 40px;
+
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.pager button:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 .pager span {
@@ -71,5 +94,4 @@ function setPage(next) {
   color: var(--color-text-main);
   letter-spacing: 1px;
 }
-
 </style>

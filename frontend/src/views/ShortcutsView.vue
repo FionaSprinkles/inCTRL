@@ -320,7 +320,7 @@ async function fetchShortcuts() {
   background: rgba(255, 255, 255, 0.09);
   border-radius: 20px;
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -337,6 +337,12 @@ table {
   border-collapse: collapse;
 }
 
+tr {
+  font-size: 16px;
+  font-weight: 340;
+  letter-spacing: 1px;
+}
+
 th,
 td {
   padding: 0.85rem 1rem;
@@ -346,10 +352,10 @@ td {
 
 th {
   font-family: var(--font-display), serif;
-  font-size: 16px;
-  font-weight: 450;
+  font-size: 20px;
+  font-weight: bold;
   letter-spacing: 1px;
-  color: var(--color-text-main);
+  color: var(--color-text-white);
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
@@ -387,7 +393,7 @@ kbd {
   width: 200px;
   color: var(--color-text-white);
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -430,7 +436,7 @@ kbd {
   outline: none;
   cursor: pointer;
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
