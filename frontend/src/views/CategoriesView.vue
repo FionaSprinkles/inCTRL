@@ -32,7 +32,7 @@ async function loadData() {
   loading.value = true
   error.value = ''
   try {
-    const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories().catch(() => [])])
+    const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories()])
     quizzes.value = qData
     categories.value = cData
   } catch (err) {
