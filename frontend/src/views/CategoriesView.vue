@@ -52,7 +52,8 @@ function resetFilters() {
 
 function onCategoryChange() {
   const cat = categories.value.find((c) => c.id === selectedCategory.value)
-  router.replace(cat?.slug ? `/categories/${cat.slug}` : '/categories')
+  const query = selectedDifficulty.value !== 'all' ? { difficulty: selectedDifficulty.value } : {}
+  router.replace({ path: cat?.slug ? `/categories/${cat.slug}` : '/categories', query })
 }
 
 function startQuiz(quiz) {
