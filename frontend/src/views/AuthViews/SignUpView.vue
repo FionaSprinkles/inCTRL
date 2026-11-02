@@ -125,6 +125,8 @@ async function handleSubmit() {
   display: flex;
   align-items: center; /* Centers the card vertically */
   justify-content: center; /* Centers the card horizontally */
+  min-height: 85vh;
+  padding: 2rem;
 }
 
 /* Card layout */
