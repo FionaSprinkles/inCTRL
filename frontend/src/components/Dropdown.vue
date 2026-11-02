@@ -3,7 +3,7 @@ This component is responsible for: - The dropdown button - Open/close dropdown -
 
 <template>
   <div ref="dropdown" class="dropdown">
-    <button class="nav-link" :aria-expanded="isOpen" @click="isOpen = !isOpen">
+    <button class="nav-link dropdown-toggle" :aria-expanded="isOpen" @click="isOpen = !isOpen">
       {{ label }}
     </button>
 
@@ -70,6 +70,7 @@ onUnmounted(() => {
   max-width: calc(100vw - 2rem);
   box-sizing: border-box;
   padding: 1rem;
+  margin-top: 20px;
 
   /* Glass effect for the dropdown */
   background: rgba(10, 40, 50, 0.85);
@@ -99,5 +100,34 @@ onUnmounted(() => {
   font-family: var(--font-body), sans-serif;
   font-size: 16px;
   text-align: left;
+  font-weight: 340;
+}
+
+.dropdown-toggle {
+  position: relative;
+  letter-spacing: 1px;
+  padding-bottom: 4px;
+}
+
+.dropdown-toggle::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-toggle:hover::after,
+.dropdown-toggle[aria-expanded='true']::after {
+  transform: scaleX(1);
+}
+
+.user-dropdown .dropdown-toggle:hover {
+  color: var(--color-text-main);
 }
 </style>
