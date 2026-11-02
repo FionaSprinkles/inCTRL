@@ -1,24 +1,14 @@
-/** This is a template for dropdowns. Should be used for both browse-dropdown and username-dropdown. 
-
-This component is responsible for:
-- The dropdown button
-- Open/close dropdown
-- Click outside
-
-*/
+/** This is a template for dropdowns. Should be used for both browse-dropdown and username-dropdown.
+This component is responsible for: - The dropdown button - Open/close dropdown - Click outside */
 
 <template>
   <div ref="dropdown" class="dropdown">
-    <button
-      class="nav-link"
-      :aria-expanded="isOpen"
-      @click="isOpen = !isOpen"
-    >
+    <button class="nav-link" :aria-expanded="isOpen" @click="isOpen = !isOpen">
       {{ label }}
     </button>
 
-    <div v-if="isOpen" class="dropdown-menu"
-    :class ="`dropdown-menu--${side}`"> <!--dropdown to the "left" or "right"--> 
+    <div v-if="isOpen" class="dropdown-menu" :class="`dropdown-menu--${side}`">
+      <!--dropdown to the "left" or "right"-->
       <slot />
     </div>
   </div>
@@ -27,26 +17,30 @@ This component is responsible for:
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
-
-
 // The text displayed on the dropdown button
-defineProps({ //what the information the component needs from its parent (ex. navbar)
+defineProps({
+  //what the information the component needs from its parent (ex. navbar)
   label: {
     type: String,
-    required: true
+    required: true,
   },
-  side: { //which side does dropdown open
+  side: {
+    //which side does dropdown open
     type: String,
-    default: 'left'
-  }
+    default: 'left',
+  },
 })
-const isOpen = ref(false) // Is thedropdown open
+
+const isOpen = ref(false) // Is the dropdown open
 const dropdown = ref(null)
 
 // Closes the dropdown when clicking outside of it
 function closeDropdown(event) {
-   if (!dropdown.value?.contains(event.target) ||
-    event.target.closest('.dropdown-menu a, .dropdown-menu button')) { // Close dropdown when clicking outside or inside
+  if (
+    !dropdown.value?.contains(event.target) ||
+    event.target.closest('.dropdown-menu a, .dropdown-menu button')
+  ) {
+    // Close dropdown when clicking outside or inside
     isOpen.value = false
   }
 }
@@ -58,18 +52,12 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdown)
 })
-
-
 </script>
 
-
 <style scoped>
-
-
 .dropdown {
   position: relative;
 }
-
 
 .dropdown-menu {
   position: absolute;
@@ -77,24 +65,25 @@ onUnmounted(() => {
   flex-direction: column;
   top: 100%; /* starts right below the Browse button */
   z-index: 10; /* stays on top of other elements */
-  width: max-content; 
+  width: max-content;
   min-width: 140px;
   max-width: calc(100vw - 2rem);
   box-sizing: border-box;
   padding: 1rem;
 
+  /* Glass effect for the dropdown */
+  background: rgba(10, 40, 50, 0.85);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
-    /* Glass effect for the dropdown */
-  background: rgba(255, 255, 255, 0.12); /* Semi-transparent white background */
-  backdrop-filter: blur(16px) saturate(160%); /* Blurs background and boosts color saturation */
-  -webkit-backdrop-filter: blur(16px) saturate(160%); /* Safari support for backdrop filter */
-  border: 1px solid rgba(255, 255, 255, 0.25); /* Subtle light border for glass edge */
-  border-radius: 20px; /* Rounded corners */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* Soft shado% */
+  border-top-color: rgba(245, 247, 250, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-
-  .dropdown-menu--left {
+.dropdown-menu--left {
   left: 0;
   right: auto;
 }
@@ -104,10 +93,6 @@ onUnmounted(() => {
   left: auto;
 }
 
-
-
-
-
 /* Smaller font for links inside the dropdown */
 .dropdown-menu :slotted(.nav-link),
 .dropdown-menu :slotted(.category-section) .nav-link {
@@ -115,6 +100,4 @@ onUnmounted(() => {
   font-size: 16px;
   text-align: left;
 }
-
-
 </style>

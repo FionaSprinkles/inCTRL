@@ -185,6 +185,7 @@ onMounted(() => {
   font-size: 20px;
   letter-spacing: 2px;
   text-align: center;
+  font-weight: bold;
 }
 
 /* Stacks the dropdown heading and links vertically with even spacing */
@@ -192,6 +193,10 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.category-section .nav-link {
+  font-weight: 340;
 }
 
 /* Log in / sign up buttons */
