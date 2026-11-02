@@ -174,9 +174,19 @@ onMounted(() => {
   position: absolute;
   left: 50%; /* start at middle of navbar */
   transform: translateX(-50%); /* shift back half its width to center */
-  font-size: 2rem;
-  color: var(--color-text-main);
+  font-size: 2.3rem;
+  color: var(--color-text-white);
   text-decoration: none; /* no underline */
+  text-shadow:
+    0 0 12px rgba(159, 211, 227, 0.6),
+    0 0 25px rgba(159, 211, 227, 0.3);
+  transition: text-shadow 0.3s ease;
+}
+
+.logo:hover {
+  text-shadow:
+    0 0 15px rgba(159, 211, 227, 0.9),
+    0 0 30px rgba(159, 211, 227, 0.5);
 }
 
 /* Links in nav-bar */

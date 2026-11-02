@@ -4,14 +4,17 @@
 
 :root {
     /* Colors */
-    --bg-gradient: linear-gradient(135deg, #0f4c5c 0%, #1d7874 40%, #679b9b 75%, #d0e1d4 100%);
+    --bg-gradient:
+    linear-gradient(135deg, #022b33 0%, #044550 30%, #086E77 55%, #199396 80%, #4FB3AE 100%);
 
     --color-text-heading: #FDFBF7;
-    --color-text-main: #F2E5D0;
+    --color-text-main: #D0C4AF;
     --color-text-muted: #85b4be;
+    --color-light-accenturate: #9FD3CD;
+    --color-dark-accenturate: #044550;
     --color-text-white: #FFFFFF;
     --color-text-black: #151515;
-    --color-dark-teal: #125662;
+    --color-dark-teal: #17344f;
 
     --color-button: #E3DDC4;
     --color-button-text: #422F23;
@@ -32,7 +35,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     color: var(--color-text-main);
     line-height: 1.5;
 }
@@ -40,18 +43,18 @@ body {
 /* ===== Typography ===== */
 /* Heading */
 h1 {
-    font-family: var(--font-heading);
+    font-family: var(--font-heading), serif;
     font-size: 38px;
     font-weight: 370;
     line-height: 1.2;
     margin-top: 20px;
     margin-bottom: 20px;
-    color: var(--color-text-heading);
+    color: var(--color-text-white);
 }
 
 /* Subheading */
 h2 {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: 20px;
     line-height: 1.2;
     font-weight: 450;
@@ -62,7 +65,7 @@ h2 {
 
 /* Card title / minor heading */
 h3 {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: 18px;
     line-height: 1.2;
     letter-spacing: 5px;
@@ -73,7 +76,7 @@ h3 {
 
 /* Main body text & paragraphs */
 p {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-size: 17px;
     font-weight: 350;
     line-height: 1.5;
@@ -85,7 +88,7 @@ p {
 /* ===== Links & buttons ===== */
 /* Router links */
 a {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     color: var(--color-text-main);
     font-size: 16px;
     font-weight: 450;
@@ -94,8 +97,8 @@ a {
 }
 
 /* Buttons */
-button {
-    font-family: var(--font-display);
+.btn, button {
+    font-family: var(--font-display), serif;
     color: var(--color-text-main);
     cursor: pointer;
     font-size: 16px;
@@ -106,21 +109,21 @@ button {
 }
 
 .nav-link {
-  font-family: var(--font-display);
-  font-size: 19px;
-  font-weight: 450;
-  letter-spacing: 1px;
-  color: var(--color-text-main);
-  background: transparent;
-  border: none;
-  padding: 0.8rem 1rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.2s ease;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 450;
+    letter-spacing: 1px;
+    color: var(--color-text-main);
+    background: transparent;
+    border: none;
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .nav-link:hover {
-  color: var(--color-text-muted);
+    color: var(--color-text-muted);
 }
 
 /* ===== Quiz ===== */

@@ -68,18 +68,18 @@ defineProps({
 }
 
 .quiz-loading-title {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 1.25rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--color-text-heading, #fdfbf7);
+  color: var(--color-text-white);
   margin: 0 0 0.5rem;
 }
 
 .quiz-loading-message {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 1rem;
-  color: var(--color-text-muted, #85b4be);
+  color: var(--color-light-accenturate);
   margin: 0;
 }
 
