@@ -24,8 +24,8 @@ categoryViewTemplate.vue
     <section>
       <h2>Available quizzes</h2>
 
-      <ListQuizzesCard
-        :quizzes="quizzes"
+      <ListQuizzesCard class="quizCard"
+        :filteredQuizzes="quizzes"
         @start-quiz="startQuiz"
       />
     </section>
@@ -41,17 +41,25 @@ categoryViewTemplate.vue
 
 <script setup>
 import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { fetchQuizzes, filterQuizzes } from '@/services/quizService'
 import ListQuizzesCard from '@/components/ListQuizzesCard.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const category = ref(null) // gets information of what the category contains, like id, name, slug and description
 const quizzes = ref([]) // this will sort and show only quizzes relevant for that category
 const loading = ref(true) // knows if we are trying to load info from backend
 const error = ref('') // gets error message
 
+
+
+function startQuiz(quiz) {
+  if (!quiz || !quiz.id) return
+
+  router.push({ path: '/quiz', query: { id: quiz.id } })
+}
 
 // fetch category from backend
 async function fetchCategory() {
@@ -108,3 +116,16 @@ watch(
 },
 { immediate : true} ) //run change imediatly
 </script>
+
+//===== STYLE =====//
+
+<style scoped>
+main{
+  text-align: center;
+}
+
+.quizCard{
+  max-width: 960px;
+  margin: 0 auto;
+}
+</style>
