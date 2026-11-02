@@ -236,6 +236,7 @@ onMounted(fetchLeaderboard)
 .player-info {
   display: flex;
   flex-direction: column;
+  width: 100%;
   align-items: center;
   margin: 8px 0;
   text-align: center;
@@ -244,6 +245,7 @@ onMounted(fetchLeaderboard)
 .player-name {
   font-weight: bold;
   font-size: 0.95rem;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
