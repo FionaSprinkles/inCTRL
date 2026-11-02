@@ -463,7 +463,7 @@ onUnmounted(stopTimer)
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
   box-sizing: border-box;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 .countdown-box {
@@ -474,7 +474,7 @@ onUnmounted(stopTimer)
 }
 
 .countdown-number {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 7rem;
   font-weight: 700;
   color: var(--color-text-heading);
@@ -524,14 +524,14 @@ onUnmounted(stopTimer)
 }
 
 .error-message {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 1rem;
   color: #fecaca;
   margin-bottom: 1rem;
 }
 
 .btn-retry {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.55rem 1.15rem;
@@ -579,7 +579,7 @@ onUnmounted(stopTimer)
 }
 
 .runner-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), serif;
   font-size: 1.45rem;
   font-weight: 400;
   color: var(--color-text-heading);
@@ -610,7 +610,7 @@ onUnmounted(stopTimer)
 }
 
 .timer-display {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-variant-numeric: tabular-nums;
   font-size: 0.95rem;
   font-weight: 500;
@@ -630,7 +630,7 @@ onUnmounted(stopTimer)
 }
 
 .progress-display {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-variant-numeric: tabular-nums;
   font-size: 0.92rem;
   color: var(--color-text-main);
@@ -641,7 +641,7 @@ onUnmounted(stopTimer)
 }
 
 .btn-back {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   color: var(--color-text-main);
@@ -679,7 +679,7 @@ onUnmounted(stopTimer)
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(15, 76, 92, 0.45);
   color: var(--color-text-main);
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0;
@@ -738,7 +738,7 @@ onUnmounted(stopTimer)
 }
 
 .summary-exit-bar .btn-secondary {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 17px;
   letter-spacing: 1px;
   padding: 0.65rem 1.4rem;
