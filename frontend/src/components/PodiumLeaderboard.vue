@@ -1,6 +1,13 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 
+const props = defineProps({
+  podiumOnly: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const activeTab = ref('Total')
 const tabs = ['Today', 'Week', 'Total']
 const leaderboardData = ref([])
@@ -24,7 +31,7 @@ onMounted(fetchLeaderboard)
 <template>
   <div class="leaderboard-container">
     <!-- Header section with title and time filter tabs -->
-    <header class="header">
+    <header v-if="!props.podiumOnly" class="header">
       <h1 class="title">Leaderboard</h1>
 
       <div class="tabs">
@@ -75,7 +82,7 @@ onMounted(fetchLeaderboard)
     </div>
 
     <!-- Remaining list for positions 4 and below -->
-    <div class="leaderboard-list-card" v-if="remainingPlayers.length > 0">
+    <div class="leaderboard-list-card" v-if="!props.podiumOnly && remainingPlayers.length > 0">
       <h3>Top 50 Players</h3>
 
       <div class="list-items">

@@ -4,7 +4,6 @@ import ShortcutsView from '../views/ShortcutsView.vue'
 import QuizView from '../views/QuizView.vue'
 import CategoriesView from '../views/categories/CategoriesView.vue'
 import SignUpView from '@/views/AuthViews/SignUpView.vue'
-import CategoryViewTemplate from '@/views/categories/categoryViewTemplate.vue'
 import AboutView from '@/views/AboutView.vue'
 import Leaderboard from '@/views/Leaderboard.vue'
 import History from '@/components/History.vue'
@@ -18,9 +17,9 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path:'/categories/:slug',
+      path: '/categories/:slug',
       name: 'category',
-      component: CategoryViewTemplate
+      component: CategoriesView,
     },
     {
       path: '/shortcuts',

@@ -26,6 +26,9 @@ const runId = ref(null)
 const elapsedSeconds = ref(0)
 const startedAt = ref(null)
 let timerInterval = null
+let countdownInterval = null
+const countdown = ref(0)
+const armingRun = ref(false)
 const isReviewMode = ref(false)
 
 function startTimer() {
@@ -40,9 +43,44 @@ function startTimer() {
 }
 
 function stopTimer() {
+  if (countdownInterval) {
+    clearInterval(countdownInterval)
+    countdownInterval = null
+    countdown.value = 0
+  }
   if (timerInterval) {
     clearInterval(timerInterval)
     timerInterval = null
+  }
+}
+
+function startCountdown() {
+  stopTimer()
+  armingRun.value = false
+  countdown.value = 3
+  countdownInterval = setInterval(() => {
+    if (--countdown.value <= 0) beginTimedRun()
+  }, 1000)
+}
+
+async function beginTimedRun() {
+  if (countdownInterval) {
+    clearInterval(countdownInterval)
+    countdownInterval = null
+  }
+  if (armingRun.value || runId.value) return
+  const requestId = quizRequestId
+  armingRun.value = true
+  try {
+    const run = await startQuizRun(activeQuiz.value.id)
+    if (requestId !== quizRequestId) return
+    runId.value = run.id
+    startTimer()
+  } catch (err) {
+    if (requestId !== quizRequestId) return
+    quizError.value = err.message || 'Could not start the quiz.'
+  } finally {
+    if (requestId === quizRequestId) armingRun.value = false
   }
 }
 
@@ -86,20 +124,18 @@ async function startQuiz(quiz) {
   runId.value = null
   stopTimer()
   elapsedSeconds.value = 0
+  armingRun.value = false
 
   try {
     const data = await fetchQuizById(quiz.id)
     if (requestId !== quizRequestId) return
     if (!data?.questions?.length) throw new Error('No questions found for this quiz.')
-    const run = await startQuizRun(quiz.id)
-    if (requestId !== quizRequestId) return
-    runId.value = run.id
     if (activeQuiz.value) {
       if (data.title) activeQuiz.value.title = data.title
       if (data.difficulty) activeQuiz.value.difficulty = data.difficulty
     }
     quizQuestions.value = data.questions
-    startTimer()
+    startCountdown()
   } catch (err) {
     if (requestId !== quizRequestId) return
     quizError.value = err.message || 'Could not load quiz questions.'
@@ -325,7 +361,7 @@ onUnmounted(stopTimer)
 
         <!-- Question jump numbers centered with the nav bar so they stay stationary -->
         <nav
-          v-if="quizQuestions.length > 1"
+          v-if="quizQuestions.length > 1 && countdown === 0 && !armingRun"
           class="question-dots-nav"
           aria-label="Question navigation"
         >
@@ -353,6 +389,10 @@ onUnmounted(stopTimer)
         :title="activeQuiz?.title"
         message="Fetching quiz questions from backend..."
       />
+
+      <div v-else-if="countdown > 0 || armingRun" class="countdown-box" aria-live="polite">
+        <span v-if="countdown > 0" :key="countdown" class="countdown-number">{{ countdown }}</span>
+      </div>
 
       <div v-else-if="quizError && !isCompleted && !isReviewMode" class="status-box error-box" role="alert">
         <div class="error-icon" aria-hidden="true">⚠️</div>
@@ -424,6 +464,36 @@ onUnmounted(stopTimer)
   padding: 1.5rem 1rem 3rem;
   box-sizing: border-box;
   font-family: var(--font-body);
+}
+
+.countdown-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+}
+
+.countdown-number {
+  font-family: var(--font-display);
+  font-size: 7rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  animation: countdown-pop 0.9s ease-out forwards;
+}
+
+@keyframes countdown-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(0.95);
+  }
 }
 
 .quiz-runner-view {
