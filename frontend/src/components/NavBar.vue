@@ -233,4 +233,29 @@ onMounted(() => {
   font-family: var(--font-display);
   font-size: 20px;
 }
+
+@media (max-width: 850px) {
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .logo {
+    position: static;
+    transform: none;
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+
+  .nav-left,
+  .nav-links,
+  .nav-right {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+}
 </style>

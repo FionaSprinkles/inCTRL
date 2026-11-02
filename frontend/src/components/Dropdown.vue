@@ -80,6 +80,8 @@ onUnmounted(() => {
   width: max-content; 
   min-width: 140px;
   max-width: calc(100vw - 2rem);
+  max-height: 75vh;
+  overflow-y: auto;
   box-sizing: border-box;
   padding: 1rem;
 
