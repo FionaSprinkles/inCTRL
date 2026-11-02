@@ -78,16 +78,6 @@ function submit() {
           />
           <button type="submit" class="btn-primary">Log in</button>
         </form>
-
-        <!-- Divider text with a line on each side -->
-        <div class="divider"><span>or log in with</span></div>
-
-        <!-- Social login buttons -->
-        <div class="social">
-          <button type="button" class="btn-social">Google</button>
-          <button type="button" class="btn-social">Apple</button>
-          <button type="button" class="btn-social">Facebook</button>
-        </div>
       </div>
     </div>
   </Teleport>
@@ -116,18 +106,23 @@ function submit() {
   padding: 1rem 2rem 1.5rem;
   text-align: center;
   color: var(--color-text-main);
+  border-radius: 40px;
 
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
 
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  /* Border */
   border: 1px solid rgba(197, 204, 214, 0.55);
   border-top-color: rgba(245, 247, 250, 0.9);
-  border-radius: 20px;
+
+  /* Glassmorphism */
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
   box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 /* Close button in the top right corner */
@@ -148,9 +143,19 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
+.member {
+  font-family: var(--font-display), serif;
+  font-size: 20px;
+}
+
 .member a {
-  font-size: 18px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-family: var(--font-display), serif;
+  color: var(--color-text-main);
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .member a:hover {
@@ -169,11 +174,12 @@ form {
 input {
   padding: 8px 2px;
   background: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-  color: white;
-  outline: none;
+  border: none; /* Removes the default border on all sides */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6); /* Underline for each field */
+  color: var(--color-text-white);
+  outline: none; /* Removes the browser's default focus outline */
   font-family: var(--font-body), sans-serif;
+  letter-spacing: 1.2px;
 }
 
 /* Color of the placeholder text */
@@ -188,13 +194,12 @@ input:focus {
 
 /* Log in button */
 .btn-primary {
-  background: var(--color-dark-teal);
-  color: var(--color-text-white);
+  background: var(--color-text-main);
+  color: var(--color-dark-accenturate);
   letter-spacing: 5px;
   margin-top: 0.5rem;
-  padding: 10px;
-
-  font-weight: 500;
+  padding: 12px;
+  font-weight: 700;
   cursor: pointer;
   border-radius: 40px;
 
@@ -207,68 +212,14 @@ input:focus {
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
   transition: all 0.3s ease;
 }
 
 /* Log in button hover */
 .btn-primary:hover {
+  background: var(--color-dark-accenturate);
   color: var(--color-text-main);
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-}
-
-/* Divider with "or log in with" text */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 1.5rem 0 1rem;
-  font-size: 0.8rem;
-  color: var(--color-text-white);
-}
-
-/* Two lines beside the "or log in with" text */
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* Social buttons */
-.social {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-/* Social buttons design*/
-.btn-social {
-  padding: 8px 16px;
-  background-color: var(--color-dark-teal);
-  color: white;
-  border-radius: 40px;
-  cursor: pointer;
-
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
-  transition: all 0.3s ease;
-}
-
-/* Social buttons hover */
-.btn-social:hover {
-  color: var(--color-text-main);
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
   transition: all 0.3s ease;
 }
 </style>
