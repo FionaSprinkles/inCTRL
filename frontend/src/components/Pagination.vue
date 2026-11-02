@@ -67,7 +67,7 @@ function setPage(next) {
 }
 
 .pager span {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   color: var(--color-text-main);
   letter-spacing: 1px;
 }
