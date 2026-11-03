@@ -8,7 +8,7 @@
       <article>
         <h2>Continue where you left off</h2>
 
-        <RouterLink to="/quiz"> Continue </RouterLink>
+        <RouterLink to="/quiz"> Keep Improving </RouterLink>
       </article>
     </section>
 
