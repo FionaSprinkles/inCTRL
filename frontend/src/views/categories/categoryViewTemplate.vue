@@ -18,9 +18,17 @@ categoryViewTemplate.vue
 */
 
 <template>
-  <main v-if="category">
-    <h1>{{ category.name }}</h1>
-    <p>{{ category.description }}</p>
+  
+    <p v-if="loading">Loading category...</p>
+
+    <section v-else-if="error">
+      <p >{{ error }}</p>
+      <button @click="fetchCategory">Try again</button>
+    </section>
+
+    <main v-else-if="category">
+      <h1>{{ category.name }}</h1>
+      <p>{{ category.description }}</p>
 
     <section>
       <h2>Available quizzes in this category</h2>
@@ -36,9 +44,7 @@ categoryViewTemplate.vue
 
   </main>
 
-  <p v-else-if="loading">Loading category...</p>
 
-  <p v-else-if="error">{{ error }}</p>
 </template>
 
 
@@ -159,4 +165,5 @@ main{
   cursor: pointer;
   padding: 1rem;
 }
+
 </style>
