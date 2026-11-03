@@ -313,6 +313,7 @@ async function fetchShortcuts() {
   max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1.5rem 3rem;
+  box-sizing: border-box;
 }
 
 .table-wrap {
@@ -320,7 +321,7 @@ async function fetchShortcuts() {
   background: rgba(255, 255, 255, 0.09);
   border-radius: 20px;
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -337,6 +338,12 @@ table {
   border-collapse: collapse;
 }
 
+tr {
+  font-size: 16px;
+  font-weight: 340;
+  letter-spacing: 1px;
+}
+
 th,
 td {
   padding: 0.85rem 1rem;
@@ -346,10 +353,10 @@ td {
 
 th {
   font-family: var(--font-display), serif;
-  font-size: 16px;
-  font-weight: 450;
+  font-size: 20px;
+  font-weight: bold;
   letter-spacing: 1px;
-  color: var(--color-text-main);
+  color: var(--color-text-white);
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
@@ -371,8 +378,10 @@ kbd {
 
 .page-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
@@ -385,9 +394,10 @@ kbd {
   border-radius: 12px;
   outline: none;
   width: 200px;
+  box-sizing: border-box;
   color: var(--color-text-white);
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -417,6 +427,7 @@ kbd {
 /* Filter button position */
 .header-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -430,7 +441,7 @@ kbd {
   outline: none;
   cursor: pointer;
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -455,13 +466,15 @@ kbd {
   position: absolute;
   top: calc(100% + 0.5rem);
   width: 280px;
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
   max-height: 350px;
   overflow-y: auto;
   border-radius: 16px;
   padding: 1rem;
   z-index: 100;
 
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid rgba(197, 204, 214, 0.55);
@@ -471,16 +484,18 @@ kbd {
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 /* Dropdown title */
 .dropdown-title {
-  font-size: 18px;
   text-transform: uppercase;
-  color: var(--color-text-white);
   margin-bottom: 0.5rem;
   font-weight: bold;
   font-family: var(--font-display), serif;
+  font-size: 20px;
+  letter-spacing: 2px;
 }
 
 /* Dropdown buttons */
@@ -492,12 +507,13 @@ kbd {
   padding: 0.45rem 0.6rem;
   background: transparent;
   border-radius: 10px;
-  font-size: 14px;
   cursor: pointer;
   transition:
     background 0.2s,
     color 0.2s;
   font-family: var(--font-body), sans-serif;
+  font-size: 14px;
+  font-weight: 340;
 }
 
 /* Dropdown buttons hover */
@@ -505,14 +521,30 @@ kbd {
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
   transition: all 0.3s ease;
   color: var(--color-dark-accenturate);
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-light-accenturate);
   font-weight: 600;
 }
 
 /* Dropdown buttons when marked */
 .dropdown-item.active {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-light-accenturate);
   font-weight: 600;
   color: var(--color-dark-accenturate);
+}
+
+@media (max-width: 600px) {
+  .shortcuts-page {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .header-controls {
+    width: 100%;
+  }
+
+  .search-input {
+    flex: 1;
+    width: auto;
+    min-width: 140px;
+  }
 }
 </style>

@@ -4,8 +4,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 const props = defineProps({
   podiumOnly: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const activeTab = ref('Total')
@@ -18,7 +18,10 @@ const remainingPlayers = computed(() => leaderboardData.value.slice(3))
 
 // Fetch leaderboard data from the backend based on the active time filter
 const fetchLeaderboard = async () => {
-  const res = await fetch(`/api/quiz/leaderboard?filter=${activeTab.value.toLowerCase()}&limit=50`)
+  const limit = props.podiumOnly ? 3 : 50
+  const res = await fetch(
+    `/api/quiz/leaderboard?filter=${activeTab.value.toLowerCase()}&limit=${limit}`,
+  )
   const data = await res.json()
   if (data.success) leaderboardData.value = data.leaderboard
 }
@@ -29,7 +32,7 @@ onMounted(fetchLeaderboard)
 </script>
 
 <template>
-  <div class="leaderboard-container">
+  <div class="leaderboard-container" :class="{ bare: podiumOnly }">
     <!-- Header section with title and time filter tabs -->
     <header v-if="!props.podiumOnly" class="header">
       <h1 class="title">Leaderboard</h1>
@@ -47,8 +50,8 @@ onMounted(fetchLeaderboard)
     </header>
 
     <!-- Podium card for top 3 players -->
-    <div class="podium-card" v-if="podiumPlayers.length > 0">
-      <div class="podium-header">
+    <div class="podium-card" :class="{ bare: podiumOnly }" v-if="podiumPlayers.length > 0">
+      <div v-if="!podiumOnly" class="podium-header">
         <h2>Podium</h2>
         <p>Top 3 with the highest score</p>
       </div>
@@ -63,18 +66,18 @@ onMounted(fetchLeaderboard)
           <div v-if="player.rank === 1" class="crown">👑</div>
 
           <!-- Player avatar initial -->
-          <div class="avatar" :style="{ backgroundColor: player.avatarBg }">
+          <div class="avatar">
             {{ player.initial }}
           </div>
 
           <!-- Player details -->
           <div class="player-info">
-            <span class="player-name">{{ player.name }}</span>
+            <span class="player-name" :title="player.name">{{ player.name }}</span>
             <span class="player-points">{{ player.points }}</span>
           </div>
 
           <!-- Podium pillar with rank number -->
-          <div class="podium-pillar" :style="{ backgroundColor: player.podiumBg }">
+          <div class="podium-pillar">
             <span class="rank-number">{{ player.rank }}</span>
           </div>
         </div>
@@ -82,7 +85,7 @@ onMounted(fetchLeaderboard)
     </div>
 
     <!-- Remaining list for positions 4 and below -->
-    <div class="leaderboard-list-card" v-if="!props.podiumOnly && remainingPlayers.length > 0">
+    <div class="leaderboard-list-card" v-if="!podiumOnly && remainingPlayers.length > 0">
       <h3>Top 50 Players</h3>
 
       <div class="list-items">
@@ -106,9 +109,10 @@ onMounted(fetchLeaderboard)
 <style scoped>
 /* Main container and layout */
 .leaderboard-container {
-  background-color: #5eb0c8;
   padding: 24px;
+  width: 100%;
   max-width: 800px;
+  box-sizing: border-box;
   margin: 0 auto;
   border-radius: 16px;
   color: white;
@@ -117,8 +121,10 @@ onMounted(fetchLeaderboard)
 /* Header section with title and time filter tabs */
 .header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
@@ -129,23 +135,35 @@ onMounted(fetchLeaderboard)
 
 /* Time filter tabs */
 .tabs {
-  background-color: rgba(255, 255, 255, 0.08);
   padding: 4px;
   border-radius: 30px;
   display: flex;
   gap: 4px;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .tab-btn {
   background: transparent;
   border: none;
-  color: #cbd5e0;
+  color: var(--color-text-white);
   padding: 6px 14px;
   border-radius: 20px;
   cursor: pointer;
   font-weight: 500;
   font-size: 0.9rem;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .tab-btn.active {
@@ -155,21 +173,34 @@ onMounted(fetchLeaderboard)
 
 /* Compact podium card for top 3 players */
 .podium-card {
-  background-color: #9fd3e3;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 16px 20px;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .podium-header h2 {
-  font-size: 1.25rem;
+  font-weight: 500;
+  font-size: 25px;
   margin: 0 0 2px 0;
+  color: var(--color-text-white);
 }
 
 .podium-header p {
-  color: #a0aec0;
+  font-size: 16px;
+  color: var(--color-text-main);
   margin: 0 0 16px 0;
-  font-size: 0.85rem;
 }
 
 /* Podium wrapper layout */
@@ -187,6 +218,7 @@ onMounted(fetchLeaderboard)
   flex-direction: column;
   align-items: center;
   flex: 1;
+  min-width: 0;
   max-width: 140px;
   position: relative;
   transition: transform 0.2s;
@@ -206,6 +238,50 @@ onMounted(fetchLeaderboard)
   order: 3;
 }
 
+/* Avatar colors per place */
+.rank-1 .avatar {
+  background-color: #ecbd4a;
+  box-shadow:
+    inset 0 10px 18px rgba(255, 255, 255, 0.35),
+    inset 0 -14px 22px rgba(0, 0, 0, 0.35),
+    inset 8px 0 14px rgba(255, 255, 255, 0.12),
+    inset -8px 0 14px rgba(0, 0, 0, 0.18),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.rank-2 .avatar {
+  background-color: #d3d8e6;
+  box-shadow:
+    inset 0 10px 18px rgba(255, 255, 255, 0.35),
+    inset 0 -14px 22px rgba(0, 0, 0, 0.35),
+    inset 8px 0 14px rgba(255, 255, 255, 0.12),
+    inset -8px 0 14px rgba(0, 0, 0, 0.18),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.rank-3 .avatar {
+  background-color: #dc9a6b;
+  box-shadow:
+    inset 0 10px 18px rgba(255, 255, 255, 0.35),
+    inset 0 -14px 22px rgba(0, 0, 0, 0.35),
+    inset 8px 0 14px rgba(255, 255, 255, 0.12),
+    inset -8px 0 14px rgba(0, 0, 0, 0.18),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.rank-1 .podium-pillar {
+  height: 110px;
+  background-color: #ecbd4a;
+}
+.rank-2 .podium-pillar {
+  height: 80px;
+  background-color: #d3d8e6;
+}
+.rank-3 .podium-pillar {
+  height: 60px;
+  background-color: #dc9a6b;
+}
+
 /* Winner crown */
 .crown {
   font-size: 1.2rem;
@@ -222,7 +298,7 @@ onMounted(fetchLeaderboard)
   justify-content: center;
   font-size: 1.3rem;
   font-weight: bold;
-  color: white;
+  color: #1e293b;
   border: 2px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
 }
@@ -231,6 +307,7 @@ onMounted(fetchLeaderboard)
 .player-info {
   display: flex;
   flex-direction: column;
+  width: 100%;
   align-items: center;
   margin: 8px 0;
   text-align: center;
@@ -238,7 +315,9 @@ onMounted(fetchLeaderboard)
 
 .player-name {
   font-weight: bold;
+  font-family: var(--font-display), serif;
   font-size: 0.95rem;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -246,7 +325,6 @@ onMounted(fetchLeaderboard)
 }
 
 .player-points {
-  color: #a0aec0;
   font-size: 0.8rem;
   margin-top: 1px;
 }
@@ -260,35 +338,38 @@ onMounted(fetchLeaderboard)
   align-items: center;
 }
 
-.rank-1 .podium-pillar {
-  height: 110px;
-}
-.rank-2 .podium-pillar {
-  height: 80px;
-}
-.rank-3 .podium-pillar {
-  height: 60px;
-}
-
 .rank-number {
   font-family: Georgia, serif;
   font-size: 1.8rem;
   font-weight: bold;
   color: #1e293b;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 /* Top 50 remaining list card */
 .leaderboard-list-card {
-  background-color: #141f1e;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 20px;
   margin-top: 20px;
+
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
 .leaderboard-list-card h3 {
-  font-size: 1.1rem;
+  font-size: 20px;
   margin: 0 0 12px 0;
+  color: var(--color-text-white);
 }
 
 .list-items {
@@ -323,11 +404,13 @@ onMounted(fetchLeaderboard)
   align-items: center;
   gap: 10px;
   flex: 1;
+  min-width: 0;
 }
 
 .list-avatar {
   width: 32px;
   height: 32px;
+  flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -340,11 +423,76 @@ onMounted(fetchLeaderboard)
 .list-name {
   font-weight: 500;
   font-size: 0.95rem;
+  overflow-wrap: anywhere;
 }
 
 .list-points {
   font-weight: bold;
   color: #fff;
   font-size: 0.9rem;
+}
+
+/* ===== podium-only mode (used on the home page) ===== */
+.leaderboard-container.bare {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  max-width: none;
+}
+
+.podium-card.bare {
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.bare .player-points {
+  color: #cbd5e0;
+}
+
+.bare .podium-wrapper {
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.bare .rank-1 .podium-pillar {
+  height: 90px;
+}
+.bare .rank-2 .podium-pillar {
+  height: 65px;
+}
+.bare .rank-3 .podium-pillar {
+  height: 48px;
+}
+
+/* Pillars with inner shadows (home page only) */
+.podium-pillar {
+  border: none;
+  box-shadow:
+    inset 0 10px 18px rgba(255, 255, 255, 0.35),
+    inset 0 -14px 22px rgba(0, 0, 0, 0.35),
+    inset 8px 0 14px rgba(255, 255, 255, 0.12),
+    inset -8px 0 14px rgba(0, 0, 0, 0.18),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.3s ease;
+}
+</style>
+@media (max-width: 600px) {
+  .leaderboard-container {
+    padding: 16px;
+  }
+
+  .podium-card {
+    padding: 12px;
+  }
+
+  .player-name {
+    font-size: 0.85rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 </style>

@@ -772,7 +772,7 @@ function getLeaderboard(filter = 'total', limit=50) {
                      JOIN quiz_attempts qa ON u.id = qa.user_id
                 ${timeCondition}
             GROUP BY u.id, u.display_name, u.username, u.avatar
-            ORDER BY total_points DESC
+            ORDER BY total_points DESC, u.id ASC
                 LIMIT ?
         `;
 

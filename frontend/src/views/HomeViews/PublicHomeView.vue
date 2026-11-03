@@ -114,6 +114,7 @@ h1 {
 /* HERO SECTION BUTTONS */
 .buttons {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center; /* Help buttons to be in center of the page */
   gap: 1.5rem; /* Makes space between elements */
   margin-top: 2rem; /* Makes space above the element */
@@ -279,5 +280,31 @@ h1 {
 /* Description */
 .section-lead {
   font-style: italic;
+}
+
+@media (max-width: 850px) {
+  .hero {
+    padding: 3.5rem 1.25rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .member {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 3rem 1.25rem;
+    gap: 2rem;
+  }
+
+  .how-it-works {
+    padding: 3rem 1.25rem;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 }
 </style>

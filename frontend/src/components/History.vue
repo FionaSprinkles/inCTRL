@@ -134,9 +134,13 @@ function getTotalTime() {
 
 .history {
   margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  overflow-x: auto;
   text-align: center;
 }
 table {
+  margin: 0 auto;
   padding: 3rem;
 }
 
@@ -166,6 +170,17 @@ button {
 
 button {
   background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+  table {
+    padding: 0.5rem;
+  }
+
+  th,
+  td {
+    padding: 0.6rem;
+  }
 }
 
 </style>
