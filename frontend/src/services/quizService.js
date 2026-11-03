@@ -99,7 +99,9 @@ export async function fetchUserAttempts(userId) {
     headers: authHeaders(),
   })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) return []
+  if (!res.ok) {
+    throw new Error(data.error || `Failed to fetch user attempts (${res.status})`)
+  }
   return data.attempts || []
 }
 

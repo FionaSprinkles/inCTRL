@@ -106,7 +106,11 @@ watch(
 watch(
   () => user.value?.id,
   async (userId) => {
-    userAttempts.value = userId ? await fetchUserAttempts(userId) : []
+    try {
+      userAttempts.value = userId ? await fetchUserAttempts(userId) : []
+    } catch (err) {
+      error.value = err.message || 'Failed to load user attempts from backend.'
+    }
   },
 )
 
