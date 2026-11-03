@@ -39,7 +39,7 @@ categoryViewTemplate.vue
       />
 
       
-        <RouterLink class="allQuizzes" to="/categories">Go to all quizzes!</RouterLink>
+        <RouterLink class="all-quizzes" to="/categories">Go to all quizzes!</RouterLink>
     </section>
 
   </main>
@@ -154,16 +154,23 @@ main{
 }
 
 
-/*The code for the button is from the "all categories page. Should this be i global.css instead?*/ 
-.allQuizzes {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
+.all-quizzes {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.5rem 1.15rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
   font-weight: 600;
+  border: 1px solid var(--color-button-border);
   cursor: pointer;
-  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.all-quizzes:hover {
+  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
 }
 
 </style>
