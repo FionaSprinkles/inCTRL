@@ -1,16 +1,20 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchQuizzes, fetchCategories, filterQuizzes } from '@/services/quizService'
+import { fetchQuizzes, fetchCategories, fetchUserAttempts, filterQuizzes } from '@/services/quizService'
+import { useAuth } from '@/composables/useAuth'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { user } = useAuth()
 
 const quizzes = ref([])
 const categories = ref([])
+const userAttempts = ref([])
 const loading = ref(true)
 const error = ref('')
+const attemptsUnavailable = ref(false)
 
 const selectedCategory = ref('all')
 const selectedDifficulty = ref('all')
@@ -22,6 +26,21 @@ const filteredQuizzes = computed(() => {
   })
 })
 
+const bestScores = computed(() => {
+  const map = {}
+  for (const attempt of userAttempts.value) {
+    if (!attempt.quizId) continue
+    const prev = map[attempt.quizId]
+    if (!prev || attempt.score > prev.score) {
+      map[attempt.quizId] = {
+        score: attempt.score,
+        maxScore: attempt.maxScore,
+      }
+    }
+  }
+  return map
+})
+
 async function loadData() {
   const qQuizId = route.query.id || route.query.quizId
   if (qQuizId) {
@@ -31,10 +50,26 @@ async function loadData() {
 
   loading.value = true
   error.value = ''
+  attemptsUnavailable.value = false
   try {
-    const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories()])
+    const requestedUserId = user.value?.id
+    const attemptsRequest = requestedUserId
+      ? fetchUserAttempts(requestedUserId).then(
+          (attempts) => ({ attempts, failed: false }),
+          () => ({ attempts: [], failed: true }),
+        )
+      : Promise.resolve({ attempts: [], failed: false })
+    const [qData, cData, aResult] = await Promise.all([
+      fetchQuizzes(),
+      fetchCategories(),
+      attemptsRequest,
+    ])
     quizzes.value = qData
     categories.value = cData
+    if (user.value?.id === requestedUserId) {
+      userAttempts.value = aResult.attempts
+      attemptsUnavailable.value = aResult.failed
+    }
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -78,6 +113,28 @@ watch(
     selectedDifficulty.value = diff || 'all'
   },
   { immediate: true },
+)
+
+watch(
+  () => user.value?.id,
+  async (userId) => {
+    attemptsUnavailable.value = false
+    if (!userId) {
+      userAttempts.value = []
+      return
+    }
+    try {
+      const attempts = await fetchUserAttempts(userId)
+      if (user.value?.id === userId) {
+        userAttempts.value = attempts
+      }
+    } catch {
+      if (user.value?.id === userId) {
+        userAttempts.value = []
+        attemptsUnavailable.value = true
+      }
+    }
+  },
 )
 
 onMounted(loadData)
@@ -125,6 +182,10 @@ onMounted(loadData)
         </button>
       </section>
 
+      <p v-if="attemptsUnavailable" class="attempts-notice" role="status">
+        Quiz history could not be loaded. Best scores are hidden.
+      </p>
+
       <div v-if="loading" class="status-box">
         <LoadingSpinner size="md" text="Loading quizzes from backend..." />
       </div>
@@ -151,8 +212,20 @@ onMounted(loadData)
           <h2 class="quiz-title">{{ quiz.title }}</h2>
           <p class="quiz-description">{{ quiz.description }}</p>
           <div class="quiz-footer">
-            <span class="question-count">{{ quiz.questionCount || 0 }} questions</span>
-            <button type="button" class="btn-start" @click="startQuiz(quiz)">Start Quiz</button>
+            <div class="quiz-meta">
+              <span class="question-count">{{ quiz.questionCount || 0 }} questions</span>
+              <span v-if="bestScores[quiz.id]" class="best-score">
+                Best: {{ bestScores[quiz.id].score }} / {{ bestScores[quiz.id].maxScore }}
+              </span>
+            </div>
+            <button
+              type="button"
+              class="btn-start"
+              :class="{ completed: Boolean(bestScores[quiz.id]) }"
+              @click="startQuiz(quiz)"
+            >
+              Start Quiz
+            </button>
           </div>
         </article>
       </div>
@@ -329,6 +402,13 @@ onMounted(loadData)
   transition: all 0.3s ease;
 }
 
+.attempts-notice {
+  text-align: center;
+  margin: -1rem 0 1.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
@@ -487,10 +567,23 @@ onMounted(loadData)
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+.quiz-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .question-count {
   font-family: var(--font-body), sans-serif;
   font-size: 0.9rem;
   color: var(--color-text-main);
+}
+
+.best-score {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.85rem;
+  color: var(--color-light-accenturate);
+  font-weight: 500;
 }
 
 .btn-start {
@@ -510,5 +603,16 @@ onMounted(loadData)
 .btn-start:hover {
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+}
+
+.btn-start.completed {
+  background: var(--color-light-accenturate);
+  color: var(--color-dark-accenturate);
+  border-color: var(--color-light-accenturate);
+}
+
+.btn-start.completed:hover {
+  background: var(--color-text-muted);
+  border-color: var(--color-text-muted);
 }
 </style>
