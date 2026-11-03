@@ -52,8 +52,9 @@ async function loadData() {
   error.value = ''
   attemptsUnavailable.value = false
   try {
-    const attemptsRequest = user.value?.id
-      ? fetchUserAttempts(user.value.id).then(
+    const requestedUserId = user.value?.id
+    const attemptsRequest = requestedUserId
+      ? fetchUserAttempts(requestedUserId).then(
           (attempts) => ({ attempts, failed: false }),
           () => ({ attempts: [], failed: true }),
         )
@@ -65,8 +66,10 @@ async function loadData() {
     ])
     quizzes.value = qData
     categories.value = cData
-    userAttempts.value = aResult.attempts
-    attemptsUnavailable.value = aResult.failed
+    if (user.value?.id === requestedUserId) {
+      userAttempts.value = aResult.attempts
+      attemptsUnavailable.value = aResult.failed
+    }
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -121,10 +124,15 @@ watch(
       return
     }
     try {
-      userAttempts.value = await fetchUserAttempts(userId)
+      const attempts = await fetchUserAttempts(userId)
+      if (user.value?.id === userId) {
+        userAttempts.value = attempts
+      }
     } catch {
-      userAttempts.value = []
-      attemptsUnavailable.value = true
+      if (user.value?.id === userId) {
+        userAttempts.value = []
+        attemptsUnavailable.value = true
+      }
     }
   },
 )
