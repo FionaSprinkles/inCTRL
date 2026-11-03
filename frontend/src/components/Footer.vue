@@ -8,11 +8,19 @@
         <p>Take control of your keyboard.</p>
       </div>
 
+      <!-- Company column -->
+      <div class="footer-col">
+        <h3>Company</h3>
+        <RouterLink to="/about">About</RouterLink>
+      </div>
+
       <!-- Courses column -->
       <div class="footer-col">
         <h3>Courses by Category</h3>
         <div class="courses-links">
-          <RouterLink to="/categories/essential-navigation">Essential Windows Navigation</RouterLink>
+          <RouterLink to="/categories/essential-navigation"
+            >Essential Windows Navigation</RouterLink
+          >
           <RouterLink to="/categories/system-troubleshooting">System & Troubleshooting</RouterLink>
           <RouterLink to="/categories/file-explorer">File Explorer & Windows Tools</RouterLink>
           <RouterLink to="/categories/multitasking">Multitasking & Window Management</RouterLink>
@@ -25,27 +33,11 @@
           <RouterLink to="/categories/dialogs-settings">Dialog Boxes & Settings</RouterLink>
         </div>
       </div>
-
-      <!-- Company column -->
-      <div class="footer-col">
-        <h3>Company</h3>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/contact">Contact us</RouterLink>
-        <RouterLink to="/faq">FAQ</RouterLink>
-      </div>
-
-      <!-- Legal column -->
-      <div class="footer-col">
-        <h3>Legal</h3>
-        <RouterLink to="/privacy">Privacy policy</RouterLink>
-        <RouterLink to="/terms">Terms of service</RouterLink>
-        <RouterLink to="/cookies">Manage cookies</RouterLink>
-      </div>
     </div>
 
     <!-- Bottom part: copyright -->
     <div class="footer-bottom">
-      <p>© 2026 InCtrl. All rights reserved.</p>
+      <p>© 2026 InCtrl. A school project.</p>
     </div>
   </footer>
 </template>
@@ -64,23 +56,23 @@ import { RouterLink } from 'vue-router'
 
 .footer-top {
   display: grid; /* columns side by side */
-  grid-template-columns: 2fr 1fr 1fr 1fr; /* so every column is beside each other */
-  gap: 5rem; /* space between columns */
+  grid-template-columns: 1.5fr 1fr 4fr; /* so every column is beside each other */
+  gap: 3rem; /* space between columns */
   margin: 0 auto; /* centers the grid */
   text-align: left; /* overrides main's centered text */
-}
-
-.footer-col a:hover {
-  color: var(--color-text-main);
-  text-decoration: none;
 }
 
 .footer-col a {
   font-size: 16px;
   font-family: var(--font-body), sans-serif; /* Jost instead of the global link font */
-  color: var(--color-light-accenturate);
+  color: var(--color-text-main);
   text-decoration: none; /* no underline */
-  transition: color 0.2s ease; /* smooth color change on hover */
+  transition: color 0.3s ease; /* smooth color change on hover */
+}
+
+.footer-col a:hover {
+  color: var(--color-light-accenturate);
+  text-decoration: none;
 }
 
 .footer-col {
@@ -90,13 +82,14 @@ import { RouterLink } from 'vue-router'
 }
 
 .footer-col h3 {
-  font-size: 14px; /* smaller than the global h3 */
+  font-size: 16px; /* smaller than the global h3 */
   margin: 0 0 0.5rem; /* no top margin, small space below */
+  color: var(--color-text-white);
 }
 
 .footer-logo {
   font-size: 2rem;
-  color: var(--color-text-main);
+  color: var(--color-text-white);
   text-decoration: none; /* no underline */
 }
 
@@ -113,9 +106,8 @@ import { RouterLink } from 'vue-router'
 }
 
 /* Links layout in courses column */
-
 .courses-links {
-  column-count: 3;
+  column-count: 4;
   column-gap: 2rem;
 }
 
