@@ -1,14 +1,17 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchQuizzes, fetchCategories, filterQuizzes } from '@/services/quizService'
+import { fetchQuizzes, fetchCategories, fetchUserAttempts, filterQuizzes } from '@/services/quizService'
+import { useAuth } from '@/composables/useAuth'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { user } = useAuth()
 
 const quizzes = ref([])
 const categories = ref([])
+const userAttempts = ref([])
 const loading = ref(true)
 const error = ref('')
 
@@ -22,6 +25,21 @@ const filteredQuizzes = computed(() => {
   })
 })
 
+const bestScores = computed(() => {
+  const map = {}
+  for (const attempt of userAttempts.value) {
+    if (!attempt.quizId) continue
+    const prev = map[attempt.quizId]
+    if (!prev || attempt.score > prev.score) {
+      map[attempt.quizId] = {
+        score: attempt.score,
+        maxScore: attempt.maxScore,
+      }
+    }
+  }
+  return map
+})
+
 async function loadData() {
   const qQuizId = route.query.id || route.query.quizId
   if (qQuizId) {
@@ -32,9 +50,14 @@ async function loadData() {
   loading.value = true
   error.value = ''
   try {
-    const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories()])
+    const [qData, cData, aData] = await Promise.all([
+      fetchQuizzes(),
+      fetchCategories(),
+      user.value?.id ? fetchUserAttempts(user.value.id) : Promise.resolve([]),
+    ])
     quizzes.value = qData
     categories.value = cData
+    userAttempts.value = aData
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -78,6 +101,13 @@ watch(
     selectedDifficulty.value = diff || 'all'
   },
   { immediate: true },
+)
+
+watch(
+  () => user.value?.id,
+  async (userId) => {
+    userAttempts.value = userId ? await fetchUserAttempts(userId) : []
+  },
 )
 
 onMounted(loadData)
@@ -151,8 +181,20 @@ onMounted(loadData)
           <h2 class="quiz-title">{{ quiz.title }}</h2>
           <p class="quiz-description">{{ quiz.description }}</p>
           <div class="quiz-footer">
-            <span class="question-count">{{ quiz.questionCount || 0 }} questions</span>
-            <button type="button" class="btn-start" @click="startQuiz(quiz)">Start Quiz</button>
+            <div class="quiz-meta">
+              <span class="question-count">{{ quiz.questionCount || 0 }} questions</span>
+              <span v-if="bestScores[quiz.id]" class="best-score">
+                Best: {{ bestScores[quiz.id].score }} / {{ bestScores[quiz.id].maxScore }}
+              </span>
+            </div>
+            <button
+              type="button"
+              class="btn-start"
+              :class="{ completed: Boolean(bestScores[quiz.id]) }"
+              @click="startQuiz(quiz)"
+            >
+              Start Quiz
+            </button>
           </div>
         </article>
       </div>
@@ -487,10 +529,23 @@ onMounted(loadData)
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+.quiz-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .question-count {
   font-family: var(--font-body), sans-serif;
   font-size: 0.9rem;
   color: var(--color-text-main);
+}
+
+.best-score {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.85rem;
+  color: var(--color-light-accenturate);
+  font-weight: 500;
 }
 
 .btn-start {
@@ -510,5 +565,16 @@ onMounted(loadData)
 .btn-start:hover {
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+}
+
+.btn-start.completed {
+  background: var(--color-light-accenturate);
+  color: var(--color-dark-accenturate);
+  border-color: var(--color-light-accenturate);
+}
+
+.btn-start.completed:hover {
+  background: var(--color-text-muted);
+  border-color: var(--color-text-muted);
 }
 </style>

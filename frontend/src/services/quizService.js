@@ -89,6 +89,21 @@ export async function submitQuizAttempt(payload) {
 }
 
 /**
+ * Fetches past quiz attempts for a specific user.
+ * @param {number|string} userId - User ID
+ * @returns {Promise<Array<object>>}
+ */
+export async function fetchUserAttempts(userId) {
+  if (!userId) return []
+  const res = await fetch(`/api/quiz/attempts/user/${userId}`, {
+    headers: authHeaders(),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) return []
+  return data.attempts || []
+}
+
+/**
  * Filters a list of quizzes by category and/or difficulty.
  *
  * @param {Array<object>} quizzes - List of quiz objects
