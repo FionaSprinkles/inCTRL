@@ -35,6 +35,7 @@ categoryViewTemplate.vue
 
       <ListQuizzesCard class="quizCard"
         :filteredQuizzes="sortedQuizzes"
+        :bestScores="bestScores"
         @start-quiz="startQuiz"
       />
 
@@ -52,8 +53,9 @@ categoryViewTemplate.vue
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchQuizzes, filterQuizzes } from '@/services/quizService'
+import { fetchQuizzes, filterQuizzes, fetchUserAttempts } from '@/services/quizService'
 import ListQuizzesCard from '@/components/ListQuizzesCard.vue'
+import { useAuth } from '@/composables/useAuth'
 
 const route = useRoute()
 const router = useRouter()
@@ -62,8 +64,52 @@ const category = ref(null) // gets information of what the category contains, li
 const quizzes = ref([]) // this will sort and show only quizzes relevant for that category
 const loading = ref(true) // knows if we are trying to load info from backend
 const error = ref('') // gets error message
+const { user } = useAuth()
+const userAttempts = ref([])
+const attemptsUnavailable = ref(false)
+
+const bestScores = computed(() => {
+
+  const map = {}
+  for (const attempt of userAttempts.value) {
+    if (!attempt.quizId) continue
+    const prev = map[attempt.quizId]
+    if (!prev || attempt.score > prev.score) {
+      map[attempt.quizId] = {
+        score: attempt.score,
+        maxScore: attempt.maxScore,
+      }
+    }
+  }
+  return map
+})
+
+watch(
+  () => user.value?.id,
+  async (userId) => {
+    attemptsUnavailable.value = false
+    if (!userId) {
+      userAttempts.value = []
+      return
+    }
+
+    userAttempts.value = []
 
 
+    try {
+      const attempts = await fetchUserAttempts(userId)
+      if (user.value?.id === userId) {
+        userAttempts.value = attempts
+      }
+    } catch {
+      if (user.value?.id === userId) {
+        userAttempts.value = []
+        attemptsUnavailable.value = true
+      }
+    }
+  },
+  {immediate:true}
+)
 
 function startQuiz(quiz) {
   if (!quiz || !quiz.id) return

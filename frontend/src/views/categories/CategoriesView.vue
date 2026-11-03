@@ -200,6 +200,7 @@ onMounted(loadData)
       <ListQuizzesCard
         v-else
         :filteredQuizzes="filteredQuizzes"
+        :bestScores="bestScores"
         @start-quiz="startQuiz"
       />
       

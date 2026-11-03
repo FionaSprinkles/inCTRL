@@ -13,8 +13,16 @@
             </div>
             <h2 class="quiz-title">{{ quiz.title }}</h2>
             <p class="quiz-description">{{ quiz.description }}</p>
+
             <div class="quiz-footer">
+              <div class="info">
                 <span class="question-count">{{ quiz.questionCount || 0 }} questions</span>
+
+                <span v-if="bestScores[quiz.id]" class="best-score">
+                  Best: {{ bestScores[quiz.id].score }} / {{ bestScores[quiz.id].maxScore }}
+                </span>
+                </div>
+
                 <button type="button" class="btn-start" @click="startQuiz(quiz)">Start Quiz</button>
             </div>
         </article>
@@ -29,6 +37,10 @@ defineProps({
   filteredQuizzes: {
     type: Array,
     required: true
+  }, 
+  bestScores: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -160,6 +172,19 @@ function startQuiz(quiz) {
 .btn-start:hover {
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.best-score {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-light-accenturate);
+  font-weight: 500;
 }
 
 </style>
