@@ -1,6 +1,7 @@
 /**
 This is a template for all different quiz-category startpages. 
 Shows name, description and fetches relevant quizzes  of that category.
+Sorts quizzes by difficulty
 
 It should be connected to backend -> data -> categoriesSeed.json to read slug.
 
@@ -25,7 +26,7 @@ categoryViewTemplate.vue
       <h2>Available quizzes in this category</h2>
 
       <ListQuizzesCard class="quizCard"
-        :filteredQuizzes="quizzes"
+        :filteredQuizzes="sortedQuizzes"
         @start-quiz="startQuiz"
       />
 
@@ -43,7 +44,7 @@ categoryViewTemplate.vue
 
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchQuizzes, filterQuizzes } from '@/services/quizService'
 import ListQuizzesCard from '@/components/ListQuizzesCard.vue'
@@ -118,6 +119,19 @@ watch(
     fetchCategory()
 },
 { immediate : true} ) //run change imediatly
+
+const sortedQuizzes = computed(() => {
+  const order = {
+    beginner: 1,
+    intermediate: 2,
+    advanced: 3
+  }
+
+  return [...quizzes.value].sort((a, b) => {
+    return (order[a.difficulty?.toLowerCase()] ?? 99) -
+           (order[b.difficulty?.toLowerCase()] ?? 99)
+  })
+})
 </script>
 
 //===== STYLE =====//
