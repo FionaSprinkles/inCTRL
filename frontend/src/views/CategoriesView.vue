@@ -14,6 +14,7 @@ const categories = ref([])
 const userAttempts = ref([])
 const loading = ref(true)
 const error = ref('')
+const attemptsUnavailable = ref(false)
 
 const selectedCategory = ref('all')
 const selectedDifficulty = ref('all')
@@ -49,15 +50,23 @@ async function loadData() {
 
   loading.value = true
   error.value = ''
+  attemptsUnavailable.value = false
   try {
-    const [qData, cData, aData] = await Promise.all([
+    const attemptsRequest = user.value?.id
+      ? fetchUserAttempts(user.value.id).then(
+          (attempts) => ({ attempts, failed: false }),
+          () => ({ attempts: [], failed: true }),
+        )
+      : Promise.resolve({ attempts: [], failed: false })
+    const [qData, cData, aResult] = await Promise.all([
       fetchQuizzes(),
       fetchCategories(),
-      user.value?.id ? fetchUserAttempts(user.value.id) : Promise.resolve([]),
+      attemptsRequest,
     ])
     quizzes.value = qData
     categories.value = cData
-    userAttempts.value = aData
+    userAttempts.value = aResult.attempts
+    attemptsUnavailable.value = aResult.failed
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -106,10 +115,16 @@ watch(
 watch(
   () => user.value?.id,
   async (userId) => {
+    attemptsUnavailable.value = false
+    if (!userId) {
+      userAttempts.value = []
+      return
+    }
     try {
-      userAttempts.value = userId ? await fetchUserAttempts(userId) : []
-    } catch (err) {
-      error.value = err.message || 'Failed to load user attempts from backend.'
+      userAttempts.value = await fetchUserAttempts(userId)
+    } catch {
+      userAttempts.value = []
+      attemptsUnavailable.value = true
     }
   },
 )
@@ -158,6 +173,10 @@ onMounted(loadData)
           Reset Filters
         </button>
       </section>
+
+      <p v-if="attemptsUnavailable" class="attempts-notice" role="status">
+        Quiz history could not be loaded. Best scores are hidden.
+      </p>
 
       <div v-if="loading" class="status-box">
         <LoadingSpinner size="md" text="Loading quizzes from backend..." />
@@ -373,6 +392,13 @@ onMounted(loadData)
 .btn-reset:hover {
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
   transition: all 0.3s ease;
+}
+
+.attempts-notice {
+  text-align: center;
+  margin: -1rem 0 1.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
 }
 
 .status-box {
