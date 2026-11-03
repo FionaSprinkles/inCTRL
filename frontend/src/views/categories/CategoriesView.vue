@@ -86,11 +86,6 @@ function resetFilters() {
   }
 }
 
-function onCategoryChange() {
-  const cat = categories.value.find((c) => c.id === selectedCategory.value)
-  const query = selectedDifficulty.value !== 'all' ? { difficulty: selectedDifficulty.value } : {}
-  router.replace({ path: cat?.slug ? `/categories/${cat.slug}` : '/categories', query })
-}
 
 function startQuiz(quiz) {
   if (!quiz || !quiz.id) return
@@ -156,7 +151,6 @@ onMounted(loadData)
             id="category-filter"
             v-model="selectedCategory"
             class="filter-select"
-            @change="onCategoryChange"
           >
             <option value="all">All Categories</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
