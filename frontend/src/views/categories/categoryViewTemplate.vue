@@ -33,6 +33,10 @@ categoryViewTemplate.vue
     <section>
       <h2>Available quizzes in this category</h2>
 
+      <p v-if="attemptsUnavailable">
+        Quiz history could not be loaded. Best scores are temporarily unavailable.
+      </p>
+
       <ListQuizzesCard v-if="sortedQuizzes.length > 0" class="quizCard"
         :filteredQuizzes="sortedQuizzes"
         :bestScores="bestScores"
