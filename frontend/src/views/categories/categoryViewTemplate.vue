@@ -22,12 +22,15 @@ categoryViewTemplate.vue
     <p>{{ category.description }}</p>
 
     <section>
-      <h2>Available quizzes</h2>
+      <h2>Available quizzes in this category</h2>
 
       <ListQuizzesCard class="quizCard"
         :filteredQuizzes="quizzes"
         @start-quiz="startQuiz"
       />
+
+      <button>
+        <RouterLink to="/categories">Go to all quizzes!</RouterLink></button>
     </section>
 
   </main>
@@ -127,5 +130,23 @@ main{
 .quizCard{
   max-width: 960px;
   margin: 0 auto;
+  padding: 4rem;
+}
+
+
+/*The code for the button is from the "all categories page. Should this be i global.css instead?*/ 
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 1rem;
+}
+
+button {
+  background: #1d4ed8;
 }
 </style>
