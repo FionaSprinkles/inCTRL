@@ -1,17 +1,21 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchQuizzes, fetchCategories, filterQuizzes } from '@/services/quizService'
+import { fetchQuizzes, fetchCategories, fetchUserAttempts, filterQuizzes } from '@/services/quizService'
+import { useAuth } from '@/composables/useAuth'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import ListQuizzesCard from '@/components/ListQuizzesCard.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { user } = useAuth()
 
 const quizzes = ref([])
 const categories = ref([])
+const userAttempts = ref([])
 const loading = ref(true)
 const error = ref('')
+const attemptsUnavailable = ref(false)
 
 const selectedCategory = ref('all')
 const selectedDifficulty = ref('all')
@@ -23,6 +27,21 @@ const filteredQuizzes = computed(() => {
   })
 })
 
+const bestScores = computed(() => {
+  const map = {}
+  for (const attempt of userAttempts.value) {
+    if (!attempt.quizId) continue
+    const prev = map[attempt.quizId]
+    if (!prev || attempt.score > prev.score) {
+      map[attempt.quizId] = {
+        score: attempt.score,
+        maxScore: attempt.maxScore,
+      }
+    }
+  }
+  return map
+})
+
 async function loadData() {
   const qQuizId = route.query.id || route.query.quizId
   if (qQuizId) {
@@ -32,10 +51,26 @@ async function loadData() {
 
   loading.value = true
   error.value = ''
+  attemptsUnavailable.value = false
   try {
-    const [qData, cData] = await Promise.all([fetchQuizzes(), fetchCategories()])
+    const requestedUserId = user.value?.id
+    const attemptsRequest = requestedUserId
+      ? fetchUserAttempts(requestedUserId).then(
+          (attempts) => ({ attempts, failed: false }),
+          () => ({ attempts: [], failed: true }),
+        )
+      : Promise.resolve({ attempts: [], failed: false })
+    const [qData, cData, aResult] = await Promise.all([
+      fetchQuizzes(),
+      fetchCategories(),
+      attemptsRequest,
+    ])
     quizzes.value = qData
     categories.value = cData
+    if (user.value?.id === requestedUserId) {
+      userAttempts.value = aResult.attempts
+      attemptsUnavailable.value = aResult.failed
+    }
   } catch (err) {
     error.value = err.message || 'Failed to load quizzes from backend.'
   } finally {
@@ -79,6 +114,28 @@ watch(
     selectedDifficulty.value = diff || 'all'
   },
   { immediate: true },
+)
+
+watch(
+  () => user.value?.id,
+  async (userId) => {
+    attemptsUnavailable.value = false
+    if (!userId) {
+      userAttempts.value = []
+      return
+    }
+    try {
+      const attempts = await fetchUserAttempts(userId)
+      if (user.value?.id === userId) {
+        userAttempts.value = attempts
+      }
+    } catch {
+      if (user.value?.id === userId) {
+        userAttempts.value = []
+        attemptsUnavailable.value = true
+      }
+    }
+  },
 )
 
 onMounted(loadData)
@@ -125,6 +182,10 @@ onMounted(loadData)
           Reset Filters
         </button>
       </section>
+
+      <p v-if="attemptsUnavailable" class="attempts-notice" role="status">
+        Quiz history could not be loaded. Best scores are hidden.
+      </p>
 
       <div v-if="loading" class="status-box">
         <LoadingSpinner size="md" text="Loading quizzes from backend..." />
@@ -319,6 +380,13 @@ onMounted(loadData)
 .btn-reset:hover {
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
   transition: all 0.3s ease;
+}
+
+.attempts-notice {
+  text-align: center;
+  margin: -1rem 0 1.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
 }
 
 .status-box {
