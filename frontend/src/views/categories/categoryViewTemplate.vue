@@ -33,11 +33,15 @@ categoryViewTemplate.vue
     <section>
       <h2>Available quizzes in this category</h2>
 
-      <ListQuizzesCard class="quizCard"
+      <ListQuizzesCard v-if="sortedQuizzes.length > 0" class="quizCard"
         :filteredQuizzes="sortedQuizzes"
         :bestScores="bestScores"
         @start-quiz="startQuiz"
       />
+
+      <p v-else>
+        No quizzes are available in this category yet.
+      </p>
 
       
         <RouterLink class="all-quizzes" to="/categories">Go to all quizzes!</RouterLink>
