@@ -5,11 +5,8 @@
     </header>
 
     <section class="continue">
-      <h2>Continue where you left off</h2>
-
       <article>
-        <h2>Windows</h2>
-        <h3>Quiz 4</h3>
+        <h2>Continue where you left off</h2>
 
         <RouterLink to="/quiz"> Continue </RouterLink>
       </article>
@@ -31,33 +28,72 @@ const { username } = useAuth()
 
 <style scoped>
 .personal-home {
-  text-align: center;
-  padding: 0 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
   box-sizing: border-box;
-}
-.continue {
-  justify-content: center; /* Help buttons to be in center of the page */
-  gap: 1rem; /* Makes space of 1rem between elements */
-  margin-top: 2rem; /* Makes space above the element */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  text-align: center;
 }
 
-.continue a {
-  padding: 0.9rem 1.5rem;
-  text-decoration: none;
-  color: #e8d8ca;
-  border: 1px solid #85b4be;
+.welcome {
+  grid-column: 1 / -1;
 }
-.continue a:hover {
-  background-color: #694627;
+
+.continue {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 2rem;
 }
 
 .continue article {
   width: 100%;
   max-width: 500px;
   box-sizing: border-box;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #275d69;
+  padding: 2.5rem 2rem;
+  background-color: var(--color-dark-accenturate);
+  border: 1px solid var(--color-text-muted);
+  border-radius: 16px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.continue h2 {
+  margin: 0;
+}
+
+.continue a {
+  display: inline-block;
+  padding: 0.75rem 1.75rem;
+  background-color: var(--color-button);
+  color: var(--color-button-text);
+  border: 1px solid var(--color-button-border);
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.continue a:hover {
+  background-color: var(--color-button-hover);
+}
+
+.history {
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .personal-home {
+    grid-template-columns: 1fr;
+  }
+
+  .continue {
+    justify-content: center;
+  }
 }
 </style>
