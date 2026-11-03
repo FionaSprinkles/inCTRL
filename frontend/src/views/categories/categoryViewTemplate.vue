@@ -30,8 +30,8 @@ categoryViewTemplate.vue
         @start-quiz="startQuiz"
       />
 
-      <button>
-        <RouterLink to="/categories">Go to all quizzes!</RouterLink></button>
+      
+        <RouterLink class="allQuizzes" to="/categories">Go to all quizzes!</RouterLink>
     </section>
 
   </main>
@@ -149,7 +149,7 @@ main{
 
 
 /*The code for the button is from the "all categories page. Should this be i global.css instead?*/ 
-button {
+.allQuizzes {
   background: #2563eb;
   color: #fff;
   border: none;
@@ -158,9 +158,5 @@ button {
   font-weight: 600;
   cursor: pointer;
   padding: 1rem;
-}
-
-button {
-  background: #1d4ed8;
 }
 </style>
