@@ -7,19 +7,12 @@
     --bg-gradient:
     linear-gradient(135deg, #022b33 0%, #044550 30%, #086E77 55%, #199396 80%, #4FB3AE 100%);
 
-    --color-text-heading: #FDFBF7;
     --color-text-main: #D0C4AF;
-    --color-text-muted: #85b4be;
     --color-light-accenturate: #9FD3CD;
     --color-dark-accenturate: #044550;
     --color-text-white: #FFFFFF;
     --color-text-black: #151515;
     --color-dark-teal: #17344f;
-
-    --color-button: #E3DDC4;
-    --color-button-text: #422F23;
-    --color-button-hover: #D6CFB6;
-    --color-button-border: #E3DDC4;
 
     /* Fonts */
     --font-heading: 'Newsreader', serif; /* h1 */

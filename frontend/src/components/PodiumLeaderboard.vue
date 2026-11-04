@@ -13,8 +13,30 @@ const tabs = ['Today', 'Week', 'Total']
 const leaderboardData = ref([])
 
 // Split players into podium (top 3) and remaining list
-const podiumPlayers = computed(() => leaderboardData.value.slice(0, 3))
-const remainingPlayers = computed(() => leaderboardData.value.slice(3))
+const podiumPlayers = computed(() => {
+  const rows = []
+  for (let i = 1; i <= 3; i++) {
+    const player = leaderboardData.value.find((p) => p.rank === i)
+    rows.push({
+      rank: i,
+      player: player || null,
+    })
+  }
+  return rows
+})
+
+const remainingPlayers = computed(() => {
+  const rows = []
+  for (let i = 0; i < 47; i++) {
+    const targetRank = i + 4
+    const player = leaderboardData.value.find((p) => p.rank === targetRank)
+    rows.push({
+      rank: targetRank,
+      player: player || null,
+    })
+  }
+  return rows
+})
 
 // Fetch leaderboard data from the backend based on the active time filter
 const fetchLeaderboard = async () => {
@@ -49,57 +71,81 @@ onMounted(fetchLeaderboard)
       </div>
     </header>
 
-    <!-- Podium card for top 3 players -->
-    <div class="podium-card" :class="{ bare: podiumOnly }" v-if="podiumPlayers.length > 0">
-      <div v-if="!podiumOnly" class="podium-header">
-        <h2>Podium</h2>
-        <p>Top 3 with the highest score</p>
-      </div>
+    <div class="leaderboard-content-wrapper">
+      <!-- Podium card for top 3 players -->
+      <div class="podium-card" :class="{ bare: podiumOnly }">
+        <div v-if="!props.podiumOnly && !podiumOnly" class="podium-header">
+          <h2>Podium</h2>
+          <p>Top 3 with the highest score</p>
+        </div>
 
-      <div class="podium-wrapper">
-        <div
-          v-for="player in podiumPlayers"
-          :key="player.rank"
-          :class="['podium-item', `rank-${player.rank}`]"
-        >
-          <!-- Crown for the 1st place winner -->
-          <div v-if="player.rank === 1" class="crown">👑</div>
+        <div class="podium-wrapper">
+          <div
+            v-for="row in podiumPlayers"
+            :key="row.rank"
+            :class="['podium-item', `rank-${row.rank}`]"
+          >
+            <!-- Crown for the 1st place winner -->
+            <div v-if="row.rank === 1" class="crown">👑</div>
 
-          <!-- Player avatar initial -->
-          <div class="avatar">
-            {{ player.initial }}
-          </div>
+            <!-- Player avatar initial -->
+            <div class="avatar" :style="row.player ? { backgroundColor: row.player.avatarBg } : {}">
+              {{ row.player ? row.player.initial : '' }}
+            </div>
 
-          <!-- Player details -->
-          <div class="player-info">
-            <span class="player-name" :title="player.name">{{ player.name }}</span>
-            <span class="player-points">{{ player.points }}</span>
-          </div>
+            <!-- Player details -->
+            <div class="player-info">
+              <template v-if="row.player">
+                <span class="player-name" :title="row.player.name">{{ row.player.name }}</span>
+                <span class="player-points">{{ row.player.points }}</span>
+              </template>
+              <template v-else>
+                <span class="player-name placeholder-text">-</span>
+                <span class="player-points">-</span>
+              </template>
+            </div>
 
-          <!-- Podium pillar with rank number -->
-          <div class="podium-pillar">
-            <span class="rank-number">{{ player.rank }}</span>
+            <!-- Podium pillar with rank number -->
+            <div class="podium-pillar">
+              <span class="rank-number">{{ row.rank }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Remaining list for positions 4 and below -->
-    <div class="leaderboard-list-card" v-if="!podiumOnly && remainingPlayers.length > 0">
-      <h3>Top 50 Players</h3>
+      <!-- Remaining list for positions 4 and below -->
+      <div class="leaderboard-list-card" v-if="!podiumOnly">
+        <h3>Remaining players</h3>
 
-      <div class="list-items">
-        <div v-for="player in remainingPlayers" :key="player.rank" class="list-item">
-          <span class="list-rank">#{{ player.rank }}</span>
+        <div class="list-items">
+          <div
+            v-for="row in remainingPlayers"
+            :key="row.rank"
+            :class="['list-item', { 'empty-slot': !row.player }]"
+          >
+            <span class="list-rank">#{{ row.rank }}</span>
 
-          <div class="list-player-info">
-            <div class="list-avatar" :style="{ backgroundColor: player.avatarBg }">
-              {{ player.initial }}
-            </div>
-            <span class="list-name">{{ player.name }}</span>
+            <template v-if="row.player">
+              <div class="list-player-info">
+                <div
+                  class="list-avatar"
+                  :style="{ backgroundColor: row.player.avatarBg || '#cbd5e0' }"
+                >
+                  {{ row.player.initial }}
+                </div>
+                <span class="list-name">{{ row.player.name }}</span>
+              </div>
+              <span class="list-points">{{ row.player.points }}</span>
+            </template>
+
+            <template v-else>
+              <div class="list-player-info">
+                <div class="list-avatar empty-avatar"></div>
+                <span class="list-name placeholder-text">-</span>
+              </div>
+              <span class="list-points">-</span>
+            </template>
           </div>
-
-          <span class="list-points">{{ player.points }}</span>
         </div>
       </div>
     </div>
@@ -107,15 +153,110 @@ onMounted(fetchLeaderboard)
 </template>
 
 <style scoped>
+/* Leaderboard list */
+.list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  gap: 8px;
+}
+
+.list-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+/* Rank number */
+.list-rank {
+  font-weight: bold;
+  color: var(--color-light-accenturate);
+  min-width: 30px;
+  font-size: 0.8rem;
+}
+
+.list-player-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Avatar circle */
+.list-avatar {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.7rem;
+  color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Empty avatar spots */
+.empty-avatar {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* Username */
+.list-name {
+  font-weight: 500;
+  font-size: 0.85rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.placeholder-text {
+  color: #a0aec0;
+}
+
+/* Points */
+.list-points {
+  margin-left: auto;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+/* Empty spots */
+.list-item.empty-slot {
+  opacity: 0.4;
+}
+
 /* Main container and layout */
 .leaderboard-container {
-  padding: 24px;
+  padding-top: 24px;
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
   box-sizing: border-box;
   margin: 0 auto;
   border-radius: 16px;
   color: white;
+}
+
+.leaderboard-content-wrapper {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 /* Header section with title and time filter tabs */
@@ -173,6 +314,8 @@ onMounted(fetchLeaderboard)
 
 /* Compact podium card for top 3 players */
 .podium-card {
+  flex: 1.2;
+  min-height: 344px;
   border-radius: 16px;
   padding: 16px 20px;
 
@@ -348,9 +491,12 @@ onMounted(fetchLeaderboard)
 
 /* Top 50 remaining list card */
 .leaderboard-list-card {
+  flex: 1;
+  min-width: min(320px, 100%);
+  box-sizing: border-box;
+  max-width: 400px;
   border-radius: 16px;
   padding: 20px;
-  margin-top: 20px;
 
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
   backdrop-filter: blur(14px) saturate(140%);
@@ -370,66 +516,6 @@ onMounted(fetchLeaderboard)
   font-size: 20px;
   margin: 0 0 12px 0;
   color: var(--color-text-white);
-}
-
-.list-items {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 10px;
-  transition: background 0.2s;
-}
-
-.list-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.list-rank {
-  font-weight: bold;
-  color: #a0aec0;
-  width: 40px;
-  font-size: 0.9rem;
-}
-
-.list-player-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-}
-
-.list-avatar {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 0.8rem;
-  color: white;
-}
-
-.list-name {
-  font-weight: 500;
-  font-size: 0.95rem;
-  overflow-wrap: anywhere;
-}
-
-.list-points {
-  font-weight: bold;
-  color: #fff;
-  font-size: 0.9rem;
 }
 
 /* ===== podium-only mode (used on the home page) ===== */
