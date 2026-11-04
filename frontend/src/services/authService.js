@@ -1,10 +1,30 @@
 const TOKEN_KEY = 'inctrl_token'
 const USER_KEY = 'inctrl_user'
+const FIRST_LOGIN_KEY = 'inctrl_first_login'
 
 // Saves the JWT and user object so the user stays logged in after a reload
-export function saveSession({ token, user }) {
-  localStorage.setItem(TOKEN_KEY, token)
-  localStorage.setItem(USER_KEY, JSON.stringify(user))
+export function saveSession({ token, user, isFirstLogin = false }) {
+  try {
+    localStorage.setItem(TOKEN_KEY, token)
+    localStorage.setItem(USER_KEY, JSON.stringify(user))
+    if (isFirstLogin) {
+      localStorage.setItem(FIRST_LOGIN_KEY, 'true')
+    } else {
+      localStorage.removeItem(FIRST_LOGIN_KEY)
+    }
+  } catch {
+    clearSession()
+    throw new Error('Could not save session to local storage')
+  }
+}
+
+// Returns true if the current session is from a newly registered account
+export function getIsFirstLogin() {
+  try {
+    return localStorage.getItem(FIRST_LOGIN_KEY) === 'true'
+  } catch {
+    return false
+  }
 }
 
 // Returns the saved JWT, or null if not logged in
@@ -25,6 +45,7 @@ export function getStoredUser() {
 export function clearSession() {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(USER_KEY)
+  localStorage.removeItem(FIRST_LOGIN_KEY)
 }
 
 async function request(url, options = {}) {
@@ -46,7 +67,7 @@ export async function register({ username, email, password, firstName, lastName 
     method: 'POST',
     body: JSON.stringify({ username, email, password, firstName, lastName }),
   })
-  saveSession(data)
+  saveSession({ ...data, isFirstLogin: true })
   return data
 }
 
@@ -56,6 +77,6 @@ export async function login({ email, password }) {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   })
-  saveSession(data)
+  saveSession({ ...data, isFirstLogin: false })
   return data
 }
