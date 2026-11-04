@@ -331,9 +331,20 @@ describe('backend API integration tests (app & routes)', () => {
             assert.strictEqual(lbRes.status, 200);
             assert.strictEqual(lbRes.body.leaderboard.length, 1);
 
-            const attRes = await request(app).get('/api/quiz/attempts/user/2');
+            const attRes = await request(app)
+                .get('/api/quiz/attempts/user/2')
+                .set('Authorization', `Bearer ${userToken}`);
             assert.strictEqual(attRes.status, 200);
             assert.strictEqual(attRes.body.attempts.length, 1);
+
+            const anonRes = await request(app).get('/api/quiz/attempts/user/2');
+            assert.strictEqual(anonRes.status, 401);
+
+            const otherToken = generateToken({ id: 99, username: 'other', role: 'user' });
+            const forbiddenRes = await request(app)
+                .get('/api/quiz/attempts/user/2')
+                .set('Authorization', `Bearer ${otherToken}`);
+            assert.strictEqual(forbiddenRes.status, 403);
         });
 
         it('GET /api/quizzes and GET /api/quizzes/:id', async () => {
