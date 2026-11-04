@@ -23,7 +23,14 @@
                 </span>
                 </div>
 
-                <button type="button" class="btn-start" @click="startQuiz(quiz)">Start Quiz</button>
+                <button
+                  type="button"
+                  class="btn-start"
+                  :class="{ completed: Boolean(bestScores[quiz.id]) }"
+                  @click="startQuiz(quiz)"
+                >
+                  Start Quiz
+                </button>
             </div>
         </article>
     </div>
@@ -67,18 +74,23 @@ function startQuiz(quiz) {
   justify-content: space-between;
   padding: 1.4rem;
   border-radius: 20px;
-  background: rgba(18, 86, 98, 0.52);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .quiz-card:hover {
-  border-color: rgba(255, 255, 255, 0.45);
   transform: translateY(-2px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 
@@ -101,7 +113,7 @@ function startQuiz(quiz) {
 
 .category-badge {
   background: rgba(133, 180, 190, 0.28);
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   border: 1px solid rgba(133, 180, 190, 0.45);
 }
 
@@ -128,7 +140,7 @@ function startQuiz(quiz) {
   font-size: 1.4rem;
   font-weight: 450;
   margin: 0 0 0.5rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   letter-spacing: 0.5px;
   text-transform: none;
 }
@@ -161,17 +173,37 @@ function startQuiz(quiz) {
   letter-spacing: 1px;
   padding: 0.5rem 1.15rem;
   border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  color: var(--color-text-white);
   font-weight: 600;
-  border: 1px solid var(--color-button-border);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-start:hover {
-  background: var(--color-button-hover);
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn-start.completed {
+  background: var(--color-light-accenturate);
+  color: var(--color-dark-accenturate);
+  border-color: var(--color-light-accenturate);
+  text-shadow: none;
+}
+
+.btn-start.completed:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 .info {
