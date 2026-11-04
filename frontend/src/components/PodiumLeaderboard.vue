@@ -243,12 +243,11 @@ onMounted(fetchLeaderboard)
 
 /* Main container and layout */
 .leaderboard-container {
-  padding: 24px;
+  padding-top: 24px;
   width: 100%;
   max-width: 1200px;
   box-sizing: border-box;
-  margin-top: 40px;
-  margin-left: 100px;
+  margin: 0 auto;
   border-radius: 16px;
   color: white;
 }
