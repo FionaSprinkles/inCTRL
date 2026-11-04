@@ -5,7 +5,8 @@
       <h1 v-else>Welcome back, {{ username }}!</h1>
     </header>
 
-    <section class="continue">
+    <!-- Continue where you left off-->
+    <section class="widget">
       <article>
         <h2>{{ isFirstLogin ? 'Get started' : 'Continue where you left off' }}</h2>
 
@@ -15,16 +16,23 @@
       </article>
     </section>
 
-    <!--At a later stage: The history section should have a small widget of History.vue component-->
-    <section class="history">
-      <RouterLink to="/history"> History </RouterLink>
+    <!--History widget-->
+    <section class="widget">
+      <article>
+        <!-- Get the compact variant of History.vue-->
+        <History compact />
+      </article>
     </section>
+
+    <!-- Leaderboard-widget? With your place on the leaderboard and top 3-->
+
   </main>
 </template>
 
 <script setup>
 import { RouterLink } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import History from '@/components/History.vue';
 
 const { username, isFirstLogin } = useAuth()
 </script>
@@ -46,13 +54,13 @@ const { username, isFirstLogin } = useAuth()
   grid-column: 1 / -1;
 }
 
-.continue {
+.widget {
   display: flex;
   justify-content: flex-start;
   margin-top: 2rem;
 }
 
-.continue article {
+.widget article {
   width: 100%;
   max-width: 500px;
   box-sizing: border-box;
@@ -67,11 +75,11 @@ const { username, isFirstLogin } = useAuth()
   gap: 1.5rem;
 }
 
-.continue h2 {
+.widget h2 {
   margin: 0;
 }
 
-.continue a {
+.widget a {
   display: inline-block;
   padding: 0.75rem 1.75rem;
   background-color: var(--color-button);
@@ -82,7 +90,7 @@ const { username, isFirstLogin } = useAuth()
   transition: background-color 0.2s ease;
 }
 
-.continue a:hover {
+.widget a:hover {
   background-color: var(--color-button-hover);
 }
 
@@ -95,7 +103,7 @@ const { username, isFirstLogin } = useAuth()
     grid-template-columns: 1fr;
   }
 
-  .continue {
+  .widget {
     justify-content: center;
   }
 }
