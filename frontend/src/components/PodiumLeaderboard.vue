@@ -71,7 +71,7 @@ onMounted(fetchLeaderboard)
       </div>
     </header>
 
-    <div class="leaderboard-content-wrapper" v-if="!props.podiumOnly">
+    <div class="leaderboard-content-wrapper">
       <!-- Podium card for top 3 players -->
       <div class="podium-card" :class="{ bare: podiumOnly }">
         <div v-if="!props.podiumOnly && !podiumOnly" class="podium-header">
