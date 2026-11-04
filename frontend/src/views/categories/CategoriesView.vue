@@ -231,7 +231,7 @@ onMounted(loadData)
   font-family: var(--font-heading), serif;
   font-size: 38px;
   font-weight: 370;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin-top: 10px;
   margin-bottom: 8px;
 }
@@ -251,12 +251,18 @@ onMounted(loadData)
   gap: 1.25rem;
   margin-bottom: 2rem;
   padding: 1.25rem 1.5rem;
-  background: rgba(18, 86, 98, 0.5);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .filter-group {
@@ -272,13 +278,13 @@ onMounted(loadData)
   font-size: 17px;
   font-weight: 500;
   letter-spacing: 1.5px;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .filter-select {
   padding: 0.65rem 0.9rem;
   border-radius: 10px;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   font-size: 0.95rem;
   outline: none;
   font-family: var(--font-body), sans-serif;
@@ -381,25 +387,31 @@ onMounted(loadData)
   text-align: center;
   margin: -1rem 0 1.5rem;
   font-size: 0.9rem;
-  color: var(--color-text-muted);
+  color: var(--color-light-accenturate);
 }
 
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
-  background: rgba(18, 86, 98, 0.5);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 20px;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .empty-box .no-quizzes-message {
   font-family: var(--font-display), serif;
   font-size: 1.35rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin-bottom: 0.5rem;
 }
 
@@ -415,16 +427,25 @@ onMounted(loadData)
   letter-spacing: 1px;
   padding: 0.6rem 1.25rem;
   border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  color: var(--color-text-white);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-clear:hover {
-  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 .error-box {
@@ -439,11 +460,25 @@ onMounted(loadData)
   letter-spacing: 1px;
   padding: 0.55rem 1.15rem;
   border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  color: var(--color-text-white);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 
