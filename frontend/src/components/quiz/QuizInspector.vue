@@ -72,13 +72,13 @@ const isOpen = ref(false)
 }
 
 .inspector-toggle-btn:hover {
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .prototype-badge {
   background: rgba(15, 76, 92, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 0.75rem;
@@ -93,8 +93,16 @@ const isOpen = ref(false)
 }
 
 .inspector-section {
-  background: rgba(10, 35, 42, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
   padding: 12px 14px;
 }
@@ -109,7 +117,7 @@ const isOpen = ref(false)
 }
 
 .json-code {
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
   font-family: 'Consolas', 'Courier New', monospace;
   font-size: 0.82rem;
   margin: 0;

@@ -346,9 +346,7 @@ function jumpToQuestion(idx) {
 .nav-dot {
   min-width: 34px;
   height: 34px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(15, 76, 92, 0.45);
+  border-radius: 10px;
   color: var(--color-text-main);
   font-family: var(--font-display);
   font-weight: 600;
@@ -358,26 +356,37 @@ function jumpToQuestion(idx) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .nav-dot:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .nav-dot.current {
-  border-color: var(--color-button-border);
-  background: var(--color-button);
-  color: var(--color-button-text);
+  background: var(--color-text-main);
+  color: var(--color-dark-accenturate);
+  border-color: rgba(245, 247, 250, 0.9);
   font-weight: 700;
+  text-shadow: none;
 }
 
 .nav-dot.answered:not(.current) {
-  border-color: rgba(227, 221, 196, 0.5);
-  background: rgba(227, 221, 196, 0.22);
-  color: var(--color-text-heading);
+  border-color: var(--color-light-accenturate);
+  background: rgba(159, 211, 205, 0.22);
+  color: var(--color-text-white);
 }
 
 .main-content {

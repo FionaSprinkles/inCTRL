@@ -260,20 +260,29 @@ function rightIsCorrect(rightId) {
 
 .reset-btn {
   padding: 5px 12px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 8px;
   font-family: var(--font-display);
   font-size: 0.9rem;
   letter-spacing: 0.5px;
   color: var(--color-text-main);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .reset-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  color: var(--color-text-heading);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .columns-grid {
@@ -299,7 +308,7 @@ function rightIsCorrect(rightId) {
   font-size: 0.95rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   letter-spacing: 1.5px;
 }
 
@@ -318,14 +327,22 @@ function rightIsCorrect(rightId) {
   align-items: center;
   justify-content: center;
   padding: 0 12px;
-  background: rgba(15, 76, 92, 0.55);
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
   color: var(--color-text-main);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .unlink-btn:hover:not(:disabled) {
@@ -345,39 +362,47 @@ function rightIsCorrect(rightId) {
   justify-content: space-between;
   gap: 10px;
   padding: 12px 14px;
-  background: rgba(15, 76, 92, 0.5);
-  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
   color: var(--color-text-main);
   font-family: var(--font-body);
   text-align: left;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
   min-height: 54px;
 }
 
 .match-card:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(15, 76, 92, 0.75);
-  color: var(--color-text-heading);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .left-card.active {
-  border-color: var(--color-button);
-  background: rgba(227, 221, 196, 0.22);
-  box-shadow: 0 0 0 3px rgba(227, 221, 196, 0.2);
-  color: var(--color-text-heading);
+  border-color: var(--color-light-accenturate);
+  background: rgba(159, 211, 205, 0.22);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  color: var(--color-text-white);
 }
 
 .right-card.can-link {
   border-style: dashed;
-  border-color: rgba(227, 221, 196, 0.6);
+  border-color: var(--color-light-accenturate);
 }
 
 .match-card.paired {
-  border-color: rgba(227, 221, 196, 0.55);
-  background: rgba(15, 76, 92, 0.72);
-  color: var(--color-text-heading);
+  border-color: var(--color-light-accenturate);
+  background: rgba(10, 40, 50, 0.8);
+  color: var(--color-text-white);
 }
 
 .match-card.correct {
@@ -400,7 +425,7 @@ function rightIsCorrect(rightId) {
   border-radius: 6px;
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: bold;
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
 }
 
 .action-text {

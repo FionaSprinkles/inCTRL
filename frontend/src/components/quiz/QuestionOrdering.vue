@@ -184,20 +184,29 @@ function isStepCorrect(id, index) {
 
 .reset-btn {
   padding: 5px 12px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 8px;
   font-family: var(--font-display);
   font-size: 0.9rem;
   letter-spacing: 0.5px;
   color: var(--color-text-main);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .reset-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  color: var(--color-text-heading);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .steps-list {
@@ -211,12 +220,20 @@ function isStepCorrect(id, index) {
   align-items: center;
   gap: 14px;
   padding: 13px 16px;
-  background: rgba(15, 76, 92, 0.5);
-  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   font-family: var(--font-body);
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .step-card.step-correct {
@@ -235,8 +252,8 @@ function isStepCorrect(id, index) {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--color-button);
-  color: var(--color-button-text);
+  background: var(--color-text-main);
+  color: var(--color-dark-accenturate);
   font-family: var(--font-display);
   display: flex;
   align-items: center;
@@ -244,6 +261,7 @@ function isStepCorrect(id, index) {
   font-weight: 700;
   font-size: 0.95rem;
   flex-shrink: 0;
+  text-shadow: none;
 }
 
 .step-text {
@@ -260,20 +278,27 @@ function isStepCorrect(id, index) {
 }
 
 .arrow-btn {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 6px;
   padding: 2px 9px;
   font-size: 0.78rem;
   cursor: pointer;
-  color: var(--color-text-heading);
-  transition: all 0.15s ease;
+  color: var(--color-text-white);
+  transition: all 0.3s ease;
 }
 
 .arrow-btn:hover:not(:disabled) {
-  background: var(--color-button);
-  border-color: var(--color-button-border);
-  color: var(--color-button-text);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 .arrow-btn:disabled {

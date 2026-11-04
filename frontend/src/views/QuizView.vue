@@ -477,7 +477,7 @@ onUnmounted(stopTimer)
   font-family: var(--font-display), serif;
   font-size: 7rem;
   font-weight: 700;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   animation: countdown-pop 0.9s ease-out forwards;
 }
 
@@ -503,13 +503,19 @@ onUnmounted(stopTimer)
 .status-box {
   padding: 2.5rem 1.5rem;
   text-align: center;
-  background: rgba(18, 86, 98, 0.5);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 20px;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .error-box {
@@ -535,12 +541,27 @@ onUnmounted(stopTimer)
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.55rem 1.15rem;
-  border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
+  border-radius: 12px;
+  color: var(--color-text-main);
   font-weight: 600;
   cursor: pointer;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .summary-error {
@@ -552,17 +573,23 @@ onUnmounted(stopTimer)
 .runner-bar {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(18, 86, 98, 0.52);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 20px;
   padding: 1.1rem 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .runner-header-top {
@@ -582,7 +609,7 @@ onUnmounted(stopTimer)
   font-family: var(--font-heading), serif;
   font-size: 1.45rem;
   font-weight: 400;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin: 0;
   letter-spacing: 0.5px;
   text-transform: none;
@@ -614,9 +641,17 @@ onUnmounted(stopTimer)
   font-variant-numeric: tabular-nums;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--color-button);
-  background: rgba(227, 221, 196, 0.15);
-  border: 1px solid rgba(227, 221, 196, 0.35);
+  color: var(--color-light-accenturate);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   display: inline-flex;
@@ -626,7 +661,7 @@ onUnmounted(stopTimer)
 
 .timer-display strong {
   font-weight: 600;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .progress-display {
@@ -637,7 +672,7 @@ onUnmounted(stopTimer)
 }
 
 .progress-display strong {
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .btn-back {
@@ -645,19 +680,27 @@ onUnmounted(stopTimer)
   font-size: 16px;
   letter-spacing: 1px;
   color: var(--color-text-main);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
   padding: 0.45rem 1rem;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
   white-space: nowrap;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .btn-back:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 /* Navigation page numbers centered with the NavBar and stationary */
@@ -675,9 +718,7 @@ onUnmounted(stopTimer)
 .dot-btn {
   min-width: 34px;
   height: 34px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(15, 76, 92, 0.45);
+  border-radius: 10px;
   color: var(--color-text-main);
   font-family: var(--font-display), serif;
   font-size: 15px;
@@ -687,26 +728,37 @@ onUnmounted(stopTimer)
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .dot-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .dot-btn.current {
-  border-color: var(--color-button-border);
-  background: var(--color-button);
-  color: var(--color-button-text);
+  background: var(--color-text-main);
+  color: var(--color-dark-accenturate);
+  border-color: rgba(245, 247, 250, 0.9);
   font-weight: 700;
+  text-shadow: none;
 }
 
 .dot-btn.answered:not(.current):not(.correct):not(.wrong) {
-  border-color: rgba(227, 221, 196, 0.5);
-  background: rgba(227, 221, 196, 0.22);
-  color: var(--color-text-heading);
+  border-color: var(--color-light-accenturate);
+  background: rgba(159, 211, 205, 0.22);
+  color: var(--color-text-white);
 }
 
 .dot-btn.correct {
@@ -743,17 +795,25 @@ onUnmounted(stopTimer)
   letter-spacing: 1px;
   padding: 0.65rem 1.4rem;
   border-radius: 12px;
-  background: rgba(18, 86, 98, 0.52);
-  border: 1px solid rgba(255, 255, 255, 0.28);
   color: var(--color-text-main);
   cursor: pointer;
-  transition: all 0.2s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .summary-exit-bar .btn-secondary:hover {
-  background: rgba(18, 86, 98, 0.75);
-  color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .error-actions {

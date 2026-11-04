@@ -67,27 +67,35 @@ function selectOption(id) {
   align-items: center;
   gap: 14px;
   padding: 14px 18px;
-  background: rgba(15, 76, 92, 0.5);
-  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.3s ease;
   color: var(--color-text-main);
   font-family: var(--font-body);
   font-size: 1rem;
 }
 
 .option-card:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(15, 76, 92, 0.75);
-  color: var(--color-text-heading);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .option-card.selected {
-  border-color: var(--color-button);
-  background: rgba(227, 221, 196, 0.22);
-  color: var(--color-text-heading);
+  border-color: var(--color-light-accenturate);
+  background: rgba(159, 211, 205, 0.22);
+  color: var(--color-text-white);
 }
 
 .option-card.correct {
@@ -107,14 +115,14 @@ function selectOption(id) {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2px solid var(--color-text-muted);
+  border: 2px solid var(--color-light-accenturate);
   position: relative;
   transition: all 0.15s;
 }
 
 .option-card.selected .radio-circle {
-  border-color: var(--color-button);
-  background: var(--color-button);
+  border-color: var(--color-light-accenturate);
+  background: var(--color-light-accenturate);
   box-shadow: inset 0 0 0 3px var(--color-dark-teal);
 }
 
@@ -141,7 +149,7 @@ function selectOption(id) {
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.5px;
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
 }
 
 :disabled {

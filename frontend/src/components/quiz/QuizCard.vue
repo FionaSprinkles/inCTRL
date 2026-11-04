@@ -232,10 +232,16 @@ function handleNext() {
 .quiz-card {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(18, 86, 98, 0.52);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 20px;
   padding: 28px;
   display: flex;
@@ -243,7 +249,7 @@ function handleNext() {
   gap: 18px;
   color: var(--color-text-main);
   font-family: var(--font-body), sans-serif;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .card-meta {
@@ -277,9 +283,9 @@ function handleNext() {
 }
 
 .category-badge {
-  background: rgba(133, 180, 190, 0.28);
-  color: var(--color-text-heading);
-  border: 1px solid rgba(133, 180, 190, 0.45);
+  background: rgba(159, 211, 205, 0.22);
+  color: var(--color-text-white);
+  border: 1px solid rgba(159, 211, 205, 0.45);
 }
 
 .difficulty-badge.beginner {
@@ -326,20 +332,29 @@ function handleNext() {
 
 .hint-toggle-btn {
   font-family: var(--font-display), serif;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  padding: 5px 12px;
-  border-radius: 8px;
+  padding: 6px 14px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
-  transition: all 0.2s;
   color: var(--color-text-main);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .hint-toggle-btn:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
   transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .hint-content {
@@ -407,7 +422,7 @@ function handleNext() {
   font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: 8px;
 }
@@ -437,27 +452,11 @@ function handleNext() {
 .btn {
   font-family: var(--font-display), serif;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border: none;
 }
 
-.btn-primary {
-  font-family: var(--font-display), serif;
-  font-size: 16px;
-  letter-spacing: 1px;
-  font-weight: 450;
-  padding: 9px 20px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-text-main);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.btn-primary:hover:not(:disabled) {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  transition: all 0.3s ease;
-}
-
+.btn-primary,
 .btn-secondary {
   font-family: var(--font-display), serif;
   font-size: 16px;
@@ -465,14 +464,25 @@ function handleNext() {
   font-weight: 500;
   padding: 9px 20px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
   color: var(--color-text-main);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
+.btn-primary:hover:not(:disabled),
 .btn-secondary:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
   transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 @media (max-width: 600px) {
@@ -487,20 +497,30 @@ function handleNext() {
 
 /* Deep stylings for child question format components */
 :deep(.option-card) {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.22) !important;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%) !important;
+  backdrop-filter: blur(14px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+  border: 1px solid rgba(197, 204, 214, 0.55) !important;
+  border-top-color: rgba(245, 247, 250, 0.9) !important;
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
   color: var(--color-text-main) !important;
   border-radius: 12px !important;
   font-family: var(--font-body), sans-serif;
+  transition: all 0.3s ease !important;
 }
 
 :deep(.option-card:hover:not(:disabled)) {
-  background: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2) !important;
+  transition: all 0.3s ease !important;
+  color: var(--color-text-white) !important;
 }
 
 :deep(.option-card.selected) {
-  background: rgba(227, 221, 196, 0.22) !important;
+  background: rgba(159, 211, 205, 0.22) !important;
   border-color: var(--color-light-accenturate) !important;
   color: var(--color-text-white) !important;
 }
