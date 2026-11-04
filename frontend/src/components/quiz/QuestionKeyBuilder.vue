@@ -170,7 +170,7 @@ function clearAll() {
 }
 
 .empty-tray-placeholder {
-  color: rgba(242, 229, 208, 0.7);
+  color: var(--color-light-accenturate);
   font-family: var(--font-body);
   font-style: italic;
   font-size: 0.95rem;
@@ -179,7 +179,7 @@ function clearAll() {
 .plus-sign {
   font-size: 1.2rem;
   font-weight: bold;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .key-token {
@@ -187,44 +187,49 @@ function clearAll() {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  background: rgba(15, 76, 92, 0.75);
-  color: var(--color-text-heading);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-bottom: 3px solid rgba(255, 255, 255, 0.45);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  color: var(--color-text-white);
   border-radius: 8px;
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all 0.3s ease;
   user-select: none;
 }
 
 .key-token:hover:not(:disabled) {
-  transform: translateY(-1px);
-  border-color: var(--color-button);
-  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 .key-token:active:not(:disabled) {
   transform: translateY(2px);
-  border-bottom-width: 1px;
 }
 
 .key-token.slotted {
-  background: var(--color-button);
-  border-color: var(--color-button-border);
-  border-bottom-color: #b8b096;
-  color: var(--color-button-text);
+  background: rgba(159, 211, 205, 0.25);
+  border-color: var(--color-light-accenturate);
+  color: var(--color-text-white);
 }
 
 .key-token.slotted:hover:not(:disabled) {
-  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 .remove-x {
   font-size: 1rem;
-  color: #991b1b;
+  color: #fca5a5;
   font-weight: bold;
   line-height: 1;
 }
@@ -235,17 +240,26 @@ function clearAll() {
   font-family: var(--font-display);
   font-size: 0.9rem;
   letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 8px;
   cursor: pointer;
   color: var(--color-text-main);
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .clear-tray-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  color: var(--color-text-heading);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .key-bank-section {
@@ -278,7 +292,7 @@ function clearAll() {
 
 .highlight-target {
   font-family: 'Consolas', 'Courier New', monospace;
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
   padding: 3px 8px;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.25);
