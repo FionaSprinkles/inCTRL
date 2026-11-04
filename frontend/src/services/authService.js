@@ -4,18 +4,27 @@ const FIRST_LOGIN_KEY = 'inctrl_first_login'
 
 // Saves the JWT and user object so the user stays logged in after a reload
 export function saveSession({ token, user, isFirstLogin = false }) {
-  localStorage.setItem(TOKEN_KEY, token)
-  localStorage.setItem(USER_KEY, JSON.stringify(user))
-  if (isFirstLogin) {
-    localStorage.setItem(FIRST_LOGIN_KEY, 'true')
-  } else {
-    localStorage.removeItem(FIRST_LOGIN_KEY)
+  try {
+    localStorage.setItem(TOKEN_KEY, token)
+    localStorage.setItem(USER_KEY, JSON.stringify(user))
+    if (isFirstLogin) {
+      localStorage.setItem(FIRST_LOGIN_KEY, 'true')
+    } else {
+      localStorage.removeItem(FIRST_LOGIN_KEY)
+    }
+  } catch {
+    clearSession()
+    throw new Error('Could not save session to local storage')
   }
 }
 
 // Returns true if the current session is from a newly registered account
 export function getIsFirstLogin() {
-  return localStorage.getItem(FIRST_LOGIN_KEY) === 'true'
+  try {
+    return localStorage.getItem(FIRST_LOGIN_KEY) === 'true'
+  } catch {
+    return false
+  }
 }
 
 // Returns the saved JWT, or null if not logged in
