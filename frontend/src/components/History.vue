@@ -78,7 +78,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
          <!-- Compact widget -->
       
-    <div v-else>
+    <div class="compact" v-else>
       <h2>Your history</h2>
 
       <!-- Message for empty history users -->
@@ -220,6 +220,35 @@ td{
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
 }
+
+/* COMPACT WIDGET */ 
+
+.compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.compact h2 {
+  margin: 0;
+}
+
+.compact table {
+  margin: 0;
+  padding: 0;
+}
+
+.compact th,
+.compact td {
+  padding: 0.75rem;
+}
+
+.compact .button {
+  margin-top: 0.5rem;
+}
+
+
 
 @media (max-width: 600px) {
   table {
