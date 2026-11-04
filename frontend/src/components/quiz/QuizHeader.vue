@@ -115,17 +115,23 @@ const formatNames = {
 .quiz-nav-header {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(18, 86, 98, 0.52);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 20px;
   padding: 1.1rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 14px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .top-row {
@@ -146,12 +152,12 @@ const formatNames = {
   font-family: var(--font-heading);
   font-size: 1.65rem;
   font-weight: 400;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   letter-spacing: 0.5px;
 }
 
 .logo-ctrl strong {
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
   font-weight: 600;
 }
 
@@ -172,35 +178,50 @@ const formatNames = {
   font-family: var(--font-body);
   font-variant-numeric: tabular-nums;
   padding: 5px 14px;
-  background: rgba(15, 76, 92, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 20px;
   font-size: 0.9rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .timer-pill {
-  background: rgba(227, 221, 196, 0.15);
-  border-color: rgba(227, 221, 196, 0.35);
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
 }
 
 .restart-btn {
   font-family: var(--font-display);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 10px;
   padding: 6px 14px;
   font-size: 0.92rem;
   letter-spacing: 0.5px;
   cursor: pointer;
   color: var(--color-text-main);
-  transition: all 0.15s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .restart-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--color-text-heading);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .filter-strip {
@@ -231,27 +252,37 @@ const formatNames = {
 .chip {
   font-family: var(--font-display);
   padding: 4px 12px;
-  background: rgba(15, 76, 92, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
   font-size: 0.88rem;
   letter-spacing: 0.5px;
   cursor: pointer;
   color: var(--color-text-main);
   white-space: nowrap;
-  transition: all 0.15s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .chip:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--color-text-heading);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .chip.active {
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border-color: var(--color-button-border);
+  background: var(--color-text-main);
+  color: var(--color-dark-accenturate);
+  border-color: rgba(245, 247, 250, 0.9);
   font-weight: 600;
+  text-shadow: none;
 }
 
 .progress-bar-container {
@@ -263,7 +294,7 @@ const formatNames = {
 
 .progress-bar-fill {
   height: 100%;
-  background: var(--color-button);
+  background: var(--color-light-accenturate);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
