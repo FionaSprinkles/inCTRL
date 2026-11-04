@@ -19,115 +19,125 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
 <template>
   <section class="history">
-        <h1>History</h1>
-        <h2>Your history</h2>
+    <h1>History</h1>
 
-        <!-- History table-->
+    <section v-if="!isLoggedIn" class="noHistory">
+      <p>Log in to see your quiz history.</p>
+      <button type="button" class="btn-auth" @click="openLogin">Log in</button>
+    </section>
 
-        <table>
-          <thead>
+    <template v-else>
+      <h2>Your history</h2>
+
+      <p v-if="errorMessage">{{ errorMessage }}</p>
+
+      <table v-else-if="history.length > 0">
+        <thead>
           <tr>
             <th>Date</th>
             <th>Quiz name</th>
             <th>Difficulty</th>
             <th>Score</th>
             <th>Time</th>
-
           </tr>
-          </thead>
-          <tbody>
+        </thead>
+        <tbody>
           <tr v-for="attempt in history" :key="attempt.id">
-            <!-- The data goeeess heereee-->
-             <!--Fetch data from quiz_attempts-->
-            <td>{{ new Date( attempt.completedAt).toLocaleDateString() }}</td>
-            <td>{{ attempt.quizname }}</td> <!--Should there be a button somewhere to redo quiz? -->
-            <td>{{attempt.difficulty}}</td>
+            <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
+            <td>{{ attempt.quizname }}</td>
+            <td>{{ attempt.difficulty }}</td>
             <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
-            <td>{{ attempt.timeSpentSeconds }}</td>
-            
+            <td>{{ formatDuration(attempt.timeSpentSeconds) }}</td>
           </tr>
-          </tbody>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3"></th>
+            <th>Total score</th>
+            <th>Total time</th>
+          </tr>
+          <tr>
+            <td colspan="3"></td>
+            <td>{{ getTotalScore() }}</td>
+            <td>{{ formatDuration(getTotalTime()) }}</td>
+          </tr>
+        </tfoot>
+      </table>
 
-          <!-- Lil summary maybe-->
-          <tfoot>
-            <tr>
-              <th colspan= "3"></th>
-              <th>Total score</th>
-              <th>Total time</th>
-              
-            </tr>
-            <tr>
-              <td colspan= "3"></td>
-              <td>{{ getTotalScore() }}</td>
-              <td>{{ getTotalTime() }}</td>
-              
-            </tr>
-          </tfoot>
-        </table>
-        </section>
-
-        <!-- Message for empty history users-->
-        <section class="noHistory" v-if="history.length === 0">
-        <p>
-          You haven't completed any quizzes yet.
-        </p>
-        <button>
-        <RouterLink to="/categories">Choose your first quiz here!</RouterLink></button>
-        </section>
-
-  
+      <section v-else-if="!loading" class="noHistory">
+        <p>You haven't completed any quizzes yet.</p>
+        <RouterLink to="/categories" class="btn-auth">Choose your first quiz here!</RouterLink>
+      </section>
+    </template>
+  </section>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
-
+import { useLoginModal } from '@/composables/useLoginModal'
+import { fetchUserAttempts } from '@/services/quizService'
 
 const history = ref([])
-const { user } = useAuth()
+const errorMessage = ref('')
+const loading = ref(false)
+const { user, isLoggedIn } = useAuth()
+const { openLogin } = useLoginModal()
 
-async function fetchHistory() {
-  try {
-    const response = await fetch(`/api/quiz/attempts/user/${user.value.id}`)
-
-    if (!response.ok) {
-      throw new Error('Could not fetch history')
+watch(
+  () => user.value?.id,
+  async (userId) => {
+    errorMessage.value = ''
+    if (!userId) {
+      history.value = []
+      loading.value = false
+      return
     }
 
-    const data = await response.json()
-    history.value = data.attempts || []
-  } catch (error) {
-    console.error('Error fetching history:', error)
-    errorMessage.value = 'Could not load your history. Please try again.'
-  }
+    loading.value = true
+    try {
+      const attempts = await fetchUserAttempts(userId)
+      if (user.value?.id !== userId) return
+      history.value = attempts
+    } catch (error) {
+      console.error('Error fetching history:', error)
+      if (user.value?.id !== userId) return
+      history.value = []
+      errorMessage.value = 'Could not load your history.'
+    } finally {
+      if (user.value?.id === userId) loading.value = false
+    }
+  },
+  { immediate: true },
+)
 
-
+function formatDuration(seconds) {
+  const value = Number(seconds) || 0
+  if (value <= 0) return '0s'
+  const mins = Math.floor(value / 60)
+  const secs = value % 60
+  if (mins === 0) return `${secs}s`
+  return `${mins}m ${secs}s`
 }
 
-onMounted(() => {
-  fetchHistory()
-})
-
-//Total score function
 function getTotalScore() {
   let totalScore = 0
 
   for (const attempt of history.value) {
-    totalScore = totalScore + attempt.score
+    totalScore = totalScore + (Number(attempt.score) || 0)
   }
 
   return totalScore
 }
 
-//Total time function
 function getTotalTime() {
   let totalTime = 0
 
   for (const attempt of history.value) {
-    totalTime = totalTime + attempt.timeSpentSeconds  }
+    totalTime = totalTime + (Number(attempt.timeSpentSeconds) || 0)
+  }
 
   return totalTime
 }
-
 </script>
 
 <style scoped>
@@ -157,19 +167,31 @@ td{
   text-align: center;
 }
 
-/*The code for the button is from the "all categories page. Should this be i global.css instead?*/ 
-button {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
+.btn-auth {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  font-size: 16px;
+  border-radius: 40px;
+  text-decoration: none;
+  color: var(--color-text-main);
+
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
-button {
-  background: #1d4ed8;
+.btn-auth:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  color: var(--color-text-main);
 }
 
 @media (max-width: 600px) {
