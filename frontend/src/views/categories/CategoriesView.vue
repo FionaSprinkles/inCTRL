@@ -5,6 +5,7 @@ import { fetchQuizzes, fetchCategories, fetchUserAttempts, filterQuizzes } from 
 import { useAuth } from '@/composables/useAuth'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import ListQuizzesCard from '@/components/ListQuizzesCard.vue'
+import Pagination from '@/components/Pagination.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -197,12 +198,15 @@ onMounted(loadData)
       </div>
 
 
-      <ListQuizzesCard
-        v-else
-        :filteredQuizzes="filteredQuizzes"
-        :bestScores="bestScores"
-        @start-quiz="startQuiz"
-      />
+      <Pagination v-else :items="filteredQuizzes" :page-size="6">
+        <template #default="{ items }">
+          <ListQuizzesCard
+            :filteredQuizzes="items"
+            :bestScores="bestScores"
+            @start-quiz="startQuiz"
+          />
+        </template>
+      </Pagination>
       
     </div>
   </div>
