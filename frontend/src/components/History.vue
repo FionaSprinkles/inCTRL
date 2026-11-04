@@ -68,9 +68,15 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
           </tfoot>
         </table>
         
+        <!-- Loading -->
+        <LoadingSpinner
+          v-if="isLoading"
+          size="md"
+          text="Loading history..."
+        />
 
         <!-- Message for empty history users-->
-        <section class="no-history" v-if="history.length === 0">
+        <section class="no-history" v-else-if="history.length === 0">
         <p>You haven't completed any quizzes yet.</p>
         <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
         </section>
@@ -81,8 +87,15 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
     <div class="compact" v-else>
       <h2>Your history</h2>
 
+      <!-- Loading -->
+      <LoadingSpinner
+        v-if="isLoading"
+        size="md"
+        text="Loading history..."
+      />
+
       <!-- Message for empty history users -->
-      <section class="" v-if="history.length === 0">
+      <section class="" v-else-if="history.length === 0">
       <p>You haven't completed any quizzes yet.</p>
       <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
       </section>
@@ -122,10 +135,12 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 import { ref, onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { RouterLink } from 'vue-router'
+import LoadingSpinner from './LoadingSpinner.vue';
 
 const history = ref([])
 const { user } = useAuth()
 const errorMessage = ref('')
+const isLoading = ref(true)
 
 // component is displayed as a compact widget or not
 defineProps({
@@ -150,6 +165,9 @@ async function fetchHistory() {
     console.error('Error fetching history:', error)
     errorMessage.value = 'Could not load your history. Please try again.'
   }
+  finally {
+  isLoading.value = false
+}
 
 
 }
