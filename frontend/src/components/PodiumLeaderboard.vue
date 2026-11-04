@@ -492,7 +492,8 @@ onMounted(fetchLeaderboard)
 /* Top 50 remaining list card */
 .leaderboard-list-card {
   flex: 1;
-  min-width: 320px;
+  min-width: min(320px, 100%);
+  box-sizing: border-box;
   max-width: 400px;
   border-radius: 16px;
   padding: 20px;
