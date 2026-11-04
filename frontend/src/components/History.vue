@@ -19,12 +19,15 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
 <template>
   <section class="history">
+    <div v-if="!compact">
         <h1>History</h1>
         <h2>Your history</h2>
 
+
+
         <!-- History table-->
 
-        <table>
+        <table v-if="history.length > 0">
           <thead>
           <tr>
             <th>Date</th>
@@ -64,29 +67,77 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
             </tr>
           </tfoot>
         </table>
-        </section>
+        
 
         <!-- Message for empty history users-->
-        <section class="noHistory" v-if="history.length === 0">
-        <p>
-          You haven't completed any quizzes yet.
-        </p>
-        <button>
-        <RouterLink to="/categories">Choose your first quiz here!</RouterLink></button>
+        <section class="no-history" v-if="history.length === 0">
+        <p>You haven't completed any quizzes yet.</p>
+        <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
         </section>
+    </div>
 
+         <!-- Compact widget -->
+      
+    <div v-else>
+      <h2>Your history</h2>
+
+      <!-- Message for empty history users -->
+      <section class="" v-if="history.length === 0">
+      <p>You haven't completed any quizzes yet.</p>
+      <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
+      </section>
+      
+
+      <div v-else>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Quiz name</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="attempt in history.slice(0, 3)"
+              :key="attempt.id"
+              >
+              <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
+              <td>{{ attempt.quizname }}</td>
+              <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <RouterLink class="button" to="/history">
+          View full history
+        </RouterLink>
+      </div>
+    </div>
+  </section>
   
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
-
+import { RouterLink } from 'vue-router'
 
 const history = ref([])
 const { user } = useAuth()
+const errorMessage = ref('')
+
+// component is displayed as a compact widget or not
+defineProps({
+  compact: {
+    type: Boolean,
+    default: false
+  }
+})
 
 async function fetchHistory() {
   try {
+    if (!user.value?.id) return
     const response = await fetch(`/api/quiz/attempts/user/${user.value.id}`)
 
     if (!response.ok) {
@@ -136,7 +187,6 @@ function getTotalTime() {
   margin: 0 auto;
   padding: 0 1rem;
   box-sizing: border-box;
-  overflow-x: auto;
   text-align: center;
 }
 table {
@@ -152,24 +202,23 @@ td{
   padding: 1rem;
 }
 
-.noHistory{
-  margin: 0 auto;
-  text-align: center;
-}
-
-/*The code for the button is from the "all categories page. Should this be i global.css instead?*/ 
-button {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
+.button {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 0.5rem 1.15rem;
+  border-radius: 10px;
+  background: var(--color-button);
+  color: var(--color-button-text);
   font-weight: 600;
+  border: 1px solid var(--color-button-border);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-button {
-  background: #1d4ed8;
+.button:hover {
+  background: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
 }
 
 @media (max-width: 600px) {
