@@ -1,14 +1,17 @@
 <template>
   <main class="personal-home">
     <header class="welcome">
-      <h1>Welcome back, {{ username }}!</h1>
+      <h1 v-if="isFirstLogin">Welcome, {{ username }}!</h1>
+      <h1 v-else>Welcome back, {{ username }}!</h1>
     </header>
 
     <section class="continue">
       <article>
-        <h2>Continue where you left off</h2>
+        <h2>{{ isFirstLogin ? 'Get started' : 'Continue where you left off' }}</h2>
 
-        <RouterLink to="/quiz"> Keep Improving </RouterLink>
+        <RouterLink to="/quiz">
+          {{ isFirstLogin ? 'Start Learning' : 'Keep Improving' }}
+        </RouterLink>
       </article>
     </section>
 
@@ -23,7 +26,7 @@
 import { RouterLink } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
-const { username } = useAuth()
+const { username, isFirstLogin } = useAuth()
 </script>
 
 <style scoped>
