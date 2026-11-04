@@ -190,6 +190,8 @@ onMounted(fetchLeaderboard)
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
 /* Avatar circle */
@@ -218,6 +220,9 @@ onMounted(fetchLeaderboard)
 .list-name {
   font-weight: 500;
   font-size: 0.85rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .placeholder-text {
