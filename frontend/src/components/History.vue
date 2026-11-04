@@ -23,7 +23,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
     <section v-if="!isLoggedIn" class="noHistory">
       <p>Log in to see your quiz history.</p>
-      <button type="button" @click="openLogin">Log in</button>
+      <button type="button" class="btn-auth" @click="openLogin">Log in</button>
     </section>
 
     <template v-else>
@@ -66,9 +66,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
       <section v-else-if="!loading" class="noHistory">
         <p>You haven't completed any quizzes yet.</p>
-        <button>
-          <RouterLink to="/categories">Choose your first quiz here!</RouterLink>
-        </button>
+        <RouterLink to="/categories" class="btn-auth">Choose your first quiz here!</RouterLink>
       </section>
     </template>
   </section>
@@ -169,19 +167,31 @@ td{
   text-align: center;
 }
 
-/*The code for the button is from the "all categories page. Should this be i global.css instead?*/ 
-button {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
+.btn-auth {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  font-size: 16px;
+  border-radius: 40px;
+  text-decoration: none;
+  color: var(--color-text-main);
+
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
 }
 
-button {
-  background: #1d4ed8;
+.btn-auth:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  color: var(--color-text-main);
 }
 
 @media (max-width: 600px) {
