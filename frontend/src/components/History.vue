@@ -27,8 +27,9 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
     
     <template v-else>
-      <h1>History</h1>
+
       <div v-if="!compact">
+      <h1>History</h1>
       <h2>Your history</h2>
 
         <!-- History table-->
@@ -90,7 +91,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
          <!-- Compact widget -->
       
     <div class="compact" v-else>
-      <h2>Your history</h2>
+      <h2>History</h2>
 
       <!-- Loading -->
       <LoadingSpinner
@@ -265,6 +266,7 @@ td{
 .button:hover {
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+}
 .noHistory{
   margin: 0 auto;
   text-align: center;
@@ -306,6 +308,8 @@ td{
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .compact h2 {
@@ -315,12 +319,14 @@ td{
 .compact table {
   margin: 0;
   padding: 0;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .compact th,
 .compact td {
   padding: 0.75rem;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 
 .compact .button {
@@ -338,7 +344,6 @@ td{
   td {
     padding: 0.6rem;
   }
-}
 }
 
 </style>

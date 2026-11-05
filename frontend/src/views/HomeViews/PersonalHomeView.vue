@@ -63,6 +63,7 @@ const { username, isFirstLogin } = useAuth()
 .widget article {
   width: 100%;
   max-width: 500px;
+  min-width: 0;
   box-sizing: border-box;
   padding: 2.5rem 2rem;
   background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
