@@ -139,9 +139,9 @@ onMounted(() => {
 .navbar-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  padding: 1rem 2rem; /* Samma padding (2rem) som AboutView-containern */
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   box-sizing: border-box;
@@ -164,15 +164,13 @@ onMounted(() => {
 
 /* Logo */
 .logo {
-  position: static;
-  transform: none;
   font-size: 2.3rem;
   color: var(--color-text-white);
   text-decoration: none;
-  text-align: center;
-  justify-self: center;
+  text-align: left;
   text-shadow: 0 0 0 rgba(159, 211, 227, 0);
   transition: text-shadow 0.6s ease;
+  margin-right: 2rem;
 }
 
 .logo:hover {
