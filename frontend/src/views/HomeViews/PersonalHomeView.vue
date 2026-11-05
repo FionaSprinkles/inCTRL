@@ -6,7 +6,9 @@
         <h1 v-else>Welcome back, {{ username }}!</h1>
       </header>
 
-      <section class="continue">
+    <!-- Continue where you left off-->
+
+    <section class="continue">
         <div class="white-card">
           <div class="card-left">
             <span class="eyebrow">{{ isFirstLogin ? 'GET STARTED' : 'CONTINUE LEARNING' }}</span>
@@ -27,10 +29,21 @@
         </div>
       </section>
 
-      <!--At a later stage: The history section should have a small widget of History.vue component-->
-      <section class="history-section">
-        <RouterLink to="/history" class="btn-history"> My history → </RouterLink>
-      </section>
+
+    <!-- kolla "btn-history som såg ut = <RouterLink to="/history" class="btn-history"> My history → </RouterLink>"-->
+    <!--History widget-->
+    <section class="history-section">
+      
+        
+          <article>
+            <!-- Get the compact variant of History.vue-->
+            <History compact />
+          </article>
+      
+  
+    </section>
+
+    <!-- Leaderboard-widget? With your place on the leaderboard and top 3-->
     </div>
   </main>
 </template>
@@ -38,6 +51,7 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import History from '@/components/History.vue';
 
 const { username, isFirstLogin } = useAuth()
 </script>
@@ -83,12 +97,6 @@ const { username, isFirstLogin } = useAuth()
   margin: 0;
 }
 
-.continue {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: 30px;
-}
 
 /* White-card */
 .white-card {
@@ -164,23 +172,6 @@ const { username, isFirstLogin } = useAuth()
   margin-top: 10px;
 }
 
-.btn-history {
-  display: inline-block;
-  padding: 0.6rem 1.5rem;
-  color: var(--color-dark-teal);
-  background: transparent;
-  border: 1px solid var(--color-dark-teal);
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.btn-history:hover {
-  background: var(--color-dark-teal);
-  color: var(--color-text-white);
-}
 
 @media (max-width: 768px) {
   .welcome h1 {

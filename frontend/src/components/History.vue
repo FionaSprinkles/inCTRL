@@ -5,73 +5,142 @@ page that shows more info than the compact widget. in quizRoutes.js ->
 router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); */
 
 <template>
-  <main class="history-page">
+  <main class="history-page">  
     <section class="history">
-      <section v-if="!isLoggedIn" class="noHistory">
-        <h1>History</h1>
-        <p>Log in to see your quiz history.</p>
-        <button type="button" class="btn-auth" @click="openLogin">Log in</button>
-      </section>
 
-      <template v-else>
-        <div class="page-header" v-if="history.length > 0">
+    <section v-if="!isLoggedIn" class="noHistory">
+      <p>Log in to see your quiz history.</p>
+      <button type="button" class="btn-auth" @click="openLogin">Log in</button>
+    </section>
+
+    
+    <template v-else>
+
+      <div v-if="!compact">
+        <div class="page-header">
           <h1>Here is your history {{ username }}!</h1>
         </div>
 
-        <p v-if="errorMessage">{{ errorMessage }}</p>
+        <!-- History table-->
+                  
+        <!-- Loading -->
+        <LoadingSpinner
+          v-if="loading"
+          size="md"
+          text="Loading history..."
+        />
+        <!-- Message for empty history users-->
+        <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
+        <section class="noHistory" v-else-if="history.length === 0">
+        <p>You haven't completed any quizzes yet.</p>
+        <RouterLink class="btn-action" to="/categories">Choose your first quiz here!</RouterLink>
+        </section>
 
-        <!-- History table wrap -->
-        <div class="table-wrap" v-if="history.length > 0">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Quiz name</th>
-                <th>Difficulty</th>
-                <th>Score</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="attempt in history" :key="attempt.id">
-                <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
-                <td>{{ attempt.quizname }}</td>
-                <td>{{ attempt.difficulty }}</td>
-                <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
-                <td>{{ formatDuration(attempt.timeSpentSeconds) }}</td>
-              </tr>
-            </tbody>
+        <div class="table-wrap" v-else-if="history.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Quiz name</th>
+              <th>Difficulty</th>
+              <th>Score</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="attempt in history" :key="attempt.id">
+              <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
+              <td>{{ attempt.quizname }}</td>
+              <td>{{ attempt.difficulty }}</td>
+              <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
+              <td>{{ formatDuration(attempt.timeSpentSeconds) }}</td>
+            </tr>
+          </tbody>
+
+            <!-- Lil summary maybe-->
+
             <tfoot>
-              <tr>
-                <td colspan="5" class="footer-combined">
-                  <div class="footer-content">
-                    <div class="footer-item">
-                      <span class="footer-title">Total score:</span>
-                      <span class="footer-value">{{ getTotalScore() }}</span>
+                <tr>
+                  <td colspan="5" class="footer-combined">
+                    <div class="footer-content">
+                      <div class="footer-item">
+                        <span class="footer-title">Total score:</span>
+                        <span class="footer-value">{{ getTotalScore() }}</span>
+                      </div>
+                      <div class="footer-item">
+                        <span class="footer-title">Total time:</span>
+                        <span class="footer-value">{{ formatDuration(getTotalTime()) }}</span>
+                      </div>
                     </div>
-                    <div class="footer-item">
-                      <span class="footer-title">Total time:</span>
-                      <span class="footer-value">{{ formatDuration(getTotalTime()) }}</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tfoot>
+                  </td>
+                </tr>
+              </tfoot>
+
           </table>
         </div>
 
-        <section v-else-if="!loading" class="noHistory">
-          <p>You haven't completed any quizzes yet.</p>
-          <RouterLink to="/categories" class="btn-auth">Choose your first quiz here!</RouterLink>
-        </section>
-      </template>
-    </section>
-  </main>
+
+      </div>
+    
+
+         <!-- Compact widget -->
+      
+    <div class="compact" v-else>
+      <h2>Latest activities</h2>
+
+      <!-- Loading -->
+      <LoadingSpinner
+        v-if="loading"
+        size="md"
+        text="Loading history..."
+      />
+
+      
+      <!-- Message for empty history users -->
+      <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <section class="noHistory" v-else-if="history.length === 0">
+      <p>You haven't completed any quizzes yet.</p>
+      <RouterLink class="btn-action" to="/categories">Choose your first quiz here!</RouterLink>
+      </section>
+      
+
+      <div v-else>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Quiz name</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="attempt in history.slice(0, 3)"
+              :key="attempt.id"
+              >
+              <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
+              <td>{{ attempt.quizname }}</td>
+              <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <RouterLink class="btn-action" to="/history">
+          View full history
+        </RouterLink>
+      </div>
+    </div>
+    </template>
+  </section>
+</main>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
+import { RouterLink } from 'vue-router'
+import LoadingSpinner from './LoadingSpinner.vue';
 import { useLoginModal } from '@/composables/useLoginModal'
 import { fetchUserAttempts } from '@/services/quizService'
 
@@ -81,12 +150,23 @@ const loading = ref(false)
 const { user, isLoggedIn, username } = useAuth()
 const { openLogin } = useLoginModal()
 
+// component is displayed as a compact widget or not
+defineProps({
+  compact: {
+    type: Boolean,
+    default: false
+  }
+})
+
+
+//fetch user history 
 watch(
   () => user.value?.id,
   async (userId) => {
     errorMessage.value = ''
+    history.value = []
     if (!userId) {
-      history.value = []
+
       loading.value = false
       return
     }
@@ -108,6 +188,8 @@ watch(
   { immediate: true },
 )
 
+
+//format to seconds
 function formatDuration(seconds) {
   const value = Number(seconds) || 0
   if (value <= 0) return '0s'
@@ -117,6 +199,8 @@ function formatDuration(seconds) {
   return `${mins}m ${secs}s`
 }
 
+
+//Total score function
 function getTotalScore() {
   let totalScore = 0
 
@@ -137,6 +221,9 @@ function getTotalTime() {
   return totalTime
 }
 </script>
+
+
+// ==== STYLE ====//
 
 <style scoped>
 .history-page {
@@ -188,6 +275,15 @@ table {
   width: 100%;
   border-collapse: collapse;
   padding: 0;
+}
+
+
+
+
+/* loginbuton*/
+.btn-auth {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
 }
 
 tr {
@@ -294,35 +390,93 @@ tfoot tr:first-child th {
   margin-bottom: 1.5rem;
 }
 
-/* Button to start your first quiz */
-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 40px;
-  cursor: pointer;
-  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
-}
-
-button a {
+.btn-action {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background-color: var(--color-dark-teal);
   color: var(--color-text-white);
+  border-radius: 12px;
   font-weight: 600;
-  letter-spacing: 2px;
+  font-size: 16px;
   text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(10, 40, 50, 0.2);
+  white-space: nowrap;
 }
 
-button:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
-  transition: all 0.3s ease;
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 40, 50, 0.3);
 }
+
+/* COMPACT WIDGET */
+.compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  min-width: 0;
+  padding: 2.5rem;
+  background: #ffffff;
+  border: 1px solid rgba(220, 225, 230, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+}
+
+.compact h2 {
+  font-family: var(--font-display);
+  color: var(--color-dark-teal);
+  text-transform: none;
+  letter-spacing: 1px;
+  font-size: 32px;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+
+.compact table {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.compact th,
+.compact td {
+  padding: 0.75rem;
+  overflow-wrap: break-word;
+  text-align: center;
+
+}
+
+.compact th {
+  color: var(--color-dark-teal);
+}
+
+.compact td {
+  color: var(--color-text-black);
+  border-bottom: 1px solid rgba(23, 52, 79, 0.12);
+}
+
+
+.compact .btn-action {
+  margin-top: 0.5rem;
+}
+
+.compact .noHistory {
+  background: none;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  text-shadow: none;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+}
+
 
 @media (max-width: 600px) {
   table {
