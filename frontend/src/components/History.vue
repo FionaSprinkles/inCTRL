@@ -169,8 +169,9 @@ watch(
   () => user.value?.id,
   async (userId) => {
     errorMessage.value = ''
+    history.value = []
     if (!userId) {
-      history.value = []
+
       loading.value = false
       return
     }
