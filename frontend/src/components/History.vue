@@ -33,7 +33,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
         <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
         <section class="noHistory" v-else-if="history.length === 0">
         <p>You haven't completed any quizzes yet.</p>
-        <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
+        <RouterLink class="btn-action" to="/categories">Choose your first quiz here!</RouterLink>
         </section>
 
         <div class="table-wrap" v-else-if="history.length > 0">
@@ -86,7 +86,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
          <!-- Compact widget -->
       
     <div class="compact" v-else>
-      <h2>Here is your history {{ username }}!</h2>
+      <h2>Latest activities</h2>
 
       <!-- Loading -->
       <LoadingSpinner
@@ -100,7 +100,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
       <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
       <section class="noHistory" v-else-if="history.length === 0">
       <p>You haven't completed any quizzes yet.</p>
-      <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
+      <RouterLink class="btn-action" to="/categories">Choose your first quiz here!</RouterLink>
       </section>
       
 
@@ -126,7 +126,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
           </tbody>
         </table>
         
-        <RouterLink class="button" to="/history">
+        <RouterLink class="btn-action" to="/history">
           View full history
         </RouterLink>
       </div>
@@ -278,24 +278,7 @@ table {
 }
 
 
-.button {
-  font-family: var(--font-display);
-  font-size: 16px;
-  letter-spacing: 1px;
-  padding: 0.5rem 1.15rem;
-  border-radius: 10px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  font-weight: 600;
-  border: 1px solid var(--color-button-border);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
 
-.button:hover {
-  background: var(--color-button-hover);
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
-}
 
 /* loginbuton*/
 .btn-auth {
@@ -407,34 +390,23 @@ tfoot tr:first-child th {
   margin-bottom: 1.5rem;
 }
 
-/* Button to start your first quiz */
-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 40px;
-  cursor: pointer;
-  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(197, 204, 214, 0.55);
-  border-top-color: rgba(245, 247, 250, 0.9);
-  box-shadow:
-    6px 12px 26px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
-}
-
-button a {
+.btn-action {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background-color: var(--color-dark-teal);
   color: var(--color-text-white);
+  border-radius: 12px;
   font-weight: 600;
-  letter-spacing: 2px;
+  font-size: 16px;
   text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(10, 40, 50, 0.2);
+  white-space: nowrap;
 }
 
-button:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
-  transition: all 0.3s ease;
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 40, 50, 0.3);
 }
 
 /* COMPACT WIDGET */
@@ -487,12 +459,21 @@ button:hover {
   border-bottom: 1px solid rgba(23, 52, 79, 0.12);
 }
 
-.compact a {
-  color: var(--color-dark-teal);
+
+.compact .btn-action {
+  margin-top: 0.5rem;
 }
 
-.compact .button {
-  margin-top: 0.5rem;
+.compact .noHistory {
+  background: none;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  text-shadow: none;
+  padding: 0;
+  margin: 0;
+  max-width: none;
 }
 
 

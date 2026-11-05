@@ -172,23 +172,6 @@ const { username, isFirstLogin } = useAuth()
   margin-top: 10px;
 }
 
-.btn-history {
-  display: inline-block;
-  padding: 0.6rem 1.5rem;
-  color: var(--color-dark-teal);
-  background: transparent;
-  border: 1px solid var(--color-dark-teal);
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.btn-history:hover {
-  background: var(--color-dark-teal);
-  color: var(--color-text-white);
-}
 
 @media (max-width: 768px) {
   .welcome h1 {
