@@ -459,9 +459,9 @@ onUnmounted(stopTimer)
 <style scoped>
 .quiz-page {
   width: 100%;
-  max-width: 960px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1.5rem 2rem 3rem;
   box-sizing: border-box;
   font-family: var(--font-body), sans-serif;
 }
