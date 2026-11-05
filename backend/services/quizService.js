@@ -814,7 +814,8 @@ function getUserAttempts(userId) {
             qa.time_spent_seconds AS timeSpentSeconds,
             qa.completed_at AS completedAt,
             q.title AS quizname,
-            q.difficulty
+            q.difficulty,
+            q.category_id AS categoryId  -- Include category ID to allow filtering quiz history by category.
             
 
             FROM quiz_attempts AS qa 
