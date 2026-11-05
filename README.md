@@ -101,4 +101,7 @@ or use the `.cmd` version: `npm.cmd install` and `npm.cmd run dev`.
 
 ## Contributors
 
-*
+* Oscar Nidemar
+* Firas Mossa
+* Fiona Friberg
+* Erika Falk Svendsen
