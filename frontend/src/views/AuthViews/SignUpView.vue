@@ -122,8 +122,6 @@ async function handleSubmit() {
 <style scoped>
 /* Page layout */
 .signup-page {
-  min-height: 100vh;
-  padding: 1.5rem 1rem;
   box-sizing: border-box;
   display: flex;
   align-items: center; /* Centers the card vertically */
