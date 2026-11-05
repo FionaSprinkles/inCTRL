@@ -482,7 +482,7 @@ onMounted(fetchLeaderboard)
 }
 
 .rank-number {
-  font-family: Georgia, serif;
+  font-family: var(--font-heading), serif;
   font-size: 1.8rem;
   font-weight: bold;
   color: #1e293b;
