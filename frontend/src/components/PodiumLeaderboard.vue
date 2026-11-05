@@ -243,9 +243,9 @@ onMounted(fetchLeaderboard)
 
 /* Main container and layout */
 .leaderboard-container {
-  padding-top: 24px;
+  padding: 24px 2rem;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1100px;
   box-sizing: border-box;
   margin: 0 auto;
   border-radius: 16px;
