@@ -76,6 +76,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
         />
 
         <!-- Message for empty history users-->
+        <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
         <section class="no-history" v-else-if="history.length === 0">
         <p>You haven't completed any quizzes yet.</p>
         <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
@@ -94,7 +95,9 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
         text="Loading history..."
       />
 
+      
       <!-- Message for empty history users -->
+      <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
       <section class="" v-else-if="history.length === 0">
       <p>You haven't completed any quizzes yet.</p>
       <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
