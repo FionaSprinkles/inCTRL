@@ -94,10 +94,6 @@ const { username, isFirstLogin } = useAuth()
   background-color: var(--color-button-hover);
 }
 
-.history {
-  margin-top: 2rem;
-}
-
 @media (max-width: 768px) {
   .personal-home {
     grid-template-columns: 1fr;
