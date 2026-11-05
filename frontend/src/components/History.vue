@@ -234,10 +234,12 @@ table {
 
 th{
   padding: 2rem;
+  overflow-wrap: anywhere;
 }
 
 td{
   padding: 1rem;
+  overflow-wrap: anywhere;
 }
 
 .button {
@@ -280,6 +282,7 @@ td{
 .compact th,
 .compact td {
   padding: 0.75rem;
+  overflow-wrap: anywhere;
 }
 
 .compact .button {
