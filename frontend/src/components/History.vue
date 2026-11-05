@@ -1,24 +1,12 @@
-/** This component should show user history like:
-- What quiz theyve taken
-- What time they got on the quiz
-- What day the did the quiz
-- How many correct vs wrong answers
-- How much XP they gained
-
-
-This component should also:
-- be a compact widget that is shown on users personal page.
-- be its own page that shows more info than the compact widget.
-
-
-in quizRoutes.js ->
-router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
-*/
-
-
+/** This component should show user history like: - What quiz theyve taken - What time they got on
+the quiz - What day the did the quiz - How many correct vs wrong answers - How much XP they gained
+This component should also: - be a compact widget that is shown on users personal page. - be its own
+page that shows more info than the compact widget. in quizRoutes.js ->
+router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); */
 
 <template>
-  <section class="history">
+  <main class="history-page">  
+    <section class="history">
 
     <section v-if="!isLoggedIn" class="noHistory">
       <p>Log in to see your quiz history.</p>
@@ -29,60 +17,67 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
     <template v-else>
 
       <div v-if="!compact">
-      <h1>History</h1>
-      <h2>Your history</h2>
+        <div class="page-header">
+          <h1>Here is your history {{ username }}!</h1>
+        </div>
 
         <!-- History table-->
                   
         <!-- Loading -->
-      <LoadingSpinner
-        v-if="loading"
-        size="md"
-        text="Loading history..."
-      />
+        <LoadingSpinner
+          v-if="loading"
+          size="md"
+          text="Loading history..."
+        />
         <!-- Message for empty history users-->
         <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
-        <section class="no-history" v-else-if="history.length === 0">
+        <section class="noHistory" v-else-if="history.length === 0">
         <p>You haven't completed any quizzes yet.</p>
         <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
         </section>
 
-      <table v-else-if="history.length > 0">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Quiz name</th>
-            <th>Difficulty</th>
-            <th>Score</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="attempt in history" :key="attempt.id">
-            <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
-            <td>{{ attempt.quizname }}</td>
-            <td>{{ attempt.difficulty }}</td>
-            <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
-            <td>{{ formatDuration(attempt.timeSpentSeconds) }}</td>
-          </tr>
-        </tbody>
+        <div class="table-wrap" v-else-if="history.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Quiz name</th>
+              <th>Difficulty</th>
+              <th>Score</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="attempt in history" :key="attempt.id">
+              <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
+              <td>{{ attempt.quizname }}</td>
+              <td>{{ attempt.difficulty }}</td>
+              <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
+              <td>{{ formatDuration(attempt.timeSpentSeconds) }}</td>
+            </tr>
+          </tbody>
 
-          <!-- Lil summary maybe-->
-          <tfoot>
-            <tr>
-              <th colspan= "3"></th>
-              <th>Total score</th>
-              <th>Total time</th>
-              
-            </tr>
-            <tr>
-              <td colspan= "3"></td>
-              <td>{{ getTotalScore() }}</td>
-              <td>{{ formatDuration(getTotalTime()) }}</td>
-              
-            </tr>
-          </tfoot>
-        </table>
+            <!-- Lil summary maybe-->
+
+            <tfoot>
+                <tr>
+                  <td colspan="5" class="footer-combined">
+                    <div class="footer-content">
+                      <div class="footer-item">
+                        <span class="footer-title">Total score:</span>
+                        <span class="footer-value">{{ getTotalScore() }}</span>
+                      </div>
+                      <div class="footer-item">
+                        <span class="footer-title">Total time:</span>
+                        <span class="footer-value">{{ formatDuration(getTotalTime()) }}</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+
+          </table>
+        </div>
 
 
       </div>
@@ -91,7 +86,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
          <!-- Compact widget -->
       
     <div class="compact" v-else>
-      <h2>History</h2>
+      <h2>Here is your history {{ username }}!</h2>
 
       <!-- Loading -->
       <LoadingSpinner
@@ -103,7 +98,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
       
       <!-- Message for empty history users -->
       <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
-      <section class="no-history" v-else-if="history.length === 0">
+      <section class="noHistory" v-else-if="history.length === 0">
       <p>You haven't completed any quizzes yet.</p>
       <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
       </section>
@@ -138,8 +133,8 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
     </div>
     </template>
   </section>
+</main>
 </template>
-
 
 <script setup>
 import { ref, watch } from 'vue'
@@ -152,7 +147,7 @@ import { fetchUserAttempts } from '@/services/quizService'
 const history = ref([])
 const errorMessage = ref('')
 const loading = ref(false)
-const { user, isLoggedIn } = useAuth()
+const { user, isLoggedIn, username } = useAuth()
 const { openLogin } = useLoginModal()
 
 // component is displayed as a compact widget or not
@@ -227,28 +222,61 @@ function getTotalTime() {
 }
 </script>
 
-<style scoped>
 
-.history {
+// ==== STYLE ====//
+
+<style scoped>
+.history-page {
+  width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 3rem 1.5rem;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
   text-align: center;
 }
+
+.page-header h1 {
+  color: var(--color-text-white);
+  font-size: 2.5rem;
+  margin-bottom: 0.2rem;
+  letter-spacing: 2px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  margin: 2rem auto;
+  width: 100%;
+}
+
+.history {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 table {
-  margin: 0 auto;
-  padding: 3rem;
+  width: 100%;
+  border-collapse: collapse;
+  padding: 0;
 }
 
-th{
-  padding: 2rem;
-  overflow-wrap: anywhere;
-}
-
-td{
-  padding: 1rem;
-  overflow-wrap: anywhere;
-}
 
 .button {
   font-family: var(--font-display);
@@ -268,21 +296,122 @@ td{
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
 }
-.noHistory{
-  margin: 0 auto;
-  text-align: center;
-}
 
 /* loginbuton*/
-
 .btn-auth {
   display: inline-block;
   padding: 0.3rem 0.9rem;
-  font-size: 16px;
-  border-radius: 40px;
-  text-decoration: none;
-  color: var(--color-text-main);
+}
 
+tr {
+  font-size: 16px;
+  font-weight: 340;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
+}
+
+th,
+td {
+  padding: 1.5rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  font-family: var(--font-display), serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-text-main);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-text-white);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tfoot td {
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.15);
+  font-weight: 400;
+  color: var(--color-text-main);
+}
+
+tfoot tr:first-child th {
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 16px;
+  padding-bottom: 0.5rem;
+}
+
+.footer-label {
+  text-align: right;
+}
+
+.footer-combined {
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.15);
+  padding: 1.2rem 1.5rem !important;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  align-items: center;
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-title {
+  font-size: 15px;
+  color: var(--color-text-main);
+  font-weight: 400;
+}
+
+.footer-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+.noHistory {
+  margin: 4rem auto;
+  max-width: 500px;
+  text-align: center;
+  padding: 3rem;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.65) 0%, rgba(10, 40, 50, 0.45) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.noHistory p {
+  color: var(--color-text-white);
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Button to start your first quiz */
+button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 40px;
+  cursor: pointer;
   background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
@@ -293,17 +422,22 @@ td{
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(197, 204, 214, 0.2);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-
   transition: all 0.3s ease;
 }
 
-.btn-auth:hover {
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
-  color: var(--color-text-main);
+button a {
+  color: var(--color-text-white);
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-decoration: none;
 }
 
-/* COMPACT WIDGET */ 
+button:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+}
 
+/* COMPACT WIDGET */
 .compact {
   display: flex;
   flex-direction: column;
@@ -311,10 +445,23 @@ td{
   gap: 1.5rem;
   width: 100%;
   min-width: 0;
+  padding: 2.5rem;
+  background: #ffffff;
+  border: 1px solid rgba(220, 225, 230, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
 }
 
 .compact h2 {
+  font-family: var(--font-display);
+  color: var(--color-dark-teal);
+  text-transform: none;
+  letter-spacing: 1px;
+  font-size: 32px;
+  font-weight: 500;
   margin: 0;
+  text-align: center;
 }
 
 .compact table {
@@ -327,13 +474,26 @@ td{
 .compact th,
 .compact td {
   padding: 0.75rem;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
+
+}
+
+.compact th {
+  color: var(--color-dark-teal);
+}
+
+.compact td {
+  color: var(--color-text-black);
+  border-bottom: 1px solid rgba(23, 52, 79, 0.12);
+}
+
+.compact a {
+  color: var(--color-dark-teal);
 }
 
 .compact .button {
   margin-top: 0.5rem;
 }
-
 
 
 @media (max-width: 600px) {
@@ -346,5 +506,4 @@ td{
     padding: 0.6rem;
   }
 }
-
 </style>

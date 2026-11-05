@@ -102,7 +102,7 @@ function startQuiz(quiz) {
 }
 
 .badge {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 0.8rem;
   padding: 0.2rem 0.65rem;
   border-radius: 8px;
@@ -136,7 +136,7 @@ function startQuiz(quiz) {
 }
 
 .quiz-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-heading), serif;
   font-size: 1.4rem;
   font-weight: 450;
   margin: 0 0 0.5rem;
@@ -146,7 +146,7 @@ function startQuiz(quiz) {
 }
 
 .quiz-description {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.95rem;
   color: var(--color-text-main);
   margin-bottom: 1.25rem;
@@ -162,13 +162,13 @@ function startQuiz(quiz) {
 }
 
 .question-count {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.9rem;
   color: var(--color-text-main);
 }
 
 .btn-start {
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-size: 16px;
   letter-spacing: 1px;
   padding: 0.5rem 1.15rem;
@@ -213,7 +213,7 @@ function startQuiz(quiz) {
 }
 
 .best-score {
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
   font-size: 0.85rem;
   color: var(--color-light-accenturate);
   font-weight: 500;

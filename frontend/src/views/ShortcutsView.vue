@@ -312,7 +312,7 @@ async function fetchShortcuts() {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
+  padding: 2rem 2rem 3rem;
   box-sizing: border-box;
 }
 
