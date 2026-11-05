@@ -135,7 +135,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
   
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { RouterLink } from 'vue-router'
 import LoadingSpinner from './LoadingSpinner.vue';
@@ -154,6 +154,9 @@ defineProps({
 })
 
 async function fetchHistory() {
+
+    isLoading.value = true
+    errorMessage.value = ''
   try {
     if (!user.value?.id) return
     const response = await fetch(`/api/quiz/attempts/user/${user.value.id}`)
@@ -175,9 +178,23 @@ async function fetchHistory() {
 
 }
 
-onMounted(() => {
-  fetchHistory()
-})
+watch( // use watch to update page
+
+  () => user.value?.id,
+  (newUserId) => {
+
+    if (newUserId) {
+      fetchHistory()
+    } else { //remove old user data 
+
+      history.value = []
+      errorMessage.value = ''
+      isLoading.value = false
+
+    }
+  },
+  { immediate: true }
+)
 
 //Total score function
 function getTotalScore() {
