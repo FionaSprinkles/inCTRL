@@ -55,6 +55,9 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
                   {{ category.name }}
                 </option>
               </select>
+              <p v-if="categoriesError" class="error">
+                {{ categoriesError }}
+              </p>
             </div>
           </section>
 
@@ -178,6 +181,8 @@ const { user, isLoggedIn, username } = useAuth()
 const { openLogin } = useLoginModal()
 const categories = ref([])
 const selectedCategory = ref('all')
+const categoryError = ref('')
+
 
 // component is displayed as a compact widget or not
 defineProps({
@@ -190,9 +195,11 @@ defineProps({
 // Fetch all categories
 async function loadCategories() {
   try {
+    categoryError.value = ''
     categories.value = await fetchCategories()
   } catch (error) {
     console.error('Could not load categories:', error)
+    categoryError.value = 'Could not load categories.'
   }
 }
 
