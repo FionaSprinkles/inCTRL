@@ -4,64 +4,66 @@ Labeling and content inside Dropdown - Fetching from backend */
 
 <template>
   <nav class="navbar">
-    <RouterLink to="/" class="logo"> InCtrl </RouterLink>
+    <div class="navbar-inner">
+      <RouterLink to="/" class="logo"> InCtrl </RouterLink>
 
-    <!-- Left side of the navbar -->
-    <div class="nav-left">
-      <div class="nav-links">
-        <!-- Dropdown component-->
-        <Dropdown label="Browse" side="left">
-          <div class="category-section">
-            <h2>Courses by category</h2>
+      <!-- Left side of the navbar -->
+      <div class="nav-left">
+        <div class="nav-links">
+          <!-- Dropdown component-->
+          <Dropdown label="Browse" side="left">
+            <div class="category-section">
+              <h2>Courses by category</h2>
 
-            <RouterLink to="/categories" class="nav-link"> All Courses </RouterLink>
+              <RouterLink to="/categories" class="nav-link"> All Courses </RouterLink>
 
-            <RouterLink
-              v-for="category in categories"
-              :key="category.id"
-              :to="`/categories/${category.slug}`"
-              class="nav-link"
-            >
-              {{ category.name }}
-            </RouterLink>
-          </div>
-        </Dropdown>
+              <RouterLink
+                v-for="category in categories"
+                :key="category.id"
+                :to="`/categories/${category.slug}`"
+                class="nav-link"
+              >
+                {{ category.name }}
+              </RouterLink>
+            </div>
+          </Dropdown>
 
-        <!-- Links for logged out users -->
-        <template v-if="!isLoggedIn">
-          <RouterLink to="/shortcuts" class="nav-link"> Shortcuts list </RouterLink>
-          <RouterLink to="/about" class="nav-link"> About </RouterLink>
-        </template>
+          <!-- Links for logged out users -->
+          <template v-if="!isLoggedIn">
+            <RouterLink to="/shortcuts" class="nav-link"> Shortcuts list </RouterLink>
+            <RouterLink to="/about" class="nav-link"> About </RouterLink>
+          </template>
 
-        <!-- Links for logged in users -->
-        <template v-else>
-          <RouterLink to="/shortcuts" class="nav-link"> Shortcuts List </RouterLink>
-          <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
-          <RouterLink to="/about" class="nav-link"> About </RouterLink>
-        </template>
+          <!-- Links for logged in users -->
+          <template v-else>
+            <RouterLink to="/shortcuts" class="nav-link"> Shortcuts List </RouterLink>
+            <RouterLink to="/leaderboards" class="nav-link"> Leaderboards </RouterLink>
+            <RouterLink to="/about" class="nav-link"> About </RouterLink>
+          </template>
+        </div>
       </div>
+
+      <!-- Right side of the navbar -->
+      <!-- Logged out: log in opens the modal, sign up goes to /signup -->
+      <template v-if="!isLoggedIn">
+        <div class="nav-right">
+          <button class="nav-link btn-auth" @click="openLogin">Log in</button>
+          <RouterLink to="/signup" class="nav-link btn-auth"> Sign up </RouterLink>
+        </div>
+      </template>
+
+      <!-- Logged in: shows the user's username and a log out button -->
+      <template v-else>
+        <div class="nav-right">
+          <!-- Dropdown from Dropdown.vue-->
+          <Dropdown :label="username" side="right" class="user-dropdown">
+            <RouterLink to="/" class="nav-link"> Home </RouterLink>
+            <RouterLink to="/history" class="nav-link"> History </RouterLink>
+            <button class="nav-link" @click="handleLogout">Log out</button>
+          </Dropdown>
+        </div>
+      </template>
     </div>
-
-    <!-- Right side of the navbar -->
-    <!-- Logged out: log in opens the modal, sign up goes to /signup -->
-    <template v-if="!isLoggedIn">
-      <div class="nav-right">
-        <button class="nav-link btn-auth" @click="openLogin">Log in</button>
-        <RouterLink to="/signup" class="nav-link btn-auth"> Sign up </RouterLink>
-      </div>
-    </template>
-
-    <!-- Logged in: shows the user's username and a log out button -->
-    <template v-else>
-      <div class="nav-right">
-        <!-- Dropdown from Dropdown.vue-->
-        <Dropdown :label="username" side="right" class="user-dropdown">
-          <RouterLink to="/" class="nav-link"> Home </RouterLink>
-          <RouterLink to="/history" class="nav-link"> History </RouterLink>
-          <button class="nav-link" @click="handleLogout">Log out</button>
-        </Dropdown>
-      </div>
-    </template>
   </nav>
 
   <!-- Visibility is controlled by the shared state in useLoginModal -->
@@ -131,38 +133,44 @@ onMounted(() => {
 
 <style scoped>
 .navbar {
+  width: 100%;
+}
+
+.navbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 2rem; /* Samma padding (2rem) som AboutView-containern */
   display: flex;
-  align-items: center; /* vertically centers all items in the bar */
-  position: relative;
-  padding: 1rem 2rem; /* 1rem top/bottom, 2rem left/right so content doesn't touch the edges */
-  justify-content: space-between; /* pushes .nav-left and .nav-right to opposite ends */
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Left and Right side of the navbar */
 .nav-left {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 2rem;
 }
 
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 1rem; /* space between Log in and Sign up */
+  justify-content: flex-end;
+  gap: 1rem;
 }
 
 /* Logo */
 .logo {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   font-size: 2.3rem;
   color: var(--color-text-white);
   text-decoration: none;
-  text-shadow:
-    0 0 0 rgba(159, 211, 227, 0),
-    0 0 0 rgba(159, 211, 227, 0);
+  text-align: left;
+  text-shadow: 0 0 0 rgba(159, 211, 227, 0);
   transition: text-shadow 0.6s ease;
+  margin-right: 2rem;
 }
 
 .logo:hover {
@@ -249,7 +257,7 @@ onMounted(() => {
 }
 
 @media (max-width: 850px) {
-  .navbar {
+  .navbar-inner {
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.5rem 1rem;

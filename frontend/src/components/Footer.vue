@@ -1,43 +1,49 @@
 <template>
   <footer class="footer">
-    <!-- Top part: brand + three link columns -->
-    <div class="footer-top">
-      <!-- Logo and slogan -->
-      <div class="footer-brand">
-        <RouterLink to="/" class="footer-logo">InCtrl</RouterLink>
-        <p>Take control of your keyboard.</p>
-      </div>
+    <div class="footer-inner">
+      <!-- Top part: brand + three link columns -->
+      <div class="footer-top">
+        <!-- Logo and slogan -->
+        <div class="footer-brand">
+          <RouterLink to="/" class="footer-logo">InCtrl</RouterLink>
+          <p>Take control of your keyboard.</p>
+        </div>
 
-      <!-- Company column -->
-      <div class="footer-col">
-        <h3>Company</h3>
-        <RouterLink to="/about">About</RouterLink>
-      </div>
+        <!-- Company column -->
+        <div class="footer-col">
+          <h3>Company</h3>
+          <RouterLink to="/about">About</RouterLink>
+        </div>
 
-      <!-- Courses column -->
-      <div class="footer-col">
-        <h3>Courses by Category</h3>
-        <div class="courses-links">
-          <RouterLink to="/categories/essential-navigation"
-            >Essential Windows Navigation</RouterLink
-          >
-          <RouterLink to="/categories/system-troubleshooting">System & Troubleshooting</RouterLink>
-          <RouterLink to="/categories/file-explorer">File Explorer & Windows Tools</RouterLink>
-          <RouterLink to="/categories/multitasking">Multitasking & Window Management</RouterLink>
-          <RouterLink to="/categories/window-snapping">Window Snapping & Layout</RouterLink>
-          <RouterLink to="/categories/virtual-desktops">Virtual Desktops</RouterLink>
-          <RouterLink to="/categories/power-keys">Windows Power Keys</RouterLink>
-          <RouterLink to="/categories/keyboard-practice">Interactive Keyboard Practice</RouterLink>
-          <RouterLink to="/categories/text-editing">Text Editing & Formatting</RouterLink>
-          <RouterLink to="/categories/taskbar">Taskbar & System Tray</RouterLink>
-          <RouterLink to="/categories/dialogs-settings">Dialog Boxes & Settings</RouterLink>
+        <!-- Courses column -->
+        <div class="footer-col">
+          <h3>Courses by Category</h3>
+          <div class="courses-links">
+            <RouterLink to="/categories/essential-navigation"
+              >Essential Windows Navigation</RouterLink
+            >
+            <RouterLink to="/categories/system-troubleshooting"
+              >System & Troubleshooting</RouterLink
+            >
+            <RouterLink to="/categories/file-explorer">File Explorer & Windows Tools</RouterLink>
+            <RouterLink to="/categories/multitasking">Multitasking & Window Management</RouterLink>
+            <RouterLink to="/categories/window-snapping">Window Snapping & Layout</RouterLink>
+            <RouterLink to="/categories/virtual-desktops">Virtual Desktops</RouterLink>
+            <RouterLink to="/categories/power-keys">Windows Power Keys</RouterLink>
+            <RouterLink to="/categories/keyboard-practice"
+              >Interactive Keyboard Practice</RouterLink
+            >
+            <RouterLink to="/categories/text-editing">Text Editing & Formatting</RouterLink>
+            <RouterLink to="/categories/taskbar">Taskbar & System Tray</RouterLink>
+            <RouterLink to="/categories/dialogs-settings">Dialog Boxes & Settings</RouterLink>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Bottom part: copyright -->
-    <div class="footer-bottom">
-      <p>© 2026 InCtrl. A school project.</p>
+      <!-- Bottom part: copyright -->
+      <div class="footer-bottom">
+        <p>© 2026 InCtrl. A school project.</p>
+      </div>
     </div>
   </footer>
 </template>
@@ -49,9 +55,15 @@ import { RouterLink } from 'vue-router'
 <style scoped>
 .footer {
   margin-top: 4rem; /* space between page content and footer */
-  padding: 3rem 2rem 1.5rem; /* top, left/right, bottom */
   border-top: 1px solid rgba(255, 255, 255, 0.25); /* thin line at the top */
   background: rgba(20, 12, 8, 0.75); /* dark, slightly transparent */
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 1.5rem;
+  box-sizing: border-box;
 }
 
 .footer-top {
@@ -138,7 +150,7 @@ import { RouterLink } from 'vue-router'
 }
 
 @media (max-width: 600px) {
-  .footer {
+  .footer-inner {
     padding: 2rem 1.25rem 1.25rem;
   }
 

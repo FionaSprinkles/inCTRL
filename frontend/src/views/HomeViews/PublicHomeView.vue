@@ -1,84 +1,99 @@
-import './assets/global.css'
-
-<template>
-  <main class="public-home">
-    <section class="hero">
-      <p class="eyebrow">MASTER WINDOWS SHORTCUTS</p>
-
-      <h1>Take control of your keyboard</h1>
-
-      <p class="hero-text">
-        Learn practical Windows shortcuts through focused, challenging quizzes.
-      </p>
-
-      <div class="buttons">
-        <RouterLink to="/signup" class="btn-hero"> Get started </RouterLink>
-
-        <RouterLink to="/categories" class="btn-hero"> Explore categories </RouterLink>
-      </div>
-    </section>
-
-    <section class="member">
-      <div class="left-side">
-        <h1>Join the community!</h1>
-        <p>
-          Save your quiz results, track your progress, and climb the leaderboards as you earn
-          points.
-        </p>
-        <p class="ps">
-          Psst! You'll need an account to save your progress and join the competition.
-        </p>
-      </div>
-      <div class="right-side">
-        <PodiumLeaderboard podium-only />
-      </div>
-    </section>
-
-    <section class="how-it-works">
-      <p class="how">HOW INCTRL WORKS</p>
-
-      <h2>Learn. Practice. Improve.</h2>
-
-      <p class="section-lead">
-        Turn Windows shortcuts into practical skills through interactive quizzes and instant
-        feedback.
-      </p>
-
-      <div class="features">
-        <article>
-          <span>01</span>
-          <h3>Create an account</h3>
-          <p>Sign up to start your journey and keep track of your learning progress.</p>
-        </article>
-
-        <article>
-          <span>02</span>
-          <h3>Choose what to learn & Test your knowledge</h3>
-          <p>Pick a category and difficulty level. Challenge yourself with shortcut quizzes.</p>
-        </article>
-
-        <article>
-          <span>03</span>
-          <h3>Climb to the top!</h3>
-          <p>Keep improving your skills, earn points, and climb the leaderboard!</p>
-        </article>
-      </div>
-    </section>
-  </main>
-</template>
-
 <script setup>
 import { RouterLink } from 'vue-router'
 import PodiumLeaderboard from '@/components/PodiumLeaderboard.vue'
 </script>
 
+<template>
+  <main class="public-home">
+    <section class="hero">
+      <div class="content-container">
+        <p class="eyebrow">MASTER WINDOWS SHORTCUTS</p>
+
+        <h1>Take control of your keyboard</h1>
+
+        <p class="hero-text">
+          Learn practical Windows shortcuts through focused, challenging quizzes.
+        </p>
+
+        <div class="buttons">
+          <RouterLink to="/signup" class="btn-hero"> Get started </RouterLink>
+
+          <RouterLink to="/categories" class="btn-hero"> Explore categories </RouterLink>
+        </div>
+      </div>
+    </section>
+
+    <section class="member">
+      <div class="content-container member-inner">
+        <div class="left-side">
+          <h1>Join the community!</h1>
+          <p>
+            Save your quiz results, track your progress, and climb the leaderboards as you earn
+            points.
+          </p>
+          <p class="ps">
+            Psst! You'll need an account to save your progress and join the competition.
+          </p>
+        </div>
+        <div class="right-side">
+          <PodiumLeaderboard podium-only />
+        </div>
+      </div>
+    </section>
+
+    <section class="how-it-works">
+      <div class="content-container">
+        <p class="how">HOW INCTRL WORKS</p>
+
+        <h2>Learn. Practice. Improve.</h2>
+
+        <p class="section-lead">
+          Turn Windows shortcuts into practical skills through interactive quizzes and instant
+          feedback.
+        </p>
+
+        <div class="features">
+          <article>
+            <span>01</span>
+            <h3>Create an account</h3>
+            <p>Sign up to start your journey and keep track of your learning progress.</p>
+          </article>
+
+          <article>
+            <span>02</span>
+            <h3>Choose what to learn & Test your knowledge</h3>
+            <p>Pick a category and difficulty level. Challenge yourself with shortcut quizzes.</p>
+          </article>
+
+          <article>
+            <span>03</span>
+            <h3>Climb to the top!</h3>
+            <p>Keep improving your skills, earn points, and climb the leaderboard!</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</template>
+
 <style scoped>
+.content-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 2rem;
+}
+
 /* HERO SECTION*/
 .hero {
-  max-width: 800px;
-  margin: auto;
-  padding: 6rem 2rem;
+  width: 100%;
+  padding: 6rem 0;
   text-align: center;
+  box-sizing: border-box;
+}
+
+.hero .content-container {
+  max-width: 800px; /* Håller hero-texten lite tightare för snyggare läsbarhet */
 }
 
 .hero-text {
@@ -115,9 +130,9 @@ h1 {
 .buttons {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* Help buttons to be in center of the page */
-  gap: 1.5rem; /* Makes space between elements */
-  margin-top: 2rem; /* Makes space above the element */
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 /* Hero buttons */
@@ -164,7 +179,7 @@ h1 {
 
 /* Hero button hover */
 .buttons a:hover {
-  color: #ffffff;
+  color: var(--color-text-white);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.08) 100%);
   border-color: rgba(230, 234, 240, 0.85);
   transform: translateY(-3px);
@@ -184,15 +199,17 @@ h1 {
 }
 
 /* MEMBER SECTION */
-/* Layout */
 .member {
+  width: 100%;
+  padding: 5rem 0;
+  box-sizing: border-box;
+}
+
+.member-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 3rem;
-  max-width: 950px;
-  margin: 0 auto;
-  padding: 5rem 2rem;
 }
 
 /* Podium layout */
@@ -219,13 +236,10 @@ h1 {
 }
 
 /* HOW IT WORKS SECTION */
-/* Layout */
 .how-it-works {
-  padding: 5rem 2rem;
-}
-
-/* Title */
-.how-it-works h2 {
+  width: 100%;
+  padding: 5rem 0;
+  box-sizing: border-box;
 }
 
 /* Feature cards layout */
@@ -233,7 +247,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  margin: 3rem auto;
+  margin: 3rem auto 0 auto;
 }
 
 /* Feature cards title */
@@ -284,7 +298,7 @@ h1 {
 
 @media (max-width: 850px) {
   .hero {
-    padding: 3.5rem 1.25rem;
+    padding: 3.5rem 0;
   }
 
   h1 {
@@ -292,14 +306,17 @@ h1 {
   }
 
   .member {
+    padding: 3rem 0;
+  }
+
+  .member-inner {
     grid-template-columns: 1fr;
     text-align: center;
-    padding: 3rem 1.25rem;
     gap: 2rem;
   }
 
   .how-it-works {
-    padding: 3rem 1.25rem;
+    padding: 3rem 0;
   }
 
   .features {

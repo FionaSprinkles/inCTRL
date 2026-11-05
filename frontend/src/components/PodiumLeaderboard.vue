@@ -243,9 +243,9 @@ onMounted(fetchLeaderboard)
 
 /* Main container and layout */
 .leaderboard-container {
-  padding-top: 24px;
+  padding: 24px 2rem;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1100px;
   box-sizing: border-box;
   margin: 0 auto;
   border-radius: 16px;
@@ -482,7 +482,7 @@ onMounted(fetchLeaderboard)
 }
 
 .rank-number {
-  font-family: Georgia, serif;
+  font-family: var(--font-heading), serif;
   font-size: 1.8rem;
   font-weight: bold;
   color: #1e293b;

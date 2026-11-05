@@ -324,12 +324,12 @@ function jumpToQuestion(idx) {
 
 <style scoped>
 .quiz-prototype-page {
-  max-width: 960px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1.5rem 2rem 3rem;
   width: 100%;
   box-sizing: border-box;
-  font-family: var(--font-body);
+  font-family: var(--font-body), sans-serif;
 }
 
 .question-nav-dots {
@@ -348,7 +348,7 @@ function jumpToQuestion(idx) {
   height: 34px;
   border-radius: 10px;
   color: var(--color-text-main);
-  font-family: var(--font-display);
+  font-family: var(--font-display), serif;
   font-weight: 600;
   font-size: 15px;
   letter-spacing: 0;
