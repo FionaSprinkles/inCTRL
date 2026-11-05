@@ -36,7 +36,33 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
         <RouterLink class="btn-action" to="/categories">Choose your first quiz here!</RouterLink>
         </section>
 
-        <div class="table-wrap" v-else-if="history.length > 0">
+        <section v-else>
+          <section class="filters-bar">
+            <div class="filter-group">
+              <label for="category-filter">Category</label>
+
+              <select
+                id="category-filter"
+                class="filter-select"
+                v-model="selectedCategory"
+              >
+                <option value="all">All</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+          </section>
+
+          <p v-if="filteredHistory.length === 0">
+            No quiz history found in this category.
+          </p>
+        
+        <div class="table-wrap" v-else="history.length > 0">
         <table>
           <thead>
             <tr>
@@ -48,7 +74,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
             </tr>
           </thead>
           <tbody>
-            <tr v-for="attempt in history" :key="attempt.id">
+            <tr v-for="attempt in filteredHistory" :key="attempt.id">
               <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
               <td>{{ attempt.quizname }}</td>
               <td>{{ attempt.difficulty }}</td>
@@ -78,6 +104,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
 
           </table>
         </div>
+        </section>
 
 
       </div>
@@ -137,18 +164,20 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts); *
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { RouterLink } from 'vue-router'
 import LoadingSpinner from './LoadingSpinner.vue';
 import { useLoginModal } from '@/composables/useLoginModal'
-import { fetchUserAttempts } from '@/services/quizService'
+import { fetchUserAttempts, fetchCategories } from '@/services/quizService'
 
 const history = ref([])
 const errorMessage = ref('')
 const loading = ref(false)
 const { user, isLoggedIn, username } = useAuth()
 const { openLogin } = useLoginModal()
+const categories = ref([])
+const selectedCategory = ref('all')
 
 // component is displayed as a compact widget or not
 defineProps({
@@ -158,6 +187,27 @@ defineProps({
   }
 })
 
+// Fetch all categories
+async function loadCategories() {
+  try {
+    categories.value = await fetchCategories()
+  } catch (error) {
+    console.error('Could not load categories:', error)
+  }
+}
+
+loadCategories()
+
+//filter categories
+const filteredHistory = computed(() => {
+  if (selectedCategory.value === 'all') {
+    return history.value
+  }
+
+  return history.value.filter(
+    attempt => String(attempt.categoryId) === String(selectedCategory.value)
+  )
+})
 
 //fetch user history 
 watch(
@@ -204,7 +254,7 @@ function formatDuration(seconds) {
 function getTotalScore() {
   let totalScore = 0
 
-  for (const attempt of history.value) {
+  for (const attempt of filteredHistory.value) {
     totalScore = totalScore + (Number(attempt.score) || 0)
   }
 
@@ -214,7 +264,7 @@ function getTotalScore() {
 function getTotalTime() {
   let totalTime = 0
 
-  for (const attempt of history.value) {
+  for (const attempt of filteredHistory.value) {
     totalTime = totalTime + (Number(attempt.timeSpentSeconds) || 0)
   }
 
@@ -408,6 +458,85 @@ tfoot tr:first-child th {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(10, 40, 50, 0.3);
 }
+
+/* FILTER */
+/*Same filter as in categoryView*/
+
+.filter-select {
+  width: 30%;
+  
+  min-width: 280px;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  color: var(--color-text-white);
+  font-size: 0.95rem;
+  outline: none;
+  font-family: var(--font-body), sans-serif;
+
+  background: linear-gradient(
+    180deg,
+    rgba(10, 40, 50, 0.65) 0%,
+    rgba(10, 40, 50, 0.45) 100%
+  );
+
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+
+.filters-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 40%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  border-radius: 20px;
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.filter-group {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 180px;
+  flex: none;
+}
+
+.filter-group label {
+  font-family: var(--font-display), serif;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: var(--color-text-white);
+}
+
 
 /* COMPACT WIDGET */
 .compact {
