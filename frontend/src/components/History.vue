@@ -447,6 +447,7 @@ tfoot tr:first-child th {
 .compact td {
   padding: 0.75rem;
   overflow-wrap: break-word;
+  text-align: center;
 
 }
 
