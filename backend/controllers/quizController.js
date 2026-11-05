@@ -413,7 +413,8 @@ exports.getLeaderboard = async (req, res) => {
 
 /**
  * Handles GET /api/quiz/attempts/user/:userId.
- * Retrieves past quiz attempts submitted by a specific user.
+ * Retrieves past quiz attempts for the authenticated user.
+ * Callers may only read their own userId.
  * @param {import('express').Request} req - Express request object with userId param.
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
@@ -421,6 +422,12 @@ exports.getLeaderboard = async (req, res) => {
 exports.getUserAttempts = async (req, res) => {
     try {
         const { userId } = req.params;
+        if (!req.user || Number(req.user.id) !== Number(userId)) {
+            return res.status(403).json({
+                success: false,
+                error: 'Forbidden: You do not have permission to view this attempt'
+            });
+        }
         const attempts = await quizService.getUserAttempts(userId);
         res.json({
             success: true,

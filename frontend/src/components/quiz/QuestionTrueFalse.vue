@@ -84,7 +84,7 @@ function setAnswer(val) {
   position: relative;
   background: rgba(15, 76, 92, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  border-left: 4px solid var(--color-button);
+  border-left: 4px solid var(--color-light-accenturate);
   padding: 18px 22px 18px 40px;
   border-radius: 12px;
 }
@@ -95,7 +95,7 @@ function setAnswer(val) {
   top: 6px;
   font-size: 2.2rem;
   line-height: 1;
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
   font-family: var(--font-heading);
 }
 
@@ -104,7 +104,7 @@ function setAnswer(val) {
   font-size: 1.08rem;
   line-height: 1.5;
   font-weight: 450;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
   margin: 0;
 }
 
@@ -120,29 +120,36 @@ function setAnswer(val) {
   justify-content: center;
   gap: 10px;
   padding: 16px;
-  border: 1.5px solid rgba(255, 255, 255, 0.26);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
-  background: rgba(15, 76, 92, 0.5);
   color: var(--color-text-main);
   font-family: var(--font-display);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 2px;
 }
 
 .tf-btn:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(15, 76, 92, 0.78);
-  color: var(--color-text-heading);
-  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .tf-btn.selected {
-  border-color: var(--color-button);
-  background: rgba(227, 221, 196, 0.24);
-  color: var(--color-text-heading);
+  border-color: var(--color-light-accenturate);
+  background: rgba(159, 211, 205, 0.24);
+  color: var(--color-text-white);
 }
 
 .btn-true.correct,

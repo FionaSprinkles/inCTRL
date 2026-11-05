@@ -124,23 +124,30 @@ function clearInput() {
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 600;
   letter-spacing: 0.5px;
-  background: rgba(15, 76, 92, 0.55);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
-  color: var(--color-text-heading);
-  transition: all 0.15s ease-in-out;
+  color: var(--color-text-white);
+  transition: all 0.3s ease;
 }
 
 .text-input::placeholder {
-  color: rgba(242, 229, 208, 0.65);
+  color: var(--color-light-accenturate);
   font-weight: 400;
 }
 
 .text-input:focus {
   outline: none;
-  border-color: var(--color-button);
-  background: rgba(15, 76, 92, 0.78);
-  box-shadow: 0 0 0 3px rgba(227, 221, 196, 0.2);
+  border-color: var(--color-light-accenturate);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
 }
 
 .text-input.has-result-correct {
@@ -168,7 +175,7 @@ function clearInput() {
 }
 
 .clear-btn:hover {
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .quick-helpers {
@@ -188,22 +195,28 @@ function clearInput() {
 
 .key-pill {
   padding: 5px 12px;
-  background: rgba(15, 76, 92, 0.65);
-  color: var(--color-text-heading);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.45);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  color: var(--color-text-white);
   border-radius: 6px;
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .key-pill:hover {
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border-color: var(--color-button-border);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 .answer-review {

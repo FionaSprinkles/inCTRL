@@ -19,37 +19,52 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
 <template>
   <section class="history">
-    <div v-if="!compact">
-        <h1>History</h1>
-        <h2>Your history</h2>
 
+    <section v-if="!isLoggedIn" class="noHistory">
+      <p>Log in to see your quiz history.</p>
+      <button type="button" class="btn-auth" @click="openLogin">Log in</button>
+    </section>
 
+    
+    <template v-else>
+      <h1>History</h1>
+      <div v-if="!compact">
+      <h2>Your history</h2>
 
         <!-- History table-->
+                  
+        <!-- Loading -->
+      <LoadingSpinner
+        v-if="loading"
+        size="md"
+        text="Loading history..."
+      />
+        <!-- Message for empty history users-->
+        <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
+        <section class="no-history" v-else-if="history.length === 0">
+        <p>You haven't completed any quizzes yet.</p>
+        <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
+        </section>
 
-        <table v-if="history.length > 0">
-          <thead>
+      <table v-else-if="history.length > 0">
+        <thead>
           <tr>
             <th>Date</th>
             <th>Quiz name</th>
             <th>Difficulty</th>
             <th>Score</th>
             <th>Time</th>
-
           </tr>
-          </thead>
-          <tbody>
+        </thead>
+        <tbody>
           <tr v-for="attempt in history" :key="attempt.id">
-            <!-- The data goeeess heereee-->
-             <!--Fetch data from quiz_attempts-->
-            <td>{{ new Date( attempt.completedAt).toLocaleDateString() }}</td>
-            <td>{{ attempt.quizname }}</td> <!--Should there be a button somewhere to redo quiz? -->
-            <td>{{attempt.difficulty}}</td>
+            <td>{{ new Date(attempt.completedAt).toLocaleDateString() }}</td>
+            <td>{{ attempt.quizname }}</td>
+            <td>{{ attempt.difficulty }}</td>
             <td>{{ attempt.score }} / {{ attempt.maxScore }}</td>
-            <td>{{ attempt.timeSpentSeconds }}</td>
-            
+            <td>{{ formatDuration(attempt.timeSpentSeconds) }}</td>
           </tr>
-          </tbody>
+        </tbody>
 
           <!-- Lil summary maybe-->
           <tfoot>
@@ -62,26 +77,15 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
             <tr>
               <td colspan= "3"></td>
               <td>{{ getTotalScore() }}</td>
-              <td>{{ getTotalTime() }}</td>
+              <td>{{ formatDuration(getTotalTime()) }}</td>
               
             </tr>
           </tfoot>
         </table>
-        
-        <!-- Loading -->
-        <LoadingSpinner
-          v-if="isLoading"
-          size="md"
-          text="Loading history..."
-        />
 
-        <!-- Message for empty history users-->
-        <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
-        <section class="no-history" v-else-if="history.length === 0">
-        <p>You haven't completed any quizzes yet.</p>
-        <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
-        </section>
-    </div>
+
+      </div>
+    
 
          <!-- Compact widget -->
       
@@ -90,7 +94,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
 
       <!-- Loading -->
       <LoadingSpinner
-        v-if="isLoading"
+        v-if="loading"
         size="md"
         text="Loading history..."
       />
@@ -98,7 +102,7 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
       
       <!-- Message for empty history users -->
       <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
-      <section class="" v-else-if="history.length === 0">
+      <section class="no-history" v-else-if="history.length === 0">
       <p>You haven't completed any quizzes yet.</p>
       <RouterLink class="button" to="/categories">Choose your first quiz here!</RouterLink>
       </section>
@@ -131,19 +135,24 @@ router.get('/api/quiz/attempts/user/:userId', quizController.getUserAttempts);
         </RouterLink>
       </div>
     </div>
+    </template>
   </section>
-  
 </template>
+
+
 <script setup>
 import { ref, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { RouterLink } from 'vue-router'
 import LoadingSpinner from './LoadingSpinner.vue';
+import { useLoginModal } from '@/composables/useLoginModal'
+import { fetchUserAttempts } from '@/services/quizService'
 
 const history = ref([])
-const { user } = useAuth()
 const errorMessage = ref('')
-const isLoading = ref(true)
+const loading = ref(false)
+const { user, isLoggedIn } = useAuth()
+const { openLogin } = useLoginModal()
 
 // component is displayed as a compact widget or not
 defineProps({
@@ -153,70 +162,67 @@ defineProps({
   }
 })
 
-async function fetchHistory() {
 
-    isLoading.value = true
+//fetch user history 
+watch(
+  () => user.value?.id,
+  async (userId) => {
     errorMessage.value = ''
-  try {
-    if (!user.value?.id) return
-    const response = await fetch(`/api/quiz/attempts/user/${user.value.id}`)
-
-    if (!response.ok) {
-      throw new Error('Could not fetch history')
+    if (!userId) {
+      history.value = []
+      loading.value = false
+      return
     }
 
-    const data = await response.json()
-    history.value = data.attempts || []
-  } catch (error) {
-    console.error('Error fetching history:', error)
-    errorMessage.value = 'Could not load your history. Please try again.'
-  }
-  finally {
-  isLoading.value = false
-}
-
-
-}
-
-watch( // use watch to update page
-
-  () => user.value?.id,
-  (newUserId) => {
-
-    if (newUserId) {
-      fetchHistory()
-    } else { //remove old user data 
-
+    loading.value = true
+    try {
+      const attempts = await fetchUserAttempts(userId)
+      if (user.value?.id !== userId) return
+      history.value = attempts
+    } catch (error) {
+      console.error('Error fetching history:', error)
+      if (user.value?.id !== userId) return
       history.value = []
-      errorMessage.value = ''
-      isLoading.value = false
-
+      errorMessage.value = 'Could not load your history.'
+    } finally {
+      if (user.value?.id === userId) loading.value = false
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
+
+
+//format to seconds
+function formatDuration(seconds) {
+  const value = Number(seconds) || 0
+  if (value <= 0) return '0s'
+  const mins = Math.floor(value / 60)
+  const secs = value % 60
+  if (mins === 0) return `${secs}s`
+  return `${mins}m ${secs}s`
+}
+
 
 //Total score function
 function getTotalScore() {
   let totalScore = 0
 
   for (const attempt of history.value) {
-    totalScore = totalScore + attempt.score
+    totalScore = totalScore + (Number(attempt.score) || 0)
   }
 
   return totalScore
 }
 
-//Total time function
 function getTotalTime() {
   let totalTime = 0
 
   for (const attempt of history.value) {
-    totalTime = totalTime + attempt.timeSpentSeconds  }
+    totalTime = totalTime + (Number(attempt.timeSpentSeconds) || 0)
+  }
 
   return totalTime
 }
-
 </script>
 
 <style scoped>
@@ -259,6 +265,38 @@ td{
 .button:hover {
   background: var(--color-button-hover);
   box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+.noHistory{
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* loginbuton*/
+
+.btn-auth {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  font-size: 16px;
+  border-radius: 40px;
+  text-decoration: none;
+  color: var(--color-text-main);
+
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+  transition: all 0.3s ease;
+}
+
+.btn-auth:hover {
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.4);
+  color: var(--color-text-main);
 }
 
 /* COMPACT WIDGET */ 
@@ -300,6 +338,7 @@ td{
   td {
     padding: 0.6rem;
   }
+}
 }
 
 </style>

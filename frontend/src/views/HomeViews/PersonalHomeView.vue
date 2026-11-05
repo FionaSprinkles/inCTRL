@@ -65,9 +65,18 @@ const { username, isFirstLogin } = useAuth()
   max-width: 500px;
   box-sizing: border-box;
   padding: 2.5rem 2rem;
-  background-color: var(--color-dark-accenturate);
-  border: 1px solid var(--color-text-muted);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 16px;
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -77,21 +86,32 @@ const { username, isFirstLogin } = useAuth()
 
 .widget h2 {
   margin: 0;
+  color: var(--color-text-white);
 }
 
 .widget a {
   display: inline-block;
   padding: 0.75rem 1.75rem;
-  background-color: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  color: var(--color-text-white);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 10px;
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   font-weight: 600;
-  transition: background-color 0.2s ease;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .widget a:hover {
-  background-color: var(--color-button-hover);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
 }
 
 @media (max-width: 768px) {

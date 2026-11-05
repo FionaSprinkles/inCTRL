@@ -339,7 +339,7 @@ describe('backend/controllers/quizController', () => {
                 cb(null, attempts);
             });
 
-            const req = { params: { userId: 3 } };
+            const req = { params: { userId: 3 }, user: { id: 3 } };
             const res = createMockResponse();
 
             await quizController.getUserAttempts(req, res);
@@ -347,12 +347,21 @@ describe('backend/controllers/quizController', () => {
             assert.deepStrictEqual(res.body.attempts, attempts);
         });
 
+        it('returns 403 when the caller is not that user', async () => {
+            const req = { params: { userId: 3 }, user: { id: 9 } };
+            const res = createMockResponse();
+
+            await quizController.getUserAttempts(req, res);
+            assert.strictEqual(res.statusCode, 403);
+            assert.strictEqual(res.body.success, false);
+        });
+
         it('returns 500 on error', async () => {
             mockDb.setQueryHandler((sql, params, cb) => {
                 cb(new Error('Attempts query failure'));
             });
 
-            const req = { params: { userId: 3 } };
+            const req = { params: { userId: 3 }, user: { id: 3 } };
             const res = createMockResponse();
 
             await quizController.getUserAttempts(req, res);

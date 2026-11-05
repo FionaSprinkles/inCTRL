@@ -66,7 +66,7 @@ const performanceGrade = computed(() => {
     return {
       title: 'inCTRL Power User! ⚡',
       desc: 'Impressive muscle memory! You can navigate Windows without touching your mouse.',
-      color: 'var(--color-text-heading)',
+      color: 'var(--color-text-white)',
     }
   if (p >= 50)
     return {
@@ -410,13 +410,19 @@ function formatCorrectAnswer(question) {
 .summary-container {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(11, 56, 66, 0.88);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 20px;
   padding: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -438,14 +444,14 @@ function formatCorrectAnswer(question) {
   width: 128px;
   height: 128px;
   border-radius: 50%;
-  background: rgba(15, 76, 92, 0.65);
-  border: 3px solid var(--color-button);
+  background: rgba(10, 40, 50, 0.65);
+  border: 3px solid var(--color-light-accenturate);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-heading);
-  box-shadow: 0 0 24px rgba(227, 221, 196, 0.2);
+  color: var(--color-text-white);
+  box-shadow: 0 0 24px rgba(159, 211, 205, 0.2);
 }
 
 .score-number {
@@ -453,7 +459,7 @@ function formatCorrectAnswer(question) {
   font-size: 2.3rem;
   font-weight: 500;
   line-height: 1;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .score-fraction {
@@ -492,13 +498,21 @@ function formatCorrectAnswer(question) {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(15, 76, 92, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   padding: 7px 16px;
   border-radius: 20px;
   font-family: var(--font-body);
   font-size: 0.92rem;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .metric-icon {
@@ -516,7 +530,7 @@ function formatCorrectAnswer(question) {
   letter-spacing: 2px;
   text-transform: uppercase;
   margin: 0;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .breakdown-grid {
@@ -527,8 +541,16 @@ function formatCorrectAnswer(question) {
 }
 
 .breakdown-card {
-  background: rgba(15, 76, 92, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
   padding: 12px 16px;
   display: flex;
@@ -543,7 +565,7 @@ function formatCorrectAnswer(question) {
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.5px;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .format-stat {
@@ -561,7 +583,7 @@ function formatCorrectAnswer(question) {
 
 .progress-fill {
   height: 100%;
-  background: var(--color-button);
+  background: var(--color-light-accenturate);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -577,22 +599,30 @@ function formatCorrectAnswer(question) {
 
 .btn-toggle-all {
   font-family: var(--font-display);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
   padding: 6px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.5px;
   color: var(--color-text-main);
   cursor: pointer;
-  transition: all 0.15s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .btn-toggle-all:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--color-text-heading);
-  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .review-list {
@@ -602,11 +632,19 @@ function formatCorrectAnswer(question) {
 }
 
 .answer-card {
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
   border-radius: 14px;
-  background: rgba(15, 76, 92, 0.48);
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  transition: border-color 0.15s ease;
+  transition: all 0.3s ease;
 }
 
 .answer-card.card-correct {
@@ -648,7 +686,7 @@ function formatCorrectAnswer(question) {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1rem;
-  color: var(--color-button);
+  color: var(--color-light-accenturate);
   min-width: 30px;
 }
 
@@ -656,7 +694,7 @@ function formatCorrectAnswer(question) {
   font-family: var(--font-body);
   font-size: 0.98rem;
   font-weight: 500;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .header-right {
@@ -671,9 +709,9 @@ function formatCorrectAnswer(question) {
   font-size: 0.78rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  background: rgba(133, 180, 190, 0.25);
-  color: var(--color-text-heading);
-  border: 1px solid rgba(133, 180, 190, 0.4);
+  background: rgba(159, 211, 205, 0.22);
+  color: var(--color-text-white);
+  border: 1px solid rgba(159, 211, 205, 0.4);
   padding: 3px 9px;
   border-radius: 6px;
   font-weight: 600;
@@ -768,14 +806,14 @@ function formatCorrectAnswer(question) {
 }
 
 .val-target {
-  background: rgba(227, 221, 196, 0.16);
-  border: 1px solid rgba(227, 221, 196, 0.45);
-  color: var(--color-text-heading);
+  background: rgba(159, 211, 205, 0.16);
+  border: 1px solid rgba(159, 211, 205, 0.45);
+  color: var(--color-text-white);
 }
 
 .explanation-box {
   background: rgba(0, 0, 0, 0.22);
-  border-left: 3px solid var(--color-button);
+  border-left: 3px solid var(--color-light-accenturate);
   padding: 10px 14px;
   border-radius: 6px;
   font-family: var(--font-body);
@@ -787,7 +825,7 @@ function formatCorrectAnswer(question) {
 .feedback-text {
   margin: 0 0 6px;
   font-weight: 600;
-  color: var(--color-text-heading);
+  color: var(--color-text-white);
 }
 
 .explanation-text {
@@ -802,22 +840,30 @@ function formatCorrectAnswer(question) {
 
 .btn-inspect {
   font-family: var(--font-display);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: var(--color-button);
+  color: var(--color-text-main);
   font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.5px;
   cursor: pointer;
   padding: 5px 12px;
-  border-radius: 8px;
-  transition: all 0.15s ease;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .btn-inspect:hover {
-  background: rgba(227, 221, 196, 0.2);
-  color: var(--color-text-heading);
-  border-color: var(--color-button);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 .summary-actions {
@@ -834,18 +880,27 @@ function formatCorrectAnswer(question) {
 .btn-primary {
   font-family: var(--font-display);
   letter-spacing: 1px;
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
+  color: var(--color-text-main);
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  background: linear-gradient(180deg, rgba(10, 40, 50, 0.7) 0%, rgba(10, 40, 50, 0.5) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(197, 204, 214, 0.55);
+  border-top-color: rgba(245, 247, 250, 0.9);
+  box-shadow:
+    6px 12px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(197, 204, 214, 0.2);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
-  background: var(--color-button-hover);
-  box-shadow: 0 0 15px rgba(253, 251, 247, 0.35);
+  box-shadow: 0 0 15px rgba(253, 251, 247, 0.2);
+  transition: all 0.3s ease;
+  color: var(--color-text-white);
 }
 
 @media (max-width: 600px) {
